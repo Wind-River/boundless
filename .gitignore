@@ -1,0 +1,29 @@
+.quasar
+.DS_Store
+.thumbs.db
+node_modules
+dist
+
+/app/config/system.yml
+/app/config/system.js
+
+/app/client/database.cred.js
+
+/app/src-cordova/node_modules
+/app/src-cordova/platforms
+/app/src-cordova/plugins
+/app/src-cordova/www
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cloud functions related ignore
+.firebaserc
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

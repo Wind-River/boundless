@@ -1,0 +1,132 @@
+[
+  {   
+    "Images": [
+      {
+        "index": 1,
+        "label": "",
+        "caption": "",
+        "ratio": "4/3",
+        "url": "static/images/..."
+      },
+      {
+        "index": 1,
+        "label": "",
+        "caption": "",
+        "ratio": "4/3",
+        "url": "static/images/..."
+      },
+      {
+        "index": 2,
+        "label": "",
+        "caption": "",
+        "ratio": "5/3",
+        "url": "static/images/..."
+      }
+    ],
+    "webpage": {
+      "ChipsContent": [
+        {
+          "index": 1,
+          "content": {
+            "label": "Source",
+            "icon":  "code",
+            "type": ["URL"],
+            "url": "http://..."
+          }
+        },  
+        {
+          "index": 2,
+          "content": {
+            "label": "Video",
+            "icon":  "movie",
+            "type": ["VIDEO"],
+            "url": "http://..."
+          }
+        },
+        {
+          "index": 3,
+          "content": {
+            "label": "Gallery",
+            "icon":  "photo_camera",
+            "type": ["GALLERY_PAGE"]
+          }
+        },
+        {
+          "index": 4,
+          "content": {
+            "label": "Keywords",
+            "icon":  "key",
+            "type": ["POP_UP", "KEYWORDS"]
+          }
+        },
+        {
+          "index": 5,
+          "content":{
+            "label": "ImpactAwards",
+            "icon": "star",
+            "type": ["IMPACT_PAGE"]
+          }
+        }                                                                                               
+      ],
+      "BodyContent": [ 
+        {
+          "index": 1,
+          "content": {
+            "label": "History",
+            "type": "TextBox",
+            "text": "Long Long ago when the ..."
+          }
+        },
+        {
+          "index": 2,
+          "content": {
+            "label": "References",
+            "type": "ORDERED_LIST",
+            "list": [
+              {
+                "index": 1,
+                "item": "Once upon a time ...",
+                "url": "http://..."
+              },
+              {
+                "index": 2,
+                "item": "Four score ...",
+                "url":  "http://..."
+              },
+              {
+                "index": 3,
+                "item": "Example without a link ...",
+                "url":  ""
+              }
+            ]                
+          }
+        },
+        {
+          "index": 4,
+          "content": {
+            "label": "History",
+            "type": "EVENT_LIST",
+            "list": [
+              {
+                "date": "2019:05:31.17:50",
+                "subject": "Once upon a time ...",
+                "body":    " ..... ",
+                "url":     "http://..."
+              },
+              {
+                "date": "2019:06:02.00:00",
+                "subject": "Once upon a time ...",
+                "body":    " ..... ",
+                "url":     "http://..."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },         
+  {
+    "ContentTypes": ["TEXT_BOX", "UNORDERED_LIST", "ORDERED_LIST", "EVENT_LIST" ],
+    "ChipTypes": ["KEYWORDS", "IMPACT_PAGE", "SOURCE", "GALLERY_PAGE", "VIDEO", "URL"]
+  }
+]

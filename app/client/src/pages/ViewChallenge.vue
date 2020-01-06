@@ -1,0 +1,998 @@
+<!-- ##
+## Copyright (c) 2019 Wind River Systems, Inc.
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at:
+##       http://www.apache.org/licenses/LICENSE-2.0
+## Unless required by applicable law or agreed to in writing, software  distributed
+## under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+## OR CONDITIONS OF ANY KIND, either express or implied.
+
+Name:     pages/ViewChallenge.vue
+Purpose:
+Methods:
+  *
+
+## -->
+
+<template>
+  <NotFound v-if="notFound" />
+  <q-page v-else class="q-pa-lg">
+    <!-- -------------------- Loading -------------------- -->
+    <div
+      v-if="loading"
+      class="absolute-center"
+    >
+      <q-spinner
+        color="primary"
+        size="8em"
+      />
+    </div>
+
+    <div v-else>
+      <q-splitter
+        v-model="splitterModel"
+        disable
+      >
+
+        <template v-slot:before>
+          <q-tabs
+            vertical inline-label stretch
+            class="text-primary"
+            v-model="pageTab"
+          >
+            <q-route-tab
+              exact no-caps
+              name="main" icon="view_stream" label="Main"
+              :to="`/challenge/${challengeId}`"
+            />
+            <q-separator />
+            <q-route-tab
+              exact no-caps
+              name="logs" icon="forum" label="Logs"
+              :to="`/challenge/${challengeId}/logs`"
+            />
+            <q-separator />
+            <!-- <div v-if="$q.sessionStorage.has('admin_token')">
+              <q-route-tab
+                :to="`/challenge/${data.uuid}/attachments`"
+                name="attachments"
+                icon="attachment"
+                label="Attachments"
+                no-caps
+              />
+              <q-separator />
+            </div> -->
+            <q-route-tab
+              exact no-caps
+              name="projects" icon="child_care" label="Projects"
+              :to="`/challenge/${challengeId}/projects`"
+            />
+            <q-separator />
+          </q-tabs>
+        </template>
+
+        <template v-slot:after>
+          <q-tab-panels
+            v-model="pageTab"
+            animated
+            transition-prev="scale"
+            transition-next="scale"
+          >
+            <q-tab-panel name="main">
+              <Banner
+                :bannerObj="bannerObj"
+              />
+
+              <div v-if="data">
+                <!-- -------------------- Main Page -------------------- -->
+                <div
+                  align="center" class="shadow-2"
+                  style="margin: auto; max-width: 1000px; min-width: 800px; border-radius: 3px;"
+                >
+                  <br class="small">
+
+                  <!-- ------------------ Challenge Page ------------------- -->
+                  <div class="q-pa-md" align="left">
+                    <br><br>
+                    <div class="row q-mb-sm">
+                      <div class="col q-pa-sm">
+                        <!-- --------------- Challenge Title --------------- -->
+                        <div class="text-h4 text-primary text-center">
+                          {{ data.challenge }}
+                          <q-separator color="secondary" />
+                        </div>
+
+                        <!-- ---------------- Description ---------------- -->
+                        <div class="q-pa-sm">
+                          <pre>{{ data.description }}</pre>
+                        </div>
+                      </div>
+                      <div class="col q-ml-md">
+                        <q-img
+                          contain
+                          class="project-img bg-black"
+                          :src="challengeImagePath"
+                          :ratio="4/3"
+                        />
+                      </div>
+                    </div>
+
+                    <q-separator inset />
+
+                    <!-- ----------------- Priority Gague ------------------ -->
+                    <div class="q-pa-md text-h7" align="center">
+                      <div class="text-h5">
+                        Priority
+                      </div>
+
+                      <div class="q-mt-sm">
+                        <q-knob
+                          show-value readonly
+                          size="70px" class="q-ma-md"
+                          track-color="grey-3"
+                          v-model="priorityGague.val[data.priority]"
+                          :angle="225"
+                          :max="360"
+                          :thickness="0.4"
+                          :color="priorityGague.color[data.priority]"
+                        >
+                          <strong>
+                            {{ priorityGague.text[data.priority] }}
+                          </strong>
+                        </q-knob>
+                      </div>
+
+                    </div>
+
+                    <q-separator inset />
+
+                    <!-- ------------------ Project Chips ------------------ -->
+                    <div class="q-pa-md" align="center">
+
+                      <q-chip
+                        clickable
+                        color="secondary"
+                        text-color="white"
+                        icon="far fa-clipboard"
+                        @click="copyURLtoClipboard"
+                      >
+                        Copy URL
+                      </q-chip>
+
+                      <span
+                        v-for="(chipContent, chipInd) in data.webpage.chips"
+                        :key="chipInd"
+                      >
+                        <q-chip
+                          v-if="!chipContent.hidden"
+                          clickable
+                          color="secondary" text-color="white"
+                          :icon="chipContent.content.icon"
+                          @click="openNewTab(chipContent.content.url)"
+                        >
+                          {{ chipContent.content.label }}
+                        </q-chip>
+                      </span>
+
+                      <q-chip
+                        clickable
+                        @click="popDialog('keywords')"
+                        color="secondary"
+                        text-color="white"
+                        icon="vpn_key"
+                      >
+                        Keywords
+                      </q-chip>
+
+                    </div>
+
+                    <!-- --------------- Business Rationale ---------------- -->
+                    <div v-if="data.rationale">
+                      <div
+                        class="
+                          text-h4
+                          text-primary
+                        "
+                      >
+                        Business Rationale
+                        <q-separator color="secondary" />
+                      </div>
+
+                      <div class="q-pa-sm">
+                        <pre>{{ data.rationale }}</pre>
+                      </div>
+                    </div>
+
+                    <!-- -------------------- Body -------------------- -->
+                    <div>
+                      <div
+                        v-for="(bodyContent, bodyInd) in data.webpage.body"
+                        :key="bodyInd"
+                      >
+                        <div :hidden="bodyContent.hidden === true">
+                          <div class="text-h4 q-mt-sm">
+                            {{ bodyContent.content.label }}
+                          </div>
+
+                          <q-separator color="secondary" />
+
+                          <div>
+                            <div v-if="bodyContent.content.type === 'TEXT_BOX'">
+                              <div class="q-pa-sm">
+                                <pre>{{ bodyContent.content.text }}</pre>
+                              </div>
+                            </div>
+
+                            <div v-else>
+                              <ul>
+                                <li
+                                  v-for="(link, ulIndex) in bodyContent.content.list"
+                                  :key="ulIndex"
+                                >
+                                  <div
+                                    v-if="bodyContent.content.type === 'EVENT_LIST'"
+                                    style="display: inline; padding-left: 12px;"
+                                  >
+                                    {{ link.subject }}
+                                    <hr>
+                                    Description: {{ link.body }} <br>
+                                    Date and Time: {{ link.date }} <br>
+                                    <a v-if="link.url !== ''" :href="link.url">More...</a>
+                                  </div>
+                                  <span v-else>
+                                    <em v-if="link.url === ''">
+                                      {{ link.item }}
+                                    </em>
+                                    <a v-else :href="link.url" target="_blank">
+                                      {{ link.item }}
+                                    </a>
+                                  </span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div><br>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- ---------------- Sponsor List ------------------- -->
+                    <div>
+                      <div class="text-h4 text-primary" >
+                        Sponsors
+                        <q-separator color="secondary" />
+                      </div>
+
+                      <q-list
+                        bordered separator
+                        class="rounded-borders"
+                        style="max-width: 98%; margin: 1em auto;"
+                      >
+                        <q-item
+                          v-for="sponsor in data.sponsors"
+                          :key="sponsor.id"
+                          clickable v-ripple
+                        >
+                          <q-item-section class="col" align="center">
+                            <div v-if="sponsor.imgURL">
+                              <q-avatar
+                                size="75px" color="primary"
+                                text-color="white"
+                              >
+                                <q-img
+                                  :src="extraSponsorInfo.img[sponsor.imgURL]"
+                                  style="height: 75px;"
+                                />
+                              </q-avatar>
+                            </div>
+
+                            <div v-else>
+                              <q-avatar
+                                v-if="sponsor.name"
+                                size="75px" color="primary"
+                                font-size="32px" text-color="white"
+                              >
+                                {{ sponsor.name.split(' ')[0][0] + sponsor.name.split(' ')[1][0] }}
+                              </q-avatar>
+                            </div>
+                          </q-item-section>
+
+                          <q-item-section class="col">
+                            <strong style="font-size: 20px;">{{ sponsor.name }}</strong>
+                          </q-item-section>
+
+                          <q-item-section class="col">
+                            <!-- <q-item-label lines="1">
+                              <span class="text-weight-medium">[quasarframework/quasar]</span>
+                              <span class="text-grey-8"> - GitHub repository</span>
+                            </q-item-label> -->
+
+                            <q-item-label lines="1">
+                              {{ sponsor.email }}
+                            </q-item-label>
+
+                            <q-item-label v-if="sponsor.title" lines="1">
+                              <span class="text-weight-medium">{{ sponsor.title }}</span>
+                            </q-item-label>
+
+                            <!-- <q-item-label lines="1" class="q-mt-xs text-body2 text-weight-bold text-primary text-uppercase">
+                              <span class="cursor-pointer">Open in GitHub</span>
+                            </q-item-label> -->
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
+                    </div>
+
+                  </div>
+
+                  <br><br>
+
+                </div>
+
+                <!-- -------------------- Popup Dialog -------------------- -->
+                <div class="q-pa-md q-gutter-sm">
+                  <q-dialog v-model="fixedDialog">
+                    <q-card>
+                      <q-card-section>
+                        <div class="text-h6">{{ dialogJSON.title }}</div>
+                      </q-card-section>
+
+                      <q-separator />
+
+                      <q-card-section v-if="dialogJSON.message" style="width: 50vh;">
+                        <ul>
+                          <li v-for="(val, ind) in dialogJSON.message" :key="ind">
+                            {{ val }}
+                          </li>
+                        </ul>
+                      </q-card-section>
+
+                      <q-card-section v-else style="width: 50vh;">
+                        <p>N/A</p>
+                      </q-card-section>
+
+                      <q-separator />
+
+                      <q-card-actions align="right">
+                        <q-btn flat label="Close" color="primary" v-close-popup />
+                      </q-card-actions>
+                    </q-card>
+                  </q-dialog>
+                </div>
+              </div>
+
+              <q-inner-loading :showing="!Boolean(challengeImagePath)">
+                <q-spinner-gears size="50px" color="primary" />
+              </q-inner-loading>
+            </q-tab-panel>
+
+            <q-tab-panel name="logs">
+              <Banner
+                :bannerObj="bannerObj"
+              />
+
+              <div
+                v-if="data"
+                align="center"
+                class="shadow-2"
+                style="
+                  margin: auto;
+                  max-width: 1000px;
+                  min-width: 800px;
+                  border-radius: 3px;
+                "
+              >
+                <div
+                  v-if="Array.isArray(data.logs) && data.logs.length > 0"
+                  class="q-pa-md q-gutter-sm"
+                >
+                  <div
+                    v-for="(val, ind) in data.logs"
+                    :key="ind"
+                  >
+                    <div
+                      v-if="!val.hidden"
+                      align="left"
+                      class="shadow-2 q-pa-sm"
+                      style="border-radius: 3px;"
+                    >
+                      <div
+                        v-ripple
+                        class="relative-position cursor-pointer"
+                      >
+                        {{ val.title }}
+                      </div>
+
+                      <div
+                        v-if="val.description"
+                        class="q-pa-sm"
+                      >
+                        <pre>{{ val.description }}</pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-else>
+                  No log currently available...
+                </div>
+              </div>
+            </q-tab-panel>
+
+            <!-- <q-tab-panel name="attachments">
+              <Banner
+                :bannerObj="bannerObj"
+              />
+
+              <div
+                class="shadow-2 q-pa-md"
+                style="
+                  margin: auto;
+                  max-width: 1000px;
+                  min-width: 800px;
+                  border-radius: 3px;
+                "
+              >
+                Attachments
+                <hr>
+
+                <li
+                  v-for="(val, key, ind) in data.files"
+                  :key="ind"
+                >
+                  {{ key }}:
+                  <dir>
+                    {{ val }}
+                  </dir>
+                </li>
+              </div>
+            </q-tab-panel> -->
+
+            <q-tab-panel name="projects">
+              <Banner
+                :bannerObj="bannerObj"
+              />
+
+              <div
+                class="shadow-2 q-pa-md"
+                style="
+                  margin: auto;
+                  max-width: 1000px;
+                  min-width: 800px;
+                  border-radius: 3px;
+                "
+              >
+                <!-- Project Table Goes Here -->
+                <ProjectTable
+                  :viewProjectList="data.projects"
+                  :childDb="db"
+                />
+              </div>
+            </q-tab-panel>
+          </q-tab-panels>
+        </template>
+
+      </q-splitter>
+    </div>
+
+  </q-page>
+</template>
+
+<script>
+import { defaultImages, layoutConfig } from '../../boundless.config'
+
+import productionDb, { productionStorage } from '../firebase/init_production'
+import testingDb, { testingStorage } from '../firebase/init_testing'
+
+import Banner from '../components/Banners/Banner'
+import ProjectTable from '../components/Tables/ProjectTable'
+
+import NotFound from './Error404'
+
+export default {
+  name: 'View_Project',
+  components: {
+    NotFound,
+    Banner,
+    ProjectTable
+  },
+  created () {
+    if (this.$q.sessionStorage.has('boundless_config')) {
+      let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
+      this.layoutConfig = layoutConfig
+
+      if (typeof cachedConfig.enabledChallenges === 'boolean') {
+        this.layoutConfig.challenges = cachedConfig.enabledChallenges
+      }
+    } else {
+      this.layoutConfig = layoutConfig
+    }
+
+    if (!this.layoutConfig.challenges) {
+      this.$router.push('/err')
+    }
+
+    this.setPageTab()
+    // fetech data from database
+    this.getDb().then(res => {
+      if (this.data) {
+        this.getInformation()
+      }
+    })
+  },
+  beforeUpdate () {
+    this.setPageTab()
+
+    this.$q.sessionStorage.set('boundless_page_info', {
+      key: this.challengeId,
+      data: this.data
+    })
+  },
+  updated () {
+  },
+  beforeDestroy () {
+    this.$q.sessionStorage.remove('boundless_page_info')
+  },
+  data () {
+    return {
+      layoutConfig: null,
+      db: null,
+      storage: null,
+      bannerObj: {
+        path: `../statics/${defaultImages.projects.webBanner}`,
+        ratio: '8',
+        type: 'webpage',
+        category: 'challenges'
+      },
+      challengeImagePath: '',
+      fixedDialog: false,
+      dialogJSON: {
+        title: '',
+        message: ''
+      },
+      extraSponsorInfo: {
+        img: {}
+      },
+      challengeId: this.$route.params.challenge_id,
+      loading: true,
+      data: {},
+      notFound: false,
+      pageTab: '',
+      splitterModel: 15,
+      priorityGague: {
+        val: [0, 90, 180, 270],
+        color: ['green', 'green', 'yellow-8', 'red'],
+        text: ['Null', 'Long', 'Med', 'Short']
+      }
+    }
+  },
+  methods: {
+    test: function (entry) {
+      /* console.log('hi') */
+      // console.log(entry)
+    },
+    setPageTab: function () {
+      if (this.$route.params.extraRoute === 'logs') {
+        this.pageTab = 'logs'
+      } else if (this.$route.params.extraRoute === 'projects') {
+        this.pageTab = 'projects'
+      } else {
+        this.pageTab = 'main'
+      }
+    },
+    replyLog: function (familyIndex, responseObj) {
+      this.$q.dialog({
+        dark: true,
+        title: 'Response...',
+        message: '<strong>Please enter your response.</strong><br><br><p class="text-red">Note: Your reponse cannot be empty!</p>',
+        html: true,
+        prompt: {
+          model: '',
+          type: 'text' // optional
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        if (data) {
+          let tmpLog = {
+            title: `In respones to: "${responseObj.title}"!`,
+            date: Date(),
+            description: `>>>>>>>>>>\n${responseObj.description}\n>>>>>>>>>>\n${data}`,
+            hidden: false
+          }
+
+          // let size = this.curData.logs[familyIndex].data.length
+
+          this.data.logs[familyIndex].data.push(tmpLog)
+          // let size = this.curData.logs[index].data.length
+          // this.updated = true
+
+          this.$forceUpdate()
+
+          this.db.collection('challenges').doc(this.data.uuid).set({
+            logs: this.data.logs
+          }, { merge: true })
+        } else {
+          this.$q.notify({
+            message: 'Not a valid response!',
+            color: 'negative',
+            icon: 'report_problem'
+          })
+        }
+      }).onCancel(() => {
+        // nothing goes here
+      }).onDismiss(() => {
+        // nothing goes here
+      })
+    },
+    getDb: function () {
+      if (this.$q.localStorage.has('boundless_db')) {
+        let sessionDb = this.$q.localStorage.getItem('boundless_db')
+        return new Promise((resolve, reject) => {
+          if (sessionDb === 'testing') {
+            this.db = testingDb
+            this.storage = testingStorage
+          } else {
+            this.db = productionDb
+            this.storage = productionStorage
+          }
+          resolve('Database fetch complete...')
+        })
+      } else {
+        return new Promise((resolve, reject) => {
+          productionDb.collection('config').doc('project').get()
+            .then(doc => {
+              if (doc.exists) {
+                if (doc.data().db === 'testing') {
+                  this.db = testingDb
+                  this.$q.localStorage.set('boundless_db', 'testing')
+                } else {
+                  this.db = productionDb
+                  this.$q.localStorage.set('boundless_db', 'production')
+                }
+                resolve('Database fetch complete...')
+              } else {
+                reject('"/config/project" path does not exists in the database...')
+              }
+            })
+            .catch(err => {
+              reject(err)
+            })
+        })
+      }
+    },
+    updateId: function () {
+      this.challengeId = this.$route.params.challenge_id
+
+      if (this.$q.sessionStorage.has('boundless_page_info')) {
+        let storageData = this.$q.sessionStorage.getItem('boundless_page_info')
+        if (storageData.key === this.challengeId) {
+          this.data = storageData.data
+        } else {
+          this.getInformation()
+        }
+      } else {
+        this.getInformation()
+      }
+    },
+    getInformation: function () {
+      this.loading = true
+
+      new Promise((resolve, reject) => {
+        this.db.collection('challenges').doc('ToC').get()
+          .then(doc => {
+            if (doc.exists) {
+              if (doc.data().alias && doc.data().alias.hasOwnProperty(this.challengeId)) {
+                let actualUid = doc.data().alias[this.challengeId]
+                resolve(doc.data()[actualUid])
+              } else if (doc.data().hasOwnProperty(this.challengeId)) {
+                resolve(doc.data()[this.challengeId])
+              } else {
+                reject('UUID nor the ALIAS exists!')
+              }
+            } else {
+              reject('ToC does not exists!')
+            }
+          }).catch(err => {
+            reject(err)
+          })
+      }).then(res => {
+        return new Promise((resolve, reject) => {
+          this.db.collection('challenges').doc(res.uuid).get()
+            .then(doc => {
+              if (doc.exists) {
+                for (let objField in res) {
+                  this.data[objField] = res[objField]
+                }
+
+                for (let objField in doc.data()) {
+                  this.data[objField] = doc.data()[objField]
+                }
+
+                this.sortBody()
+
+                if (!this.data.webpage.imgURL) {
+                  this.challengeImagePath = this.getMainPhoto()
+                } else {
+                  this.storage.ref().child(this.data.webpage.imgURL).getDownloadURL()
+                    .then(url => {
+                      this.challengeImagePath = url
+                    })
+                    .catch(err => {
+                      if (err) {
+                        /* console.log(err) */
+                        this.challengeImagePath = this.getMainPhoto()
+                      }
+                    })
+                }
+
+                resolve()
+              } else {
+                reject('Document containing webpage information is either corrupted or no longer there!')
+              }
+            }).catch(err => {
+              reject(err)
+            })
+        })
+      }).then(() => {
+        return new Promise((resolve, reject) => {
+          let tmpSponsors = []
+          if (this.data.sponsors[0].email) {
+            // handling old data
+            this.data.sponsors.forEach(sponsor => {
+              tmpSponsors.push({
+                uuid: sponsor.email
+              })
+            })
+
+            // this.db.collection('challenges').doc('ToC').set({
+            //   [this.data.uuid]: {
+            //     sponsors: tmpSponsors
+            //   }
+            // }, { merge: true })
+
+            this.data.sponsors = tmpSponsors
+            tmpSponsors = []
+          }
+          // handling new data
+          this.db.collection('users').doc('ToC').get()
+            .then(doc => {
+              if (doc.exists) {
+                this.data.sponsors.forEach(sponsor => {
+                  tmpSponsors.push({
+                    ...doc.data()[sponsor.uuid]
+                  })
+                })
+
+                this.data.sponsors = tmpSponsors
+
+                resolve()
+              } else {
+                reject('Document containing webpage information is either corrupted or no longer there!')
+              }
+            }).catch(err => {
+              reject(err)
+            })
+        })
+      }).then(() => {
+        let avatarLoad = false
+
+        this.data.sponsors.forEach(sponsor => {
+          if (sponsor.imgURL) {
+            avatarLoad = true
+
+            this.storage.ref().child(sponsor.imgURL).getDownloadURL()
+              .then(url => {
+                this.extraSponsorInfo.img[sponsor.imgURL] = url
+
+                if (this.data.sponsors[this.data.sponsors.length - 1] === sponsor) {
+                  setTimeout(() => {
+                    this.loading = false
+                  }, 100)
+                }
+              })
+          }
+        })
+
+        if (!avatarLoad) {
+          setTimeout(() => {
+            this.loading = false
+          }, 500)
+        }
+      }).catch(err => {
+        if (err) {
+          /* console.log(err) */
+        }
+        setTimeout(() => {
+          this.notFound = true
+        }, 1500)
+      })
+    },
+    popDialog: function (entry) {
+      if (entry === 'awards') {
+        this.dialogJSON['title'] = 'Impact Awards'
+      } else {
+        this.dialogJSON['title'] = entry.charAt(0).toUpperCase() + entry.slice(1)
+      }
+      this.dialogJSON['message'] = this.data[entry]
+      this.fixedDialog = true
+    },
+    getMainPhoto: function () {
+      var max = 5
+      var photoId = Math.floor(Math.random() * (max - 1 + 1)) + 1
+      return 'statics/images/project-img-' + photoId + '.jpg'
+    },
+    sortBody: function () {
+      this.data.webpage.body.sort((a, b) => {
+        return a.index - b.index
+      })
+
+      this.data.webpage.body.forEach(webContent => {
+        if (webContent.content.type === 'ORDERED_LIST') {
+          webContent.content.list.sort((a, b) => {
+            return a.index - b.index
+          })
+        }
+      })
+    },
+    copyURLtoClipboard: function () {
+      // https://stackoverflow.com/questions/6725890/location-host-vs-location-hostname-and-cross-browser-compatibility
+      if (!window.location.origin) {
+        window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '')
+      }
+
+      let routeData = window.location.origin + '/' + this.$router.resolve('', this.$route).href
+      this.copyTextToClipboard(routeData)
+
+      this.$q.notify({
+        message: 'The URL has been copied to the clipboard.',
+        position: 'top',
+        timeout: 2000,
+        color: 'info',
+        textColor: 'white',
+        actions: [
+          {
+            icon: 'close',
+            color: 'white'
+          }
+        ]
+      })
+    },
+    fallbackCopyTextToClipboard: function (entry) {
+      // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+      let textArea = document.createElement('textarea')
+      textArea.value = entry
+      document.body.prepend(textArea)
+      // textArea.focus()
+      textArea.select()
+
+      try {
+        document.execCommand('copy')
+      } catch (err) {
+        if (err) {
+          // error
+        }
+      }
+
+      document.body.removeChild(textArea)
+    },
+    copyTextToClipboard: function (entry) {
+      // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+      if (!navigator.clipboard) {
+        this.fallbackCopyTextToClipboard(entry)
+        // return
+      } else {
+        navigator.clipboard.writeText(entry).then(function () {
+        }, function (err) {
+          if (err) {
+          }
+        })
+      }
+    },
+    openNewTab: function (entry) {
+      window.open(entry, '_blank')
+    }
+  },
+  watch: {
+    $route: 'updateId'
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+.shadow-box {
+  width 90px
+  height 90px
+  margin 25px
+  border-radius 50%
+  font-size 12px
+}
+
+hr.newLine {
+  border: 1px solid #ce2029;
+}
+
+hr.newLine2 {
+  display: block; height: 1px;
+  border: 1; border-top: 1px solid #ccc;
+  margin: 0em; padding: 0em;
+}
+
+br.small {
+  display: block; /* makes it have a width */
+  content: "";    /* clears default height */
+  margin-top: 0em;  /* change this to whatever height you want it */
+}
+
+h4 {
+  font-size: 2.0em;
+  /* background-color: #ccc; width: 80%; */
+  margin: 10px;
+  padding: 10px;
+}
+
+.project-img {
+  border: 3px solid #ddd;
+  border-radius: 4px;
+  padding: 5px
+}
+
+.progress-bar {
+  min-width: 150px;
+  max-width: 35%
+  min-height: 50px;
+  height: 30px;
+  line-height: 45px;
+  text-align: center;
+  font-family: Verdana, Arial, sans-serif;
+  font-weight: 500;
+  border: solid 1.5px;
+  border-color: gray;
+}
+
+/* Colors from: https://www.december.com/html/spec/color2.html */
+.green-priority {
+  background-image: linear-gradient(#00EE00, #9AFF9A, #00EE00)
+}
+
+/* Colors from: https://www.december.com/html/spec/color1.html */
+.yellow-priority {
+  background-image: linear-gradient(#FFE600, #FFF68F, #FFE600)
+}
+
+/* Colors from: https://www.december.com/html/spec/color1.html */
+.red-priority {
+  background-image: linear-gradient(#ED0C0C, #ED8C8C, #ED0C0C)
+}
+
+/* Colors from: https://www.december.com/html/spec/color0.html */
+.null-priority {
+  background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
+}
+
+ul {
+  list-style: none; /* Remove default bullets */
+}
+
+ul li::before {
+  content: "\25A0";       // Add content: \25A0 is the CSS Code/unicode for a block bullet
+  color: $secondary;      // Set the color
+  font-weight: bold;
+  display: inline-block;  // add space between the bullet and the text
+  width: 1em; // space between bullet and text
+  margin-left: -2em; // space between bullet and margin
+}
+
+.overviewCSS {
+  max-height: 240px;
+  overflow: auto;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+}
+</style>

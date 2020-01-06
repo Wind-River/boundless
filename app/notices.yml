@@ -1,0 +1,23 @@
+quasar:
+  name: 'Quasar Framework'
+  description: 'VueJS Quasar Framework'
+  copyright: 'Copyright (c) 2015-present Razvan Stoenescu'
+  licensing: 'MIT'
+  url: 'https://github.com/quasarframework/quasar/blob/dev/LICENSE'
+  notice: ''
+
+vue:
+  name: 'VueJS'
+  description: 'VueJS Frontend Framework'
+  copyright: 'Copyright (c) 2013-present, Yuxi (Evan) You'
+  licensing: 'MIT'
+  url: 'https://github.com/vuejs/vue/blob/dev/LICENSE'
+  notice: ''
+
+boundless:
+  name: 'Boundless Project'
+  description: 'Wind River founding contribution'
+  copyright: 'Copyright (c) 2019 Wind River Systems, Inc.'
+  licensing: 'Apache-2.0'
+  url: 'https://github.com/Wind-River/boundless'
+  notice: ''
