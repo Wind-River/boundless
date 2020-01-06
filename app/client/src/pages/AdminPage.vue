@@ -76,7 +76,8 @@ Methods:
 
           <!-- ------------------- Challenge Tab Content ------------------- -->
           <q-tab-panel
-            v-if="layoutConfig && layoutConfig.challenges" name="challenges"
+            v-if="layoutConfig && layoutConfig.challenges"
+            name="challenges"
           >
             <div class="q-pa-xs console-content-tab">
               <ManageChallenges />
@@ -340,6 +341,13 @@ export default {
       //   @loadVal <Boolean>: event emitter value to render loading
 
       this.haltConsole = loadVal
+
+      if (!loadVal) {
+        let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
+        if (typeof storedConfig.enabledChallenges === 'boolean') {
+          this.layoutConfig.challenges = storedConfig.enabledChallenges
+        }
+      }
     },
     getKeywords: function (val) {
       // load keywords from the child component and convert to

@@ -141,7 +141,7 @@ Methods:
                 </q-item-section>
                 <q-item-section avatar>
                   <q-toggle
-                    color="secondary"
+                    color="green"
                     v-model="data.enabledChallenges"
                     @input="invokeChallengesEnabler"
                   />
@@ -518,6 +518,7 @@ export default {
         let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
 
         storedConfig.keywords = this.data.keywords
+        storedConfig.enabledChallenges = this.data.enabledChallenges
 
         this.$q.sessionStorage.set('boundless_config', storedConfig)
 

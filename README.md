@@ -3,7 +3,8 @@ Boundless Innovation Portal
 
 # Installation Guide
 **Note:** Docker compose is required and must support version 3.7+
-##
+
+## Application
 
 Please fill in Firebase configuration inside docker-compose.yml file.
 ```yaml
@@ -37,4 +38,4 @@ browser and explore the software.
 
 **Note:** Currently, Firebase-functions are not automated.
 
-##
+## Firebase-Functions

@@ -134,19 +134,45 @@ Methods:
                   style="font-size: 20px"
                 >
                   <strong>
-                    {{ memberList.length }}
+                    {{ innovatorList.length }}
                   </strong>
                 </span>
               </div>
 
               <div class="col q-mt-xs">
-                <strong>Innovators & Sponsors</strong>
+                <strong>Innovators</strong>
               </div>
 
               <div class="col q-mb-sm">
                 <q-img
                   src="../statics/images/innovator-icon.png"
                   style="height: 40px; max-width: 45px"
+                />
+              </div>
+            </div>
+
+            <q-separator inset />
+
+            <div class="row q-mt-sm">
+              <div class="col">
+                <span
+                  class="text-blue-4"
+                  style="font-size: 20px"
+                >
+                  <strong>
+                    {{ sponsorList.length }}
+                  </strong>
+                </span>
+              </div>
+
+              <div class="col q-mt-xs">
+                <strong>Sponsors</strong>
+              </div>
+
+              <div class="col q-mb-sm">
+                <q-icon
+                  name="person"
+                  size="45px"
                 />
               </div>
             </div>
@@ -426,7 +452,8 @@ export default {
       loading: true, // <Boolean>
       projectList: [], // <Array<Object>>
       challengeList: [], // <Array<Object>>
-      memberList: [],
+      innovatorList: [],
+      sponsorList: [],
       keywords: [], // <Array<String>>
       keywordsInUse: [],
       keywordsCounter: {},
@@ -536,10 +563,15 @@ export default {
                   // getting the innovator list
                   if (doc.data()[project].members.length > 0) {
                     doc.data()[project].members.forEach(member => {
-                      if (member.email && !this.memberList.includes(member.email)) {
-                        this.memberList.push(member.email)
-                      } else if (member.uuid && !this.memberList.includes(member.uuid)) {
-                        this.memberList.push(member.uuid)
+                      if (
+                        member.email &&
+                        !this.innovatorList.includes(member.email)
+                      ) {
+                        this.innovatorList.push(member.email)
+                      } else if (
+                        member.uuid && !this.innovatorList.includes(member.uuid)
+                      ) {
+                        this.innovatorList.push(member.uuid)
                       }
                     })
                   }
@@ -569,10 +601,16 @@ export default {
                       this.challengeList.push(challenge)
 
                       doc.data()[challenge].sponsors.forEach(sponsor => {
-                        if (sponsor.email && !this.memberList.includes(sponsor.email)) {
-                          this.memberList.push(sponsor.email)
-                        } else if (sponsor.uuid && !this.memberList.includes(sponsor.uuid)) {
-                          this.memberList.push(sponsor.uuid)
+                        if (
+                          sponsor.email &&
+                          !this.sponsorList.includes(sponsor.email)
+                        ) {
+                          this.sponsorList.push(sponsor.email)
+                        } else if (
+                          sponsor.uuid &&
+                          !this.sponsorList.includes(sponsor.uuid)
+                        ) {
+                          this.sponsorList.push(sponsor.uuid)
                         }
                       })
 

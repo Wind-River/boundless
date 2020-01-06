@@ -65,9 +65,9 @@ Methods:
 
             <br>
 
-            <q-img
-              src="../statics/images/innovator-icon.png"
-              style="height: 40px; max-width: 45px"
+            <q-icon
+              name="person"
+              size="45px"
             />
           </div>
 
@@ -77,7 +77,7 @@ Methods:
             class="col" @click="filter = key"
           >
             <strong class="text-blue-4" style="font-size: 20px" >
-              {{ keywordsCounter[key] }}
+              {{ keywordsCounter[key] ? keywordsCounter[key] : 0 }}
             </strong>
 
             <br>
@@ -88,7 +88,7 @@ Methods:
 
             <img
               class="cursor-pointer"
-              :src="keywordsImage[key]"
+              :src="keywordsImage[key] || '../statics/images/other-icon.png'"
               style="height: 40px; max-width: 45px"
             />
           </div>
@@ -550,7 +550,7 @@ export default {
             // extracting keywords for the banner and dropdown filter
             // non-sorted to maintain order for now
             // let cachedKeywords = data.challengesConfig.keywords.sort()
-            let cachedKeywords = data.challengesConfig.keywords
+            // let cachedKeywords = data.challengesConfig.keywords
 
             for (let key in data['keywords']) {
               this.popkeywords.push({
@@ -560,15 +560,16 @@ export default {
 
               this.keywordsValToKeyMap[data['keywords'][key]] = key
 
-              if (
-                !cachedKeywords.includes(data['keywords'][key]) &&
-                cachedKeywords.length < 5
-              ) {
-                cachedKeywords.push(data['keywords'][key])
-              }
+              // if (
+              //   !cachedKeywords.includes(data['keywords'][key]) &&
+              //   cachedKeywords.length < 5
+              // ) {
+              //   cachedKeywords.push(data['keywords'][key])
+              // }
             }
 
-            this.keywordsInUse = cachedKeywords
+            // this.keywordsInUse = cachedKeywords
+            this.keywordsInUse = data.challengesConfig.keywords
 
             // make sure the database response has extraKeywordsData
             if (data.extraKeywordsData) {

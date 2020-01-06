@@ -251,7 +251,7 @@ export default {
             // checking for config_version
             if (
               !doc.data().config_version ||
-              doc.data().config_version !== configMeta.config_version
+              doc.data().config_version < configMeta.config_version
             ) {
               // deepClone before updating db_config
               let tempData = this.deepObjCopy(doc.data())

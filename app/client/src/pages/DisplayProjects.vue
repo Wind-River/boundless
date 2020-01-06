@@ -52,9 +52,13 @@ Methods:
             <strong class="text-blue-4" style="font-size: 20px" >
               {{ memberList.length }}
             </strong>
+
             <br>
+
             <strong>Innovators</strong>
+
             <br>
+
             <q-img
               src="../statics/images/innovator-icon.png"
               style="height: 40px; max-width: 45px"
@@ -67,14 +71,18 @@ Methods:
             class="col" @click="filter = key"
           >
             <strong class="text-blue-4" style="font-size: 20px" >
-              {{ keywordsCounter[key] }}
+              {{ keywordsCounter[key] ? keywordsCounter[key] : 0 }}
             </strong>
+
             <br>
+
             <strong>{{ keywordsValToKeyMap[key] }}</strong>
+
             <br>
+
             <img
               class="cursor-pointer"
-              :src="keywordsImage[key]"
+              :src="keywordsImage[key] || '../statics/images/other-icon.png'"
               style="height: 40px; max-width: 45px"
             />
           </div>
@@ -607,7 +615,7 @@ export default {
     loadInformation: function () {
       // load the minimun database information to the respective component var
 
-      this.db.collection('config').doc('project').get()
+      return this.db.collection('config').doc('project').get()
         .then(doc => {
           if (doc.exists) {
             let data = doc.data()
@@ -615,7 +623,7 @@ export default {
             // extracting keywords for the banner and dropdown filter
             // non-sorted to maintain order for now
             // let cachedKeywords = data.projectsConfig.keywords.sort()
-            let cachedKeywords = data.projectsConfig.keywords
+            // let cachedKeywords = data.projectsConfig.keywords
 
             for (let key in data['keywords']) {
               this.popkeywords.push({
@@ -625,15 +633,16 @@ export default {
 
               this.keywordsValToKeyMap[data['keywords'][key]] = key
 
-              if (
-                !cachedKeywords.includes(data['keywords'][key]) &&
-                cachedKeywords.length < 5
-              ) {
-                cachedKeywords.push(data['keywords'][key])
-              }
+              // if (
+              //   !cachedKeywords.includes(data['keywords'][key]) &&
+              //   cachedKeywords.length < 5
+              // ) {
+              //   cachedKeywords.push(data['keywords'][key])
+              // }
             }
 
-            this.keywordsInUse = cachedKeywords
+            // this.keywordsInUse = cachedKeywords
+            this.keywordsInUse = data.projectsConfig.keywords
 
             // make sure the database response has extraKeywordsData
             if (data.extraKeywordsData) {

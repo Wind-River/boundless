@@ -18,13 +18,12 @@ export const defaultImages = {
 export const firebaseConfigs = databaseConfig
 
 export const layoutConfig = {
-  homeName: 'Jive',
-  homeURL: 'https://jive.windriver.com/groups/boundless-innovation',
-  // companyName: 'Wind River',
+  homeName: '',
+  homeURL: '',
   companyName: '',
-  defaultImg: 'images/project-img-6.jpg',
-  challenges: true,
-  hairCut: true // Wind River specific
+  defaultImg: '',
+  challenges: false,
+  hairCut: false
 }
 
 export const dbMeta = {
@@ -132,6 +131,7 @@ export const configSkeleton = {
     { label: 'Eco', value: 'eco' },
     { label: 'Feedback', value: 'feedback' }
   ],
+  enabledChallenges: layoutConfig.challenges,
   extraKeywordsData: {},
   keywords: {},
   newFlag: 15,

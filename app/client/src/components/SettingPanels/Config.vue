@@ -46,7 +46,7 @@ Methods:
       />
 
       <p v-if="data.keywords" class="q-px-lg q-py-md">
-        Testing purpose: {{ data.keywords }} <br >
+        Selected keywords: {{ data.keywords }} <br >
         This is the order in which the keywords appear in banner.
       </p>
     </div>
