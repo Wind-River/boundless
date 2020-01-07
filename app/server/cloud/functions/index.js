@@ -48,13 +48,13 @@ exports.appCall = functions.https.onCall(async (data, context) => {
   }
 })
 
-exports.appTestPoint = functions.https.onCall((data, context) => {
-  console.log('starting the appTestPoint')
-  for (let prop in context.rawRequest) {
-    console.log(prop)
-  }
+// exports.appTestPoint = functions.https.onCall((data, context) => {
+//   console.log('starting the appTestPoint')
+//   for (let prop in context.rawRequest) {
+//     console.log(prop)
+//   }
 
-  return {
-    data: data.data
-  }
-})
+//   return {
+//     data: data.data
+//   }
+// })

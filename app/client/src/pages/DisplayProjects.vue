@@ -111,7 +111,8 @@ Methods:
         <template v-slot:top-right>
 
           <q-toolbar>
-            <q-btn
+            <!-- TODO -->
+            <!-- <q-btn
               dense flat round
               @click="openTutorialVideo"
             >
@@ -124,7 +125,8 @@ Methods:
               >
                 'Search' video tutorial
               </q-tooltip>
-            </q-btn>
+            </q-btn> -->
+
             <q-btn
               round dense flat
               class="q-mr-xs" icon="menu"
@@ -519,9 +521,9 @@ export default {
         })
       }
     },
-    openTutorialVideo: function () {
-      window.open('https://www.youtube.com', '_blank')
-    },
+    // openTutorialVideo: function () {
+    //   window.open('https://www.youtube.com', '_blank')
+    // },
     displayProjectPage: function (entry) {
       let routeData = this.$router.resolve('project/' + entry, '/')
       window.open(routeData.href, '_blank')

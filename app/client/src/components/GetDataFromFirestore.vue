@@ -22,10 +22,9 @@ Methods:
 
       <q-uploader
         bordered hide-upload-btn
-        class="full-width q-mb-sm"
-        label="Upload JSON file for 'Import'..."
         ref="file"
-        accept=".json"
+        class="full-width q-mb-sm"
+        label="Upload JSON file for 'Import'..." accept=".json"
         @added="retrieveDataFromFile"
         @removed="attachedFile = !attachedFile"
       />
@@ -34,23 +33,21 @@ Methods:
         <div class="row q-gutter-sm" align="center">
           <div class="col">
             <q-btn
-              class="full-width"
-              type="submit"
-              label="Import"
               no-caps
+              class="full-width" label="Import"
+              type="submit"
               :disable="!attachedFile"
             />
+
             <q-tooltip v-if="!attachedFile">
               Please attach a '*.json' file.
             </q-tooltip>
           </div>
 
           <q-btn
-            class="col"
-            color="secondary"
-            @click="download('boundless_data', data)"
-            label="Download"
             no-caps
+            class="col" color="secondary" label="Download"
+            @click="download('boundless_data', data)"
           />
         </div>
       </q-form>
@@ -66,7 +63,6 @@ import testingDb from '../firebase/init_testing'
 import { dbMeta } from '../../boundless.config'
 
 export default {
-  name: 'Export_Data',
   created () {
     this.getDb().then(() => {
       this.getData()
@@ -101,6 +97,7 @@ export default {
 
       this.importDataField.forEach(colObj => {
         let dbCollection = this.db.collection(colObj.name)
+
         colObj.data.forEach(colData => {
           dbCollection.doc(colData.doc_id).set(colData.data)
             .then(() => {
@@ -132,7 +129,7 @@ export default {
       document.body.removeChild(element)
     },
     getData: function () {
-      this.db.collection('--db_meta--').doc('data').get()
+      return this.db.collection('--db_meta--').doc('data').get()
         .then(doc => {
           if (doc.exists) {
             this.meta = doc.data()
@@ -202,6 +199,6 @@ export default {
 }
 </script>
 
-<style>
+<style lang="stylus">
 
 </style>

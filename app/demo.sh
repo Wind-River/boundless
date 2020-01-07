@@ -2,4 +2,6 @@
 
 cd client
 
+npm i
+
 quasar dev
