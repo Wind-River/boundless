@@ -186,40 +186,9 @@ Methods:
             <q-separator inset />
 
             <div
-              v-if="layoutConfig.companyName !== 'Wind River'"
+              v-for="(key, ind) in keywordsInUse"
+              :key="ind"
             >
-              <div
-                v-for="(key, ind) in keywordsInUse"
-                :key="ind"
-              >
-                <div class="row q-mt-sm">
-                  <div class="col">
-                    <span
-                      class="text-blue-4"
-                      style="font-size: 20px"
-                    >
-                      <strong>
-                        {{ keywordsCounter[key] }}
-                      </strong>
-                    </span>
-                  </div>
-
-                  <div class="col q-mt-xs">
-                    <strong>{{ keywordsValToKeyMap[key] }}</strong>
-                  </div>
-
-                  <div class="col q-mb-sm">
-                    <q-img
-                      :src="keywordsImage[key]"
-                      style="height: 40px; max-width: 45px"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div v-else>
-
               <div class="row q-mt-sm">
                 <div class="col">
                   <span
@@ -227,128 +196,22 @@ Methods:
                     style="font-size: 20px"
                   >
                     <strong>
-                      {{ vxworks }}
+                      {{ keywordsCounter[key] }}
                     </strong>
                   </span>
                 </div>
 
                 <div class="col q-mt-xs">
-                  <strong>VxWorks</strong>
+                  <strong>{{ keywordsValToKeyMap[key] }}</strong>
                 </div>
 
                 <div class="col q-mb-sm">
                   <q-img
-                    src="../statics/images/VxWorksLogo.png"
+                    :src="keywordsImage[key]"
                     style="height: 40px; max-width: 45px"
                   />
                 </div>
               </div>
-
-              <q-separator inset />
-
-              <div class="row q-mt-sm">
-                <div class="col">
-                  <span
-                    class="text-blue-4"
-                    style="font-size: 20px"
-                  >
-                    <strong>
-                      {{ linux }}
-                    </strong>
-                  </span>
-                </div>
-
-                <div class="col q-mt-xs">
-                  <strong>Linux</strong>
-                </div>
-
-                <div class="col q-mb-sm">
-                  <q-img
-                    src="../statics/images/Linux-icon.png"
-                    style="height: 40px; max-width: 45px"
-                  />
-                </div>
-              </div>
-
-              <q-separator inset />
-
-              <div class="row q-mt-sm">
-                <div class="col">
-                  <span
-                    class="text-blue-4"
-                    style="font-size: 20px"
-                  >
-                    <strong>
-                      {{ tis }}
-                    </strong>
-                  </span>
-                </div>
-
-                <div class="col q-mt-xs">
-                  <strong>TiS</strong>
-                </div>
-
-                <div class="col q-mb-sm">
-                  <q-img
-                    src="../statics/images/TiS-icon.png"
-                    style="height: 40px; max-width: 45px"
-                  />
-                </div>
-              </div>
-
-              <q-separator inset />
-
-              <div class="row q-mt-sm">
-                <div class="col">
-                  <span
-                    class="text-blue-4"
-                    style="font-size: 20px"
-                  >
-                    <strong>
-                      {{ simics }}
-                    </strong>
-                  </span>
-                </div>
-
-                <div class="col q-mt-xs">
-                  <strong>Simics</strong>
-                </div>
-
-                <div class="col q-mb-sm">
-                  <q-img
-                    src="../statics/images/simics-icon.png"
-                    style="height: 40px; max-width: 45px"
-                  />
-                </div>
-              </div>
-
-              <q-separator inset />
-
-              <div class="row q-mt-sm">
-                <div class="col">
-                  <span
-                    class="text-blue-4"
-                    style="font-size: 20px"
-                  >
-                    <strong>
-                      {{ other }}
-                    </strong>
-                  </span>
-                </div>
-
-                <div class="col q-mt-xs">
-                  <strong>Others</strong>
-                </div>
-
-                <div class="col q-mb-sm">
-                  <q-img
-                    src="../statics/images/other-icon.png"
-                    style="height: 40px; max-width: 45px"
-                  />
-                </div>
-              </div>
-
-              <q-separator inset />
             </div>
 
           </div>
