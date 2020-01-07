@@ -65,6 +65,55 @@ Proceed onto next session.
 
 ## Application
 
+### Non-dockerized Hosting
+Generating the setup files.
+```bash
+$ ./setup.sh
+```
+
+Please fill in Firebase configuration inside system.yml inside config folder as 
+instructed.
+
+```yml
+# Please make sure to replace all the commas
+databaseConfig:
+  production:
+    apiKey: ------------------------------------
+    authDomain: ------------------------------------
+    databaseURL: ------------------------------------
+    projectId: ------------------------------------
+    storageBucket: ------------------------------------
+    messagingSenderId: ------------------------------------
+    appId: ------------------------------------
+
+  testing:
+    apiKey: ------------------------------------
+    authDomain: ------------------------------------
+    databaseURL: ------------------------------------
+    projectId: ------------------------------------
+    storageBucket: ------------------------------------
+    messagingSenderId: ------------------------------------
+    appId: ------------------------------------
+    
+  dev:
+  
+```
+**NOTE:** It is important to fill both "testing" and "production" out. If you 
+only have one credential, you may reuse same credential. It is safe to leave 
+"dev" as empty.
+
+Once the Firebase credentials are set inside 'system.yml' please proceed with 
+the following:
+
+```bash
+$ ./database_setup.sh
+# to test/use locally
+$ ./demo.sh
+# to build
+$ ./build.sh # this will generate dist/ repo inside the root
+```
+
+### Dockerized Hosting
 Please fill in Firebase configuration inside docker-compose.yml file.
 ```yaml
  6|      args:
@@ -97,3 +146,12 @@ browser and explore the software.
 **Note:** Currently, Firebase-functions are not automated.
 
 ## Firebase-Functions
+Installation guide can be found on the following link:
+https://firebase.google.com/docs/functions/get-started
+
+```bash
+$ npm install -g firebase-tools
+$ cd ./app/server/cloud/functions && npm i && cd ..
+$ firebase login
+$ ./deploy.sh
+```
