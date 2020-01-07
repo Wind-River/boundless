@@ -23,7 +23,7 @@ export const layoutConfig = {
   // homeURL: 'https://jive.windriver.com/groups/boundless-innovation',
   // companyName: 'Wind River',
   // defaultImg: 'images/project-img-6.jpg',
-  homeName:'',
+  homeName: '',
   homeURL: '',
   companyName: '',
   defaultImg: '',

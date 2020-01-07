@@ -74,6 +74,7 @@ Proceed onto next session.
 ### Non-dockerized Hosting
 Generating the setup files.
 ```bash
+$ cd ./app
 $ ./setup.sh
 ```
 
@@ -113,9 +114,11 @@ the following:
 
 ```bash
 $ ./database_setup.sh
-# to test/use locally
+
+# if running locally (ex. localhost:8080), run demo.sh
 $ ./demo.sh
-# to build
+
+# if building to host on a server, run build.sh to create the distribution file
 $ ./build.sh # this will generate dist/ repo inside the root
 ```
 
