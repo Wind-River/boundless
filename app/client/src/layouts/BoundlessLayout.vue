@@ -245,7 +245,7 @@ export default {
       // TODO: have a cache delay param
       // load db_configurations
       // try to update db if db_version mismatch occurs
-      this.db.collection('config').doc('project').get()
+      return this.db.collection('config').doc('project').get()
         .then(doc => {
           if (doc.exists) {
             // checking for config_version
@@ -431,6 +431,7 @@ export default {
                     }, 300)
                   }
                 } else {
+                  // TODO: promise.all
                   this.db.collection('--db_meta--').doc('data').set(dbMeta)
                   this.db.collection('config').doc('project')
                     .set(configSkeleton)

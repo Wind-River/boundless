@@ -4,13 +4,13 @@ services:
     build:
       context: .
       args:
-        - FIREBASE_API_KEY="---------------------------------"
-        - FIREBASE_AUTH_DOMAIN="---------------------------------"
-        - FIREBASE_DATABASE_URL="-----------------------------------"
-        - FIREBASE_PROJECT_ID="------------------------------------"
-        - FIREBASE_STORAGE_BUCKET="------------------------------------"
-        - FIREBASE_MESSAGING_SENDER_ID="------------------------------------"
-        - FIREBASE_APP_ID="------------------------------------"
+        apiKey: "[VALUE]"
+        authDomain: "[VALUE]"
+        databaseURL: "[VALUE]"
+        projectId: "[VALUE]"
+        storageBucket: "[VALUE]"
+        messagingSenderId: "[VALUE]"
+        appId: "[VALUE]"
       dockerfile: boundless.Dockerfile
     image: boundless:0.1.12-alpine
     container_name: phyo

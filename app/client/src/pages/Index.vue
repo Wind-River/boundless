@@ -102,7 +102,10 @@ Methods:
 
             <q-separator inset />
 
-            <div class="row q-mt-sm">
+            <div
+              v-if="layoutConfig && layoutConfig.challenges"
+              class="row q-mt-sm"
+            >
               <div class="col">
                 <span
                   class="text-blue-4"
@@ -153,7 +156,10 @@ Methods:
 
             <q-separator inset />
 
-            <div class="row q-mt-sm">
+            <div
+              v-if="layoutConfig && layoutConfig.challenges"
+              class="row q-mt-sm"
+            >
               <div class="col">
                 <span
                   class="text-blue-4"
@@ -439,10 +445,19 @@ export default {
     HairCut
   },
   created () {
-    this.layoutConfig = layoutConfig
-
     this.loadFireRef().then(res => {
       this.loadInformation()
+
+      if (this.$q.sessionStorage.has('boundless_config')) {
+        let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
+        this.layoutConfig = layoutConfig
+
+        if (typeof cachedConfig.enabledChallenges === 'boolean') {
+          this.layoutConfig.challenges = cachedConfig.enabledChallenges
+        }
+      } else {
+        this.layoutConfig = layoutConfig
+      }
     })
   },
   data () {
@@ -551,7 +566,7 @@ export default {
     loadInformation: function () {
       // load the minimun database information to the respective component var
 
-      this.db.collection('projects').doc('ToC').get()
+      return this.db.collection('projects').doc('ToC').get()
         .then(doc => {
           if (doc.exists) {
             for (let project in doc.data()) {

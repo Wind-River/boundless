@@ -135,10 +135,9 @@ Methods:
               v-else-if="field === 'enabledChallenges'"
               class="col"
             >
-              <q-item tag="label" v-ripple>
-                <q-item-section>
-                  <!-- <q-item-label>Battery too low</q-item-label> -->
-                </q-item-section>
+              <q-item tag="label" v-ripple style="border-radius: 3px;">
+                <!-- <q-item-section>
+                </q-item-section> -->
                 <q-item-section avatar>
                   <q-toggle
                     color="green"

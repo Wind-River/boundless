@@ -94,32 +94,10 @@ export default {
           }
           resolve('Database fetch complete...')
         })
-      } else {
-        return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
-            .then(doc => {
-              if (doc.exists) {
-                if (doc.data().db === 'testing') {
-                  this.db = testingDb
-                  this.$q.localStorage.set('boundless_db', 'testing')
-                } else {
-                  this.db = productionDb
-                  this.$q.localStorage.set('boundless_db', 'production')
-                }
-                resolve('Database fetch complete...')
-              } else {
-                reject('"/config/project" path does not exists in the database...')
-              }
-            })
-            .catch(err => {
-              reject(err)
-            })
-        })
       }
     },
     onSubmit: function () {
       this.$emit('importingToDB', true)
-      this.db.collection('--db_meta--').doc('data').set(this.meta)
 
       this.importDataField.forEach(colObj => {
         let dbCollection = this.db.collection(colObj.name)
@@ -127,7 +105,6 @@ export default {
           dbCollection.doc(colData.doc_id).set(colData.data)
             .then(() => {
               if ((colObj.name === this.importDataField[this.importDataField.length - 1].name) && (colData.doc_id === this.importDataField[this.importDataField.length - 1].data[this.importDataField[this.importDataField.length - 1].data.length - 1].doc_id)) {
-                // console.log(this.importDataField[this.importDataField.length - 1].name, this.importDataField[this.importDataField.length - 1].data[this.importDataField[this.importDataField.length - 1].data.length - 1].doc_id)
                 setTimeout(() => {
                   this.$refs.file.files.splice(0, 1)
                   this.attachedFile = false

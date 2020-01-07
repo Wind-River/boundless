@@ -94,8 +94,12 @@ Methods:
               <q-item v-if="!data.listingTable.bannerImg.url" style="height: 27vh;">
                 <q-item-section
                   class="hoverable"
-                  :style="!data.listingTable.bannerImg.active ? selectedStyle : ''"
-                  @click="data.listingTable.bannerImg.active = false; updated = true"
+                  :style="
+                    !data.listingTable.bannerImg.active ? selectedStyle : ''
+                  "
+                  @click="
+                    data.listingTable.bannerImg.active = false; updated = true
+                  "
                 >
                   <div>
                     <q-img
@@ -104,6 +108,7 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.challenges.tableBanner}`"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
 
                     <q-img
@@ -112,6 +117,7 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.projects.tableBanner}`"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>
@@ -130,6 +136,7 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.challenges.tableBanner}`"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
 
                     <q-img
@@ -138,6 +145,7 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.projects.tableBanner}`"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>
@@ -153,6 +161,7 @@ Methods:
                       class="center-img"
                       :src="data.listingTable.bannerImg.url"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>
@@ -218,6 +227,7 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.challenges.webBanner}`"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
 
                     <q-img
@@ -226,6 +236,7 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.projects.webBanner}`"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>
@@ -244,6 +255,7 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.challenges.webBanner}`"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
 
                     <q-img
@@ -252,6 +264,7 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.projects.webBanner}`"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>
@@ -267,6 +280,7 @@ Methods:
                       class="center-img"
                       :src="data.webpage.bannerImg.url"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>
@@ -288,7 +302,10 @@ Methods:
                 <input
                   hidden
                   type="file" accept="image/*"
-                  @change="filePickerOnChange(type, 'webpage.mainImg'); updated = true"
+                  @change="
+                    filePickerOnChange(type, 'webpage.mainImg');
+                    updated = true
+                  "
                 />
               </q-item>
 
@@ -304,6 +321,7 @@ Methods:
                       class="center-img"
                       src="https://placeimg.com/500/300/nature"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>
@@ -321,6 +339,7 @@ Methods:
                       class="center-img"
                       src="https://placeimg.com/500/300/nature"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>
@@ -336,6 +355,7 @@ Methods:
                       class="center-img"
                       :src="data.webpage.mainImg.url"
                       :ratio="ratio"
+                      style="max-height: 150px;"
                     />
                   </div>
                 </q-item-section>

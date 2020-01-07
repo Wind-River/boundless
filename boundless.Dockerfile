@@ -1,42 +1,42 @@
 FROM node:12-alpine
 
-ARG FIREBASE_API_KEY
-ARG FIREBASE_AUTH_DOMAIN
-ARG FIREBASE_DATABASE_URL
-ARG FIREBASE_PROJECT_ID
-ARG FIREBASE_STORAGE_BUCKET
-ARG FIREBASE_MESSAGING_SENDER_ID
-ARG FIREBASE_APP_ID
+ARG apiKey
+ARG authDomain
+ARG databaseURL
+ARG projectId
+ARG storageBucket
+ARG messagingSenderId
+ARG appId
 
-COPY ./app/client/. /app
+COPY ./boundless1/client/. /app
 
 RUN cd /app && \
-  FIREBASE_API_KEY=${FIREBASE_API_KEY//\"} && \
-  FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN//\"} && \
-  FIREBASE_DATABASE_URL=${FIREBASE_DATABASE_URL//\"} && \
-  FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID//\"} && \
-  FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET//\"} && \
-  FIREBASE_MESSAGING_SENDER_ID=${FIREBASE_MESSAGING_SENDER_ID//\"} && \
-  FIREBASE_APP_ID=${FIREBASE_APP_ID//\"} && \
+  apiKey=${apiKey//\"} && \
+  authDomain=${authDomain//\"} && \
+  databaseURL=${databaseURL//\"} && \
+  projectId=${projectId//\"} && \
+  storageBucket=${storageBucket//\"} && \
+  messagingSenderId=${messagingSenderId//\"} && \
+  appId=${appId//\"} && \
   echo -e "\
 export const databaseConfig = {\\n\
   production: {\\n\
-    apiKey: '${FIREBASE_API_KEY//\'/}',\\n\
-    authDomain: '${FIREBASE_AUTH_DOMAIN//\'/}',\\n\
-    databaseURL: '${FIREBASE_DATABASE_URL//\'/}',\\n\
-    projectId: '${FIREBASE_PROJECT_ID//\'/}',\\n\
-    storageBucket: '${FIREBASE_STORAGE_BUCKET//\'/}',\\n\
-    messagingSenderId: '${FIREBASE_MESSAGING_SENDER_ID//\'/}',\\n\
-    appId: '${FIREBASE_APP_ID//\'/}'\\n\
+    apiKey: '${apiKey//\'/}',\\n\
+    authDomain: '${authDomain//\'/}',\\n\
+    databaseURL: '${databaseURL//\'/}',\\n\
+    projectId: '${projectId//\'/}',\\n\
+    storageBucket: '${storageBucket//\'/}',\\n\
+    messagingSenderId: '${messagingSenderId//\'/}',\\n\
+    appId: '${appId//\'/}'\\n\
   },\\n\
   testing: {\\n\
-    apiKey: '${FIREBASE_API_KEY//\'/}',\\n\
-    authDomain: '${FIREBASE_AUTH_DOMAIN//\'/}',\\n\
-    databaseURL: '${FIREBASE_DATABASE_URL//\'/}',\\n\
-    projectId: '${FIREBASE_PROJECT_ID//\'/}',\\n\
-    storageBucket: '${FIREBASE_STORAGE_BUCKET//\'/}',\\n\
-    messagingSenderId: '${FIREBASE_MESSAGING_SENDER_ID//\'/}',\\n\
-    appId: '${FIREBASE_APP_ID//\'/}'\\n\
+    apiKey: '${apiKey//\'/}',\\n\
+    authDomain: '${authDomain//\'/}',\\n\
+    databaseURL: '${databaseURL//\'/}',\\n\
+    projectId: '${projectId//\'/}',\\n\
+    storageBucket: '${storageBucket//\'/}',\\n\
+    messagingSenderId: '${messagingSenderId//\'/}',\\n\
+    appId: '${appId//\'/}'\\n\
   },\\n\
   dev: {}\\n\
 }\

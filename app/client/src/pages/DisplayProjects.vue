@@ -87,6 +87,14 @@ Methods:
             />
           </div>
 
+          <div
+            v-for="(val, valInd) in (5 - keywordsInUse.length)"
+            :key="valInd"
+            class="col"
+          >
+            <!-- PLACEHOLDING FOR THE BANNER -->
+          </div>
+
         </div>
       </div>
 
