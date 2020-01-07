@@ -93,7 +93,7 @@ Methods:
         <q-space />
 
         <q-tab
-          :label="$q.sessionStorage.has('admin_token') ? 'Log Out' : 'Log In'"
+          :label="$q.sessionStorage.has('admin_token') ? 'Log Out' : 'Admin Log In'"
           @click="logInLogOut"
         />
       </q-tabs>
