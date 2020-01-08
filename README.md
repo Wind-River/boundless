@@ -159,8 +159,16 @@ Installation guide can be found on the following link:
 https://firebase.google.com/docs/functions/get-started
 
 ```bash
+# inside boundless root directory
 $ npm install -g firebase-tools
+
+# this could take several mins since this will be installing dependencies
 $ cd ./app/server/cloud/functions && npm i && cd ..
+
+# 'firebase login' should prompt broswer, please select proper google account since
+# this command will be grabbing credentials from the browser
 $ firebase login
+
+# './deploy.sh' should take several minutes to complete
 $ ./deploy.sh
 ```
