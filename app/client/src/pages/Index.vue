@@ -343,20 +343,17 @@ export default {
         helix: '../statics/images/other-icon.png',
         titanium: '../statics/images/TiS-icon.png',
         complier: '../statics/images/other-icon.png'
-      },
-      vxworks: 0,
-      linux: 0,
-      tis: 0,
-      simics: 0,
-      other: 0
+      }
     }
   },
   methods: {
     loadFireRef: function () {
+      /*
       // load firebase database reference
       // load firebase storage reference (if applicable)
       // load firebase cloud functions reference (if applicable)
       // return: Promise<String>
+      */
 
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
@@ -395,31 +392,22 @@ export default {
       }
     },
     gettingCount: function () {
-      // TODO: replace the below code with this
-      // this.keywords.forEach(val => {
-      //   if (val in this.keywordsCounter) {
-      //     this.keywordsCounter[val] = this.keywordsCounter[val] + 1
-      //   } else {
-      //     this.keywordsCounter[val] = 1
-      //   }
-      // })
+      /*
+      // TODO: function description
+      */
 
       this.keywords.forEach(val => {
-        if (val === 'vxworks') {
-          this.vxworks += 1
-        } else if (val === 'linux') {
-          this.linux += 1
-        } else if (val === 'titanium') {
-          this.tis += 1
-        } else if (val === 'simics') {
-          this.simics += 1
+        if (val in this.keywordsCounter) {
+          this.keywordsCounter[val] = this.keywordsCounter[val] + 1
         } else {
-          this.other += 1
+          this.keywordsCounter[val] = 1
         }
       })
     },
     routeHairCutPage: function () {
+      /*
       // routes to the HairCut page by opening a new tab
+      */
 
       let routeData = this.$router.resolve({
         name: 'HairCut'
@@ -427,7 +415,10 @@ export default {
       window.open(routeData.href, '_blank')
     },
     loadInformation: function () {
+      /*
       // load the minimun database information to the respective component var
+      // return:
+      */
 
       return this.db.collection('projects').doc('ToC').get()
         .then(doc => {
@@ -518,36 +509,31 @@ export default {
 }
 </script>
 
-<style>
+<style lang="stylus">
 hr.newColor {
   border: 1px solid #C00000;
 }
 
-ul { /* need to clear the default values for ul before changing them. */
-    list-style-type: none;
-    position: relative;    /* It is required for setting position to absolute in the next rule. */
+ul {
+  list-style-type: none;
+  position: relative;
 }
+
 ul li::before {
-  content: "\25A0"; /* Unicode for • character */
+  content: "\25A0";
   color: #C00000;
   font-weight: bold;
   display: inline-block;
   width: 1em;
   margin-left: -1em;
   line-height: 1em;
-  font-size: 1.1em;  /* Adjust this value so that it appears what size you want. */
+  font-size: 1.1em;
 }
 
 .local-img {
   border: 1px solid DimGray;
   border-radius: 4px;
   padding: 5px
-}
-
-.my-text {
-  width: 100%;
-  max-width: 90%;
-  margin-top: 25px;
 }
 
 .overviewCSS {
@@ -563,9 +549,5 @@ ul li::before {
 .title-font-1 {
   font-size: 18px;
   color: #C00000;
-}
-
-.underline {
-  text-decoration: underline;
 }
 </style>

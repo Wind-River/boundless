@@ -2223,7 +2223,7 @@ export default {
       }
 
       let tmpTocContent = {
-        hidden: this.curData.hidden,
+        hidden: this.curData.hidden || false,
         alias: alias
       }
 
