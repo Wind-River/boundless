@@ -208,13 +208,12 @@ import addChallenge from '../components/SubmitChallengeAdminConsole'
 import popUpChallenge from '../components/EditAndPreviewChallenge'
 
 export default {
-  name: 'Manage_Challenge',
   components: {
     addChallenge,
     popUpChallenge
   },
   created () {
-    this.getDb().then(res => {
+    this.loadFireRefs().then(res => {
       this.getProjects()
       this.getConfig()
       // this.columnsFont()
@@ -277,7 +276,7 @@ export default {
     }
   },
   methods: {
-    getDb: function () {
+    loadFireRefs: function () {
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
         return new Promise((resolve, reject) => {

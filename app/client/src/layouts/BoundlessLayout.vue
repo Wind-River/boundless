@@ -197,10 +197,13 @@ export default {
   },
   methods: {
     loadFireRefs: function () {
+      /*
       // load firebase database reference
       // load firebase storage reference (if applicable)
       // load firebase cloud functions reference (if applicable)
       // return: Promise<String>
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         // TODO: add description
         let sessionDb = this.$q.localStorage.getItem('boundless_db')

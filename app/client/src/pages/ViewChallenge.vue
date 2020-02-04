@@ -492,7 +492,6 @@ import ProjectTable from '../components/Tables/ProjectTable'
 import NotFound from './Error404'
 
 export default {
-  name: 'View_Project',
   components: {
     NotFound,
     Banner,
@@ -515,11 +514,10 @@ export default {
     }
 
     this.setPageTab()
+
     // fetech data from database
-    this.getDb().then(res => {
-      if (this.data) {
-        this.getInformation()
-      }
+    this.loadFireRefs().then(res => {
+      this.loadInformation()
     })
   },
   beforeUpdate () {
@@ -569,11 +567,14 @@ export default {
     }
   },
   methods: {
-    test: function (entry) {
-      /* console.log('hi') */
-      // console.log(entry)
+    test: function () {
+      // test param goes here
     },
     setPageTab: function () {
+      /*
+      // TODO: add function description
+      */
+
       if (this.$route.params.extraRoute === 'logs') {
         this.pageTab = 'logs'
       } else if (this.$route.params.extraRoute === 'projects') {
@@ -583,6 +584,10 @@ export default {
       }
     },
     replyLog: function (familyIndex, responseObj) {
+      /*
+      // TODO: add function description
+      */
+
       this.$q.dialog({
         dark: true,
         title: 'Response...',
@@ -627,7 +632,14 @@ export default {
         // nothing goes here
       })
     },
-    getDb: function () {
+    loadFireRefs: function () {
+      /*
+      // load firebase database reference
+      // load firebase storage reference (if applicable)
+      // load firebase cloud functions reference (if applicable)
+      // return: Promise<String>
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
         return new Promise((resolve, reject) => {
@@ -664,6 +676,10 @@ export default {
       }
     },
     updateId: function () {
+      /*
+      // TODO: add function description
+      */
+
       this.challengeId = this.$route.params.challenge_id
 
       if (this.$q.sessionStorage.has('boundless_page_info')) {
@@ -671,20 +687,29 @@ export default {
         if (storageData.key === this.challengeId) {
           this.data = storageData.data
         } else {
-          this.getInformation()
+          this.loadInformation()
         }
       } else {
-        this.getInformation()
+        this.loadInformation()
       }
     },
-    getInformation: function () {
+    loadInformation: function () {
+      /*
+      // TODO: add function description
+      */
+
+      // start loading
       this.loading = true
 
-      new Promise((resolve, reject) => {
+      // return the promise to check for alias
+      return new Promise((resolve, reject) => {
         this.db.collection('challenges').doc('ToC').get()
           .then(doc => {
             if (doc.exists) {
-              if (doc.data().alias && doc.data().alias.hasOwnProperty(this.challengeId)) {
+              if (
+                doc.data().alias &&
+                doc.data().alias.hasOwnProperty(this.challengeId)
+              ) {
                 let actualUid = doc.data().alias[this.challengeId]
                 resolve(doc.data()[actualUid])
               } else if (doc.data().hasOwnProperty(this.challengeId)) {
@@ -712,6 +737,7 @@ export default {
                 }
 
                 this.sortBody()
+                this.sortChip()
 
                 if (!this.data.webpage.imgURL) {
                   this.challengeImagePath = this.getMainPhoto()
@@ -722,7 +748,6 @@ export default {
                     })
                     .catch(err => {
                       if (err) {
-                        /* console.log(err) */
                         this.challengeImagePath = this.getMainPhoto()
                       }
                     })
@@ -730,7 +755,7 @@ export default {
 
                 resolve()
               } else {
-                reject('Document containing webpage information is either corrupted or no longer there!')
+                reject('Document containing webpage information is either corrupted or no longer available!')
               }
             }).catch(err => {
               reject(err)
@@ -743,40 +768,67 @@ export default {
             // handling old data
             this.data.sponsors.forEach(sponsor => {
               tmpSponsors.push({
-                uuid: sponsor.email
+                uuid: sponsor.uuid || sponsor.email
               })
             })
-
-            // this.db.collection('challenges').doc('ToC').set({
-            //   [this.data.uuid]: {
-            //     sponsors: tmpSponsors
-            //   }
-            // }, { merge: true })
 
             this.data.sponsors = tmpSponsors
             tmpSponsors = []
           }
+          let correctionReq = false // bool to check if data correction req
+          let uuidList = [] // list to correct data in db
+
           // handling new data
           this.db.collection('users').doc('ToC').get()
             .then(doc => {
               if (doc.exists) {
                 this.data.sponsors.forEach(sponsor => {
-                  tmpSponsors.push({
-                    ...doc.data()[sponsor.uuid]
-                  })
+                  // check if sponsor.uuid return empt user
+                  if (!doc.data()[sponsor.uuid]) {
+                    // hard check if the user is not in db
+                    for (let userUid in doc.data()) {
+                      if (doc.data()[userUid].email === sponsor.uuid) {
+                        tmpSponsors.push({
+                          ...doc.data()[userUid]
+                        })
+                        uuidList.push({
+                          uuid: userUid
+                        })
+
+                        correctionReq = true
+                        break
+                      }
+                    }
+                  } else {
+                    tmpSponsors.push({
+                      ...doc.data()[sponsor.uuid]
+                    })
+                    uuidList.push({
+                      uuid: sponsor.uuid
+                    })
+                  }
                 })
 
                 this.data.sponsors = tmpSponsors
 
+                if (correctionReq) {
+                  this.db.collection('challenges').doc('ToC').set({
+                    [this.data.uuid]: {
+                      sponsors: uuidList
+                    }
+                  }, { merge: true })
+                }
+
                 resolve()
               } else {
-                reject('Document containing webpage information is either corrupted or no longer there!')
+                reject('Document containing webpage information is either corrupted or no longer available!')
               }
             }).catch(err => {
               reject(err)
             })
         })
       }).then(() => {
+        // TODO: change this to promise all
         let avatarLoad = false
 
         this.data.sponsors.forEach(sponsor => {
@@ -803,14 +855,17 @@ export default {
         }
       }).catch(err => {
         if (err) {
-          /* console.log(err) */
+          setTimeout(() => {
+            this.notFound = true
+          }, 1500)
         }
-        setTimeout(() => {
-          this.notFound = true
-        }, 1500)
       })
     },
     popDialog: function (entry) {
+      /*
+      // TODO: add function description
+      */
+
       if (entry === 'awards') {
         this.dialogJSON['title'] = 'Impact Awards'
       } else {
@@ -820,11 +875,19 @@ export default {
       this.fixedDialog = true
     },
     getMainPhoto: function () {
+      /*
+      // TODO: add function description
+      */
+
       var max = 5
       var photoId = Math.floor(Math.random() * (max - 1 + 1)) + 1
       return 'statics/images/project-img-' + photoId + '.jpg'
     },
     sortBody: function () {
+      /*
+      // TODO: add function description
+      */
+
       this.data.webpage.body.sort((a, b) => {
         return a.index - b.index
       })
@@ -837,8 +900,21 @@ export default {
         }
       })
     },
+    sortChip: function () {
+      /*
+      // TODO: add function description
+      */
+
+      this.data.webpage.chips.sort((a, b) => {
+        return a.index - b.index
+      })
+    },
     copyURLtoClipboard: function () {
+      /*
       // https://stackoverflow.com/questions/6725890/location-host-vs-location-hostname-and-cross-browser-compatibility
+      // TODO: add function description
+      */
+
       if (!window.location.origin) {
         window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '')
       }
@@ -861,7 +937,11 @@ export default {
       })
     },
     fallbackCopyTextToClipboard: function (entry) {
+      /*
       // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+      // TODO: add function description
+      */
+
       let textArea = document.createElement('textarea')
       textArea.value = entry
       document.body.prepend(textArea)
@@ -879,7 +959,11 @@ export default {
       document.body.removeChild(textArea)
     },
     copyTextToClipboard: function (entry) {
+      /*
       // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+      // TODO: add function description
+      */
+
       if (!navigator.clipboard) {
         this.fallbackCopyTextToClipboard(entry)
         // return
@@ -887,11 +971,16 @@ export default {
         navigator.clipboard.writeText(entry).then(function () {
         }, function (err) {
           if (err) {
+            // err handler
           }
         })
       }
     },
     openNewTab: function (entry) {
+      /*
+      // TODO: add function description
+      */
+
       window.open(entry, '_blank')
     }
   },

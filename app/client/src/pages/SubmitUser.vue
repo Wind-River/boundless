@@ -76,7 +76,7 @@ Methods:
           <div class="col-1">Optional</div>
           <hr class="col">
         </div>
-        <q-input
+        <!-- <q-input
           filled
           class="q-mt-sm"
           v-model="webpage.socialNetwork.github"
@@ -87,9 +87,9 @@ Methods:
           <template v-slot:prepend>
             <q-icon name="fab fa-github" />
           </template>
-        </q-input>
+        </q-input> -->
 
-        <q-input
+        <!-- <q-input
           filled
           class="q-mt-sm"
           v-model="webpage.socialNetwork.jive"
@@ -100,7 +100,7 @@ Methods:
           <template v-slot:prepend>
             <q-icon name="fab fa-github" />
           </template>
-        </q-input>
+        </q-input> -->
 
         <hr>
         <q-btn

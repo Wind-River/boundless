@@ -534,22 +534,17 @@ Methods:
                             </p>
 
                             <q-select
-                              dense outlined
-                              options-dense
-                              class="col-3"
-                              label="Chip Type"
-                              :options="configData.chipContentType"
-                              v-model="chipType"
+                              dense outlined options-dense
+                              class="col-3" label="Chip Type"
                               style="overflow: auto;"
+                              v-model="chipType"
+                              :options="configData.chipContentType"
                             />
 
-                            <div
-                              class="col-1 q-mt-sm"
-                              align="center"
-                            >
+                            <div class="col-1 q-mt-sm" align="center" >
                               <q-btn
-                                dense round
                                 :disable="chipType === ''"
+                                dense round
                                 color="accent" icon="add"
                                 @click="addChip(); addedChip = true"
                               />
@@ -642,7 +637,10 @@ Methods:
                                   <div class="col">
                                     <q-list bordered separator>
                                       <q-item
-                                        v-for="(val, ind) in customChips" :key="ind"
+                                        v-for="
+                                          (val, ind) in configData.customChips
+                                        "
+                                        :key="ind"
                                         clickable v-ripple
                                         :active="
                                           chipContent.content.icon === val.value
@@ -1775,16 +1773,16 @@ Methods:
 </template>
 
 <script>
-import productionDb, { productionStorage } from '../firebase/init_production'
-import testingDb, { testingStorage } from '../firebase/init_testing'
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+
+import productionDb, { productionStorage } from '../firebase/init_production'
+import testingDb, { testingStorage } from '../firebase/init_testing'
 
 import ProjectTable from '../components/Tables/ProjectTable'
 // import uploadGUI from '../components/Upload'
 
 export default {
-  name: 'Edit_And_Preview_Project',
   props: {
     challengeId: String,
     mode: String
@@ -1794,10 +1792,10 @@ export default {
     ProjectTable
   },
   created () {
-    this.getDb().then(res => {
+    this.loadFireRefs().then(res => {
       // fetech data from database
-      this.getInformation()
-      this.getConfig()
+      this.loadInformation()
+      this.loadConfig()
     })
   },
   data () {
@@ -1870,12 +1868,20 @@ export default {
   },
   methods: {
     projectDeleteByChild: function (value) {
+      /*
+      // TODO: function description
+      */
+
       this.projectList.projects = this.projectList.projects.filter(
         project => project.label !== value
       )
     },
     filterFn: function (val, update) {
+      /*
       // modified version of source code from quasr.dev
+      // TODO: function description
+      */
+
       update(() => {
         if (val === '') {
           this.projectList.filter = this.projectList.options
@@ -1888,6 +1894,10 @@ export default {
       })
     },
     updateAttachments: function (data) {
+      /*
+      // TODO: function description
+      */
+
       for (let aliasName in data) {
         if (!(aliasName in this.curData.files)) {
           this.curData.files[aliasName] = data[aliasName].val
@@ -1897,6 +1907,10 @@ export default {
       this.fileAttachmentDialog = false
     },
     updateAtHide: function (entry) {
+      /*
+      // TODO: function description
+      */
+
       if (entry) {
         if (entry[0] === 'index') {
           this.curData.logs[entry[1]].index = parseInt(entry[2])
@@ -1908,9 +1922,17 @@ export default {
       this.$forceUpdate()
     },
     invokeFilePicker: function () {
+      /*
+      // TODO: function description
+      */
+
       this.$refs.imageInput.click()
     },
     filePickerOnChange: function (e) {
+      /*
+      // TODO: function description
+      */
+
       const file = e.target.files[0]
 
       if (file) {
@@ -1925,9 +1947,15 @@ export default {
     },
     // Form functions
     onSubmit: function () {
+      /*
+      // TODO: function description
+      */
+
       // edit, preview, and submit handler
       if (this.submitMode === 'view') {
         this.childMode = (this.childMode === 'preview') ? 'edit' : 'preview'
+        this.curSortBody()
+        this.curSortChip()
       } else if (this.submitMode === 'database') {
         // pushing data to database
         if (this.curData.keywords.length > 1) {
@@ -1994,7 +2022,11 @@ export default {
       }
     },
     // Database calls
-    getDb: function () {
+    loadFireRefs: function () {
+      /*
+      // TODO: function description
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
         return new Promise((resolve, reject) => {
@@ -2030,7 +2062,11 @@ export default {
         })
       }
     },
-    getConfig: function () {
+    loadConfig: function () {
+      /*
+      // TODO: function description
+      */
+
       this.db.collection('config').doc('project').get()
         .then(doc => {
           if (doc.exists) {
@@ -2045,6 +2081,11 @@ export default {
 
             this.configData = data
             this.configData.customChips = this.configData.customChips || []
+
+            this.configData.customChips.push({
+              label: 'None',
+              value: null
+            })
             // this.allowedDomain = data['allowedDomain']
           }
         })
@@ -2054,7 +2095,11 @@ export default {
           }
         })
     },
-    getInformation: function () {
+    loadInformation: function () {
+      /*
+      // TODO: function description
+      */
+
       this.loading = true
 
       let promises = []
@@ -2078,6 +2123,7 @@ export default {
           }
 
           this.sortBody()
+          this.sortChip()
 
           this.curData = this.deepObjCopy(this.data)
           this.childMode = this.mode
@@ -2185,6 +2231,10 @@ export default {
         })
     },
     compareSponsor: function (a, b) {
+      /*
+      // TODO: function description
+      */
+
       if (a.name === b.name && a.email === b.email) {
         return true
       }
@@ -2192,16 +2242,28 @@ export default {
     },
     // Advanced Settings functions
     popupAdvancedSettingsDialog: function () {
+      /*
+      // TODO: function description
+      */
+
       this.advancedDialog = true
       this.oldAdvancedSettings.hidden = this.curData.hidden
     },
     advancedSettingsCancel: function () {
+      /*
+      // TODO: function description
+      */
+
       this.aliasKeys = Object.keys(this.aliasMap)
       this.aliasVals = Object.values(this.aliasMap)
       this.curData.hidden = this.oldAdvancedSettings.hidden
       this.oldAdvancedSettings = {}
     },
     advancedSettingSet: function () {
+      /*
+      // TODO: function description
+      */
+
       let alias = ''
       let oldAlias = this.curData.alias
       if (this.aliasVals.includes(this.curData.uuid)) {
@@ -2230,14 +2292,29 @@ export default {
         alias: tmpAliasMap
       }, { merge: true })
 
+      this.$q.notify({
+        icon: 'done',
+        color: 'positive',
+        message: 'Submitted sucessfully!',
+        closeBtn: 'Okay!'
+      })
+
       this.emitAdded()
     },
     addToAliasKeys: function () {
+      /*
+      // TODO: function description
+      */
+
       let initName = this.curData.challenge.split(' ').join('_').toLowerCase()
       this.aliasKeys.push(initName)
       this.aliasVals.push(this.curData.uuid)
     },
     aliasValidation: function (val) {
+      /*
+      // TODO: function description
+      */
+
       if (val === '') {
         this.aliasEditObj.error = true
         this.aliasEditObj.message = 'Cannot be empty!'
@@ -2269,6 +2346,10 @@ export default {
     },
     // Log Forum functions
     deleteLogThread: function (index) {
+      /*
+      // TODO: function description
+      */
+
       this.curData.logs.splice(index, 1)
 
       this.updated = true
@@ -2276,6 +2357,10 @@ export default {
       this.$forceUpdate()
     },
     createLogThread: function () {
+      /*
+      // TODO: function description
+      */
+
       this.$q.dialog({
         dark: true,
         title: 'Description...',
@@ -2322,6 +2407,10 @@ export default {
       })
     },
     addLog: function (index) {
+      /*
+      // TODO: function description
+      */
+
       this.$q.dialog({
         dark: true,
         title: 'Description...',
@@ -2366,7 +2455,10 @@ export default {
       })
     },
     deleteLog: function (index, parent) {
-      /* // console.log(index, parent) */
+      /*
+      // TODO: function description
+      */
+
       this.curData.logs[parent].data.splice(index, 1)
 
       this.updated = true
@@ -2374,6 +2466,10 @@ export default {
       this.$forceUpdate()
     },
     replyLog: function (familyIndex, responseObj) {
+      /*
+      // TODO: function description
+      */
+
       this.$q.dialog({
         dark: true,
         title: 'Response...',
@@ -2416,12 +2512,20 @@ export default {
     },
     // Edit Mode functions
     projectNameValidation: function (val) {
+      /*
+      // TODO: function description
+      */
+
       if (val === '') {
         return false
       }
       return true
     },
     addCustomField: function () {
+      /*
+      // TODO: function description
+      */
+
       let tmpBody = {}
 
       if (this.bodyType.value === 'TEXT_BOX') {
@@ -2469,6 +2573,10 @@ export default {
       this.updated = true
     },
     addChip: function () {
+      /*
+      // TODO: function description
+      */
+
       let tmpChip = {}
 
       if (this.chipType.value === 'SOURCE') {
@@ -2504,6 +2612,10 @@ export default {
       this.updated = true
     },
     popDialog: function (entry) {
+      /*
+      // TODO: function description
+      */
+
       if (entry === 'awards') {
         this.dialogJSON['title'] = 'Impact Awards'
       } else {
@@ -2525,11 +2637,19 @@ export default {
       this.fixedDialog = true
     },
     getMainPhoto: function () {
+      /*
+      // TODO: function description
+      */
+
       let max = 5
       let photoId = Math.floor(Math.random() * (max - 1 + 1)) + 1
       return 'statics/images/project-img-' + photoId + '.jpg'
     },
     priorityCountUp: function () {
+      /*
+      // TODO: function description
+      */
+
       if (this.curData.priority === 3) {
         this.curData.priority = 0
       } else {
@@ -2538,6 +2658,10 @@ export default {
       this.updated = true
     },
     priorityCountDown: function () {
+      /*
+      // TODO: function description
+      */
+
       if (this.curData.priority === 0) {
         this.curData.priority = 3
       } else {
@@ -2546,6 +2670,10 @@ export default {
       this.updated = true
     },
     addChallengeSponsor: function () {
+      /*
+      // TODO: function description
+      */
+
       let itemOptions = []
 
       for (let email in this.userEmailToObjMap) {
@@ -2584,13 +2712,25 @@ export default {
     },
     // Child functions
     emitClose: function () {
+      /*
+      // TODO: function description
+      */
+
       this.$emit('close')
     },
     emitAdded: function () {
+      /*
+      // TODO: function description
+      */
+
       this.$emit('added')
     },
     // Helper functions
     sortBody: function () {
+      /*
+      // TODO: function description
+      */
+
       this.data.webpage.body.sort((a, b) => {
         return a.index - b.index
       })
@@ -2603,11 +2743,54 @@ export default {
         }
       })
     },
+    sortChip: function () {
+      /*
+      // TODO: function description
+      */
+
+      this.data.webpage.chips.sort((a, b) => {
+        return a.index - b.index
+      })
+    },
+    curSortBody: function () {
+      /*
+      // TODO: function description
+      */
+
+      this.curData.webpage.body.sort((a, b) => {
+        return a.index - b.index
+      })
+
+      this.curData.webpage.body.forEach(webContent => {
+        if (webContent.content.type === 'ORDERED_LIST') {
+          webContent.content.list.sort((a, b) => {
+            return a.index - b.index
+          })
+        }
+      })
+    },
+    curSortChip: function () {
+      /*
+      // TODO: function description
+      */
+
+      this.curData.webpage.chips.sort((a, b) => {
+        return a.index - b.index
+      })
+    },
     openNewTab: function (entry) {
+      /*
+      // TODO: function description
+      */
+
       window.open(entry, '_blank')
     },
     deepObjCopy: function (aObject) {
+      /*
       // https://stackoverflow.com/questions/4459928/how-to-deep-clone-in-javascript/34624648#34624648
+      // TODO: function description
+      */
+
       if (!aObject) {
         return aObject
       }
@@ -2622,6 +2805,10 @@ export default {
       return bObject
     },
     notifyError: function () {
+      /*
+      // TODO: function description
+      */
+
       this.$q.notify({
         color: 'negative',
         message: 'Field is required!',
