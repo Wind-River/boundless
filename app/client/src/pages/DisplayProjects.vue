@@ -230,96 +230,16 @@ Methods:
                 </div>
               </div>
             </q-td>
+
             <q-td key="progress" :props="props">
               <div style="min-width: 150px; max-width: 250px; border: solid 1px; border-color: #d0d7e2;">
-
-                <div class="row" v-if="props.row.progress === -1">
-                  <div class="col null-color">
-                    Idea
-                  </div>
-                  <div class="col null-color">
-                    PoC
-                  </div>
-                  <div class="col null-color">
-                    Value
-                  </div>
-                </div>
-
-                <div class="row" v-if="props.row.progress === 0">
-                  <div class="col half-full-color">
-                    Idea
-                  </div>
-                  <div class="col null-color">
-                    PoC
-                  </div>
-                  <div class="col null-color">
-                    Value
-                  </div>
-                </div>
-
-                <div class="row" v-if="props.row.progress === 1">
-                  <div class="col full-color">
-                    Idea
-                  </div>
-                  <div class="col null-color">
-                    PoC
-                  </div>
-                  <div class="col null-color">
-                    Value
-                  </div>
-                </div>
-
-                <div class="row" v-if="props.row.progress === 2">
-                  <div class="col full-color">
-                    Idea
-                  </div>
-                  <div class="col half-full-color">
-                    PoC
-                  </div>
-                  <div class="col null-color">
-                    Value
-                  </div>
-                </div>
-
-                <div class="row" v-if="props.row.progress === 3">
-                  <div class="col full-color">
-                    Idea
-                  </div>
-                  <div class="col full-color">
-                    PoC
-                  </div>
-                  <div class="col null-color">
-                    Value
-                  </div>
-                </div>
-
-                <div class="row" v-if="props.row.progress === 4">
-                  <div class="col full-color">
-                    Idea
-                  </div>
-                  <div class="col full-color">
-                    PoC
-                  </div>
-                  <div class="col half-full-color">
-                    Value
-                  </div>
-                </div>
-
-                <div class="row" v-if="props.row.progress === 5">
-                  <div class="col full-color">
-                    Idea
-                  </div>
-                  <div class="col full-color">
-                    PoC
-                  </div>
-                  <div class="col full-color">
-                    Value
-                  </div>
-                </div>
-
+                <ProgressBar
+                  :progressBar="progressBar"
+                  :progress="props.row.progress"
+                />
               </div>
-
             </q-td>
+
             <q-td
               key="members"
               :props="props"
@@ -380,21 +300,30 @@ import productionDb from '../firebase/init_production'
 import testingDb from '../firebase/init_testing'
 
 import Banner from '../components/Banners/Banner'
+import ProgressBar from '../components/ProgressBar'
 
 export default {
-  name: 'DisplayTable_Test',
   components: {
-    Banner
+    Banner,
+    ProgressBar
   },
   created () {
     // fetches data from database
     this.getDb().then(res => {
       this.getProjectList()
       this.loadInformation()
+      this.loadProgressBarConf()
     })
+  },
+  beforeUpdate () {
+    this.loadProgressBarConf()
   },
   data () {
     return {
+      progressBar: {
+        tags: ['Idea', 'PoC', 'Value'],
+        half: true
+      },
       db: null,
       bannerObj: {
         path: `../statics/${defaultImages.projects.tableBanner}`,
@@ -470,7 +399,9 @@ export default {
             let membersRetVal = ''
             val.forEach(entry => {
               if (entry.role === 'lead') {
-                membersRetVal += entry.name + ', '
+                if (entry) {
+                  membersRetVal += entry.name + ', '
+                }
               }
             })
             return membersRetVal.substring(0, membersRetVal.length - 2)
@@ -487,6 +418,15 @@ export default {
     }
   },
   methods: {
+    loadProgressBarConf: function () {
+      if (this.$q.sessionStorage.has('boundless_config')) {
+        let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+        if (cachedConfig.projectsConfig.progressBar) {
+          this.progressBar = cachedConfig.projectsConfig.progressBar
+        }
+      }
+    },
     getDb: function () {
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
@@ -533,9 +473,13 @@ export default {
       entry.forEach(member => {
         if (member.role === 'lead') {
           if (member.email) {
-            retMembers += ', ' + member.name
+            if (member) {
+              retMembers += ', ' + member.name
+            }
           } else {
-            retMembers += ', ' + this.userToC[member.uuid].name
+            if (this.userToC[member.uuid]) {
+              retMembers += ', ' + this.userToC[member.uuid].name
+            }
           }
         }
       })
@@ -567,15 +511,7 @@ export default {
                   this.projectList.push(doc.data()[project])
 
                   // getting the innovator list
-                  if (doc.data()[project].members.length < 1) {
-                    /* console.log('Members_Array is empty!') */
-                  } else if (doc.data()[project].members.length === 1) {
-                    if (doc.data()[project].members[0].email && !this.memberList.includes(doc.data()[project].members[0].email)) {
-                      this.memberList.push(doc.data()[project].members[0].email)
-                    } else if (doc.data()[project].members[0].uuid && !this.memberList.includes(doc.data()[project].members[0].uuid)) {
-                      this.memberList.push(doc.data()[project].members[0].uuid)
-                    }
-                  } else {
+                  if (doc.data()[project].members.length > 0) {
                     doc.data()[project].members.forEach(member => {
                       if (member.email && !this.memberList.includes(member.email)) {
                         this.memberList.push(member.email)

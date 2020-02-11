@@ -510,10 +510,6 @@ export default {
 </script>
 
 <style lang="stylus">
-hr.newColor {
-  border: 1px solid #C00000;
-}
-
 ul {
   list-style-type: none;
   position: relative;

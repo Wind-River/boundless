@@ -18,12 +18,71 @@ Methods:
 
 <template>
   <div :hidden="loading">
+    <!-- -------------------- Progress Bar -------------------- -->
+    <div v-if="data.progressBar">
+      <div
+        v-if="type === 'projects'"
+        class="text-h4 q-mb-md"
+      >
+        Project Progress Bar
+        <q-separator color="secondary" />
+      </div>
+
+      <div class="row">
+        <div class="col-2 q-px-lg">
+          Tags:
+        </div>
+
+        <div class="col-2">
+          <q-btn
+            dense round
+            color="accent" size="md" icon="add" style="margin: 0;"
+            @click="addProgressTag"
+          />
+        </div>
+
+        <div class="col">
+          <q-chip
+            v-for="(arrVal, arrInd) in data.progressBar.tags" :key="arrInd"
+            color="secondary" text-color="white"
+            :label='arrVal'
+            removable
+            @remove="deleteProgressTag(arrInd)"
+          />
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col-4 q-px-lg q-my-md">
+          Half-step:
+        </div>
+
+        <div class="col" align="left">
+          <q-item tag="label" v-ripple style="border-radius: 3px;">
+            <!-- <q-item-section>
+            </q-item-section> -->
+            <q-item-section avatar>
+              <q-toggle
+                color="green"
+                v-model="data.progressBar.half"
+                @input="forceUpdate()"
+              />
+            </q-item-section>
+          </q-item>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- -------------------- Keywords -------------------- -->
     <div>
+
       <div
         v-if="type === 'challenges'"
         class="text-h4 q-mb-md"
       >
-        Challenges Keywords
+        Challenge Keywords
         <q-separator color="secondary" />
       </div>
 
@@ -31,7 +90,7 @@ Methods:
         v-else-if="type === 'projects'"
         class="text-h4 q-mb-md"
       >
-        Projects Keywords
+        Project Keywords
         <q-separator color="secondary" />
       </div>
 
@@ -50,13 +109,14 @@ Methods:
         This is the order in which the keywords appear in banner.
       </p>
     </div>
+
     <!-- -------------------- Listing Table -------------------- -->
     <div>
       <div
         v-if="type === 'challenges'"
         class="text-h4 q-mb-md"
       >
-        Challenges Listing Page
+        Challenge Listing Page
         <q-separator color="secondary" />
       </div>
 
@@ -64,7 +124,7 @@ Methods:
         v-else-if="type === 'projects'"
         class="text-h4 q-mb-md"
       >
-        Projects Listing Page
+        Project Listing Page
         <q-separator color="secondary" />
       </div>
 
@@ -396,6 +456,16 @@ export default {
       // data fetching goes here
       this.data = this.deepObjCopy(this.configs)
 
+      if (
+        this.type === 'projects' &&
+        typeof this.data.progressBar === 'undefined'
+      ) {
+        this.data.progressBar = {
+          tags: ['Idea', 'PoC', 'Value'],
+          half: true
+        }
+      }
+
       for (let key in this.keywords) {
         this.keywordOptions.push({
           label: key,
@@ -447,6 +517,43 @@ export default {
     }
   },
   methods: {
+    addProgressTag: function () {
+      this.$q.dialog({
+        title: 'Add new tag for progress bar',
+        prompt: {
+          model: '',
+          type: 'text' // optional
+        },
+        cancel: true,
+        persistent: true
+      }).onOk(data => {
+        if (data) {
+          if (!(data in this.data.progressBar.tags)) {
+            this.data.progressBar.tags.push(data)
+
+            this.$forceUpdate()
+          }
+        } else {
+        }
+      }).onCancel(() => {
+      }).onDismiss(() => {
+      })
+    },
+    deleteProgressTag: function (index) {
+      if (this.data.progressBar.tags.length > 1) {
+        this.data.progressBar.tags.splice(index, 1)
+        this.$forceUpdate()
+      } else {
+        this.$q.notify({
+          message: 'Must have at least 1 tag for the progress bar!',
+          icon: 'warning',
+          color: 'negative'
+        })
+      }
+    },
+    forceUpdate: function () {
+      this.$forceUpdate()
+    },
     checkMax: function (entry) {
       if (entry.length > 5) {
         this.$q.notify({

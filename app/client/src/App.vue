@@ -78,4 +78,32 @@ tr:nth-child(even) {
     top 0
     opacity 1
     z-index 1
+
+/* Colors from: https://www.december.com/html/spec/color2.html */
+.full-color {
+  background-image: linear-gradient(#00EE00, #9AFF9A, #00EE00)
+}
+
+/* Colors from: https://www.december.com/html/spec/color1.html */
+.half-full-color {
+  background-image: linear-gradient(#FFE600, #FFF68F, #FFE600)
+}
+
+/* Colors from: https://www.december.com/html/spec/color0.html */
+.null-color {
+  background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
+}
+
+.progress-bar {
+  min-width: 150px;
+  max-width: 35%
+  min-height: 50px;
+  height: 30px;
+  line-height: 45px;
+  text-align: center;
+  font-family: Verdana, Arial, sans-serif;
+  font-weight: 500;
+  border: solid 1.5px;
+  border-color: gray;
+}
 </style>

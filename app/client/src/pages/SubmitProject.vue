@@ -834,7 +834,7 @@ export default {
           this.emailToUuidMap[newUser.email] = key
           this.emailToNameMap[newUser.email] = newUser.name
 
-          this.db.collection('users').doc(member.email).set({
+          this.db.collection('users').doc(key).set({
             socialNetwork: {},
             projects: [],
             achievements: {}

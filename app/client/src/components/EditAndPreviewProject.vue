@@ -205,94 +205,11 @@ Methods:
                             Progress
                           </div>
 
-                          <div class="q-mt-sm progress-bar">
-
-                            <div class="row" v-if="curData.progress === -1">
-                              <div class="col null-color">
-                                Idea
-                              </div>
-                              <div class="col null-color">
-                                PoC
-                              </div>
-                              <div class="col null-color">
-                                Value
-                              </div>
-                            </div>
-
-                            <div class="row" v-if="curData.progress === 0">
-                              <div class="col half-full-color">
-                                Idea
-                              </div>
-                              <div class="col null-color">
-                                PoC
-                              </div>
-                              <div class="col null-color">
-                                Value
-                              </div>
-                            </div>
-
-                            <div class="row" v-if="curData.progress === 1">
-                              <div class="col full-color">
-                                Idea
-                              </div>
-                              <div class="col null-color">
-                                PoC
-                              </div>
-                              <div class="col null-color">
-                                Value
-                              </div>
-                            </div>
-
-                            <div class="row" v-if="curData.progress === 2">
-                              <div class="col full-color">
-                                Idea
-                              </div>
-                              <div class="col half-full-color">
-                                PoC
-                              </div>
-                              <div class="col null-color">
-                                Value
-                              </div>
-                            </div>
-
-                            <div class="row" v-if="curData.progress === 3">
-                              <div class="col full-color">
-                                Idea
-                              </div>
-                              <div class="col full-color">
-                                PoC
-                              </div>
-                              <div class="col null-color">
-                                Value
-                              </div>
-                            </div>
-
-                            <div class="row" v-if="curData.progress === 4">
-                              <div class="col full-color">
-                                Idea
-                              </div>
-                              <div class="col full-color">
-                                PoC
-                              </div>
-                              <div class="col half-full-color">
-                                Value
-                              </div>
-                            </div>
-
-                            <div class="row" v-if="curData.progress === 5">
-                              <div class="col full-color">
-                                Idea
-                              </div>
-                              <div class="col full-color">
-                                PoC
-                              </div>
-                              <div class="col full-color">
-                                Value
-                              </div>
-                            </div>
-
-                          </div>
-
+                          <ProgressBar
+                            class="q-mt-sm progress-bar"
+                            :progressBar="progressBar"
+                            :progress="curData.progress"
+                          />
                         </div>
 
                         <q-separator inset />
@@ -572,91 +489,11 @@ Methods:
                               <!-- Col filler -->
                             </div>
 
-                            <div class="col progress-bar">
-                              <div class="row" v-if="curData.progress === -1">
-                                <div class="col null-color">
-                                  Idea
-                                </div>
-                                <div class="col null-color">
-                                  PoC
-                                </div>
-                                <div class="col null-color">
-                                  Value
-                                </div>
-                              </div>
-
-                              <div class="row" v-if="curData.progress === 0">
-                                <div class="col half-full-color">
-                                  Idea
-                                </div>
-                                <div class="col null-color">
-                                  PoC
-                                </div>
-                                <div class="col null-color">
-                                  Value
-                                </div>
-                              </div>
-
-                              <div class="row" v-if="curData.progress === 1">
-                                <div class="col full-color">
-                                  Idea
-                                </div>
-                                <div class="col null-color">
-                                  PoC
-                                </div>
-                                <div class="col null-color">
-                                  Value
-                                </div>
-                              </div>
-
-                              <div class="row" v-if="curData.progress === 2">
-                                <div class="col full-color">
-                                  Idea
-                                </div>
-                                <div class="col half-full-color">
-                                  PoC
-                                </div>
-                                <div class="col null-color">
-                                  Value
-                                </div>
-                              </div>
-
-                              <div class="row" v-if="curData.progress === 3">
-                                <div class="col full-color">
-                                  Idea
-                                </div>
-                                <div class="col full-color">
-                                  PoC
-                                </div>
-                                <div class="col null-color">
-                                  Value
-                                </div>
-                              </div>
-
-                              <div class="row" v-if="curData.progress === 4">
-                                <div class="col full-color">
-                                  Idea
-                                </div>
-                                <div class="col full-color">
-                                  PoC
-                                </div>
-                                <div class="col half-full-color">
-                                  Value
-                                </div>
-                              </div>
-
-                              <div class="row" v-if="curData.progress === 5">
-                                <div class="col full-color">
-                                  Idea
-                                </div>
-                                <div class="col full-color">
-                                  PoC
-                                </div>
-                                <div class="col full-color">
-                                  Value
-                                </div>
-                              </div>
-                            </div>
+                            <ProgressBar
+                              class="col progress-bar"
+                              :progressBar="progressBar"
+                              :progress="curData.progress"
+                            />
 
                             <div class="col q-ml-sm" align="left">
                               <div v-if="mode === 'edit'">
@@ -1811,10 +1648,12 @@ import productionDb, { productionStorage } from '../firebase/init_production'
 import testingDb, { testingStorage } from '../firebase/init_testing'
 
 import uploadGUI from '../components/Upload'
+import ProgressBar from '../components/ProgressBar'
 
 export default {
   components: {
-    uploadGUI
+    uploadGUI,
+    ProgressBar
   },
   props: {
     projectId: String,
@@ -1825,10 +1664,18 @@ export default {
       // fetech data from database
       this.loadInformation()
       this.loadConfig()
+      this.loadProgressBarConf()
     })
+  },
+  beforeUpdate () {
+    this.loadProgressBarConf()
   },
   data () {
     return {
+      progressBar: {
+        tags: ['Idea', 'PoC', 'Value'],
+        half: true
+      },
       // Reference for the database
       db: null,
       storage: null,
@@ -1881,6 +1728,15 @@ export default {
     }
   },
   methods: {
+    loadProgressBarConf: function () {
+      if (this.$q.sessionStorage.has('boundless_config')) {
+        let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+        if (cachedConfig.projectsConfig.progressBar) {
+          this.progressBar = cachedConfig.projectsConfig.progressBar
+        }
+      }
+    },
     updateAttachments: function (data) {
       /*
       // TODO: function description
@@ -2605,7 +2461,7 @@ export default {
       // TODO: function description
       */
 
-      if (this.curData.progress === 5) {
+      if (this.curData.progress === 2 * this.progressBar.tags.length - 1) {
         this.curData.progress = 0
       } else {
         this.curData.progress += 1
@@ -2618,7 +2474,7 @@ export default {
       */
 
       if (this.curData.progress === 0) {
-        this.curData.progress = 5
+        this.curData.progress = 2 * this.progressBar.tags.length - 1
       } else {
         this.curData.progress -= 1
       }
@@ -2781,16 +2637,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-hr.newLine {
-  border: 1px solid #ce2029;
-}
-
-hr.newLine2 {
-  display: block; height: 1px;
-  border: 1; border-top: 1px solid #ccc;
-  margin: 0em; padding: 0em;
-}
-
 br.small {
   display: block; /* makes it have a width */
   content: "";    /* clears default height */
@@ -2799,7 +2645,6 @@ br.small {
 
 h4 {
   font-size: 2.0em;
-  /* background-color: #ccc; width: 80%; */
   margin: 10px;
   padding: 10px;
 }
@@ -2808,34 +2653,6 @@ h4 {
   border: 3px solid #ddd;
   border-radius: 4px;
   padding: 5px
-}
-
-.progress-bar {
-  min-width: 150px;
-  max-width: 35%
-  min-height: 50px;
-  height: 30px;
-  line-height: 45px;
-  text-align: center;
-  font-family: Verdana, Arial, sans-serif;
-  font-weight: 500;
-  border: solid 1.5px;
-  border-color: gray;
-}
-
-/* Colors from: https://www.december.com/html/spec/color2.html */
-.full-color {
-  background-image: linear-gradient(#00EE00, #9AFF9A, #00EE00)
-}
-
-/* Colors from: https://www.december.com/html/spec/color1.html */
-.half-full-color {
-  background-image: linear-gradient(#FFE600, #FFF68F, #FFE600)
-}
-
-/* Colors from: https://www.december.com/html/spec/color0.html */
-.null-color {
-  background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
 }
 
 ul {

@@ -151,8 +151,11 @@ export default {
       this.user['uuid'] = key
       this.user['title'] = ''
 
-      this.webpage.projects = []
-      this.webpage.achievements = {}
+      this.webpage = {
+        socialNetwork: {},
+        projects: [],
+        achievements: {}
+      }
 
       firestore.set(this.webpage)
 

@@ -2822,7 +2822,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-
 br.small {
   display: block; /* makes it have a width */
   content: "";    /* clears default height */

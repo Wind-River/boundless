@@ -182,100 +182,17 @@ Methods:
 
                     <q-separator inset />
 
-                    <!-- -------------------- Progress Bar -------------------- -->
-                    <div class="q-pa-md text-h7" align="center">
+                    <!-- ------------------- Progress Bar ------------------ -->
+                    <div class="q-pa-md" align="center">
                       <div class="text-h5">
                         Progress
                       </div>
 
-                      <div class="q-mt-sm progress-bar">
-
-                        <div class="row" v-if="data.progress === -1">
-                          <div class="col null-color">
-                            Idea
-                          </div>
-                          <div class="col null-color">
-                            PoC
-                          </div>
-                          <div class="col null-color">
-                            Value
-                          </div>
-                        </div>
-
-                        <div class="row" v-if="data.progress === 0">
-                          <div class="col half-full-color">
-                            Idea
-                          </div>
-                          <div class="col null-color">
-                            PoC
-                          </div>
-                          <div class="col null-color">
-                            Value
-                          </div>
-                        </div>
-
-                        <div class="row" v-if="data.progress === 1">
-                          <div class="col full-color">
-                            Idea
-                          </div>
-                          <div class="col null-color">
-                            PoC
-                          </div>
-                          <div class="col null-color">
-                            Value
-                          </div>
-                        </div>
-
-                        <div class="row" v-if="data.progress === 2">
-                          <div class="col full-color">
-                            Idea
-                          </div>
-                          <div class="col half-full-color">
-                            PoC
-                          </div>
-                          <div class="col null-color">
-                            Value
-                          </div>
-                        </div>
-
-                        <div class="row" v-if="data.progress === 3">
-                          <div class="col full-color">
-                            Idea
-                          </div>
-                          <div class="col full-color">
-                            PoC
-                          </div>
-                          <div class="col null-color">
-                            Value
-                          </div>
-                        </div>
-
-                        <div class="row" v-if="data.progress === 4">
-                          <div class="col full-color">
-                            Idea
-                          </div>
-                          <div class="col full-color">
-                            PoC
-                          </div>
-                          <div class="col half-full-color">
-                            Value
-                          </div>
-                        </div>
-
-                        <div class="row" v-if="data.progress === 5">
-                          <div class="col full-color">
-                            Idea
-                          </div>
-                          <div class="col full-color">
-                            PoC
-                          </div>
-                          <div class="col full-color">
-                            Value
-                          </div>
-                        </div>
-
-                      </div>
-
+                      <ProgressBar
+                        class="q-mt-sm progress-bar"
+                        :progressBar="progressBar"
+                        :progress="data.progress"
+                      />
                     </div>
 
                     <q-separator inset />
@@ -529,13 +446,15 @@ import productionDb, { productionStorage } from '../firebase/init_production'
 import testingDb, { testingStorage } from '../firebase/init_testing'
 
 import Banner from '../components/Banners/Banner'
+import ProgressBar from '../components/ProgressBar'
 
 import NotFound from './Error404'
 
 export default {
   components: {
     NotFound,
-    Banner
+    Banner,
+    ProgressBar
   },
   created () {
     this.setPageTab()
@@ -543,10 +462,12 @@ export default {
     // fetch data from database
     this.loadFireRefs().then(res => {
       this.loadInformation()
+      this.loadProgressBarConf()
     })
   },
   beforeUpdate () {
     this.setPageTab()
+    this.loadProgressBarConf()
 
     this.$q.sessionStorage.set('boundless_page_info', {
       key: this.projectId,
@@ -560,6 +481,10 @@ export default {
   },
   data () {
     return {
+      progressBar: {
+        tags: ['Idea', 'PoC', 'Value'],
+        half: true
+      },
       db: null,
       storage: null,
       bannerObj: {
@@ -585,6 +510,15 @@ export default {
   methods: {
     test: function () {
       // test code goes here
+    },
+    loadProgressBarConf: function () {
+      if (this.$q.sessionStorage.has('boundless_config')) {
+        let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+        if (cachedConfig.projectsConfig.progressBar) {
+          this.progressBar = cachedConfig.projectsConfig.progressBar
+        }
+      }
     },
     setPageTab: function () {
       /*
@@ -804,11 +738,11 @@ export default {
                     for (let userUid in doc.data()) {
                       if (doc.data()[userUid].email === member.uuid) {
                         tmpMembers.push({
-                          ...doc.data()[member.uuid],
+                          ...doc.data()[userUid],
                           role: member.role
                         })
                         uuidList.push({
-                          uuid: member.uuid,
+                          uuid: userUid,
                           role: member.role
                         })
 
@@ -986,25 +920,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-hr.newLine {
-  border: 1px solid #ce2029;
-}
-
-hr.newLine2 {
-  display: block; height: 1px;
-  border: 1; border-top: 1px solid #ccc;
-  margin: 0em; padding: 0em;
-}
-
-br.small {
-  display: block; /* makes it have a width */
-  content: "";    /* clears default height */
-  margin-top: 0em;  /* change this to whatever height you want it */
-}
-
 h4 {
   font-size: 2.0em;
-  /* background-color: #ccc; width: 80%; */
   margin: 10px;
   padding: 10px;
 }
@@ -1013,34 +930,6 @@ h4 {
   border: 3px solid #ddd;
   border-radius: 4px;
   padding: 5px
-}
-
-.progress-bar {
-  min-width: 150px;
-  max-width: 35%
-  min-height: 50px;
-  height: 30px;
-  line-height: 45px;
-  text-align: center;
-  font-family: Verdana, Arial, sans-serif;
-  font-weight: 500;
-  border: solid 1.5px;
-  border-color: gray;
-}
-
-/* Colors from: https://www.december.com/html/spec/color2.html */
-.full-color {
-  background-image: linear-gradient(#00EE00, #9AFF9A, #00EE00)
-}
-
-/* Colors from: https://www.december.com/html/spec/color1.html */
-.half-full-color {
-  background-image: linear-gradient(#FFE600, #FFF68F, #FFE600)
-}
-
-/* Colors from: https://www.december.com/html/spec/color0.html */
-.null-color {
-  background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
 }
 
 ul {
