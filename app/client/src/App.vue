@@ -29,6 +29,12 @@ export default {
 </script>
 
 <style lang="stylus">
+br.small {
+  display: block; /* makes it have a width */
+  content: "";    /* clears default height */
+  margin-top: 0em;  /* change this to whatever height you want it */
+}
+
 // Scrollbar width for horizontal and vertical scrollbars
 div::-webkit-scrollbar {
   width: 6px;

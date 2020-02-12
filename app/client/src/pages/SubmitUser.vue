@@ -72,11 +72,13 @@ Methods:
           </template>
         </q-input>
 
-        <div class="row q-mt-sm">
+        <!-- -------------------- MIGHT NEED IN FUTURE -------------------- -->
+        <!-- <div class="row q-mt-sm">
           <div class="col-1">Optional</div>
           <hr class="col">
         </div>
-        <!-- <q-input
+
+        <q-input
           filled
           class="q-mt-sm"
           v-model="webpage.socialNetwork.github"
@@ -87,9 +89,9 @@ Methods:
           <template v-slot:prepend>
             <q-icon name="fab fa-github" />
           </template>
-        </q-input> -->
+        </q-input>
 
-        <!-- <q-input
+        <q-input
           filled
           class="q-mt-sm"
           v-model="webpage.socialNetwork.jive"
@@ -103,6 +105,7 @@ Methods:
         </q-input> -->
 
         <hr>
+
         <q-btn
           no-caps
           label="Submit User" type="submit" color="secondary"
@@ -120,11 +123,10 @@ import productionDb from '../firebase/init_production'
 import testingDb from '../firebase/init_testing'
 
 export default {
-  name: 'User_Submit',
   created () {
-    this.getDb().then(res => {
-      this.getUserList()
-      this.getConfig()
+    this.loadFireRefs().then(res => {
+      this.loadUserList()
+      this.loadAllowedDomain()
     })
   },
   data () {
@@ -138,18 +140,26 @@ export default {
     }
   },
   methods: {
-    onSubmit () {
+    onSubmit: function () {
+      /*
+      // submits the new user to the user database
+      // instantiate a webpage for the new user
+      // return: Promise<Boolean>
+      */
+
       this.loading = true
 
       let timeOfSubmit = new Date(Date.now()).toISOString()
       let firestore = this.db.collection('users').doc()
       let key = firestore.id
 
-      this.user['timestamp'] = timeOfSubmit
-      this.user['created'] = timeOfSubmit
-      this.user['imgURL'] = ''
-      this.user['uuid'] = key
-      this.user['title'] = ''
+      this.user = {
+        timestamp: timeOfSubmit,
+        created: timeOfSubmit,
+        uuid: key,
+        imgURL: '',
+        title: ''
+      }
 
       this.webpage = {
         socialNetwork: {},
@@ -157,23 +167,27 @@ export default {
         achievements: {}
       }
 
-      firestore.set(this.webpage)
-
-      this.db.collection('users').doc('ToC').set({
-        [key]: this.user
-      }, { merge: true })
-
-      this.onReset()
+      return firestore.set(this.webpage).then(() => {
+        return this.db.collection('users').doc('ToC').set({
+          [key]: this.user
+        }, { merge: true })
+      }).then(() => {
+        this.onReset()
+        return true
+      }).catch(err => {
+        if (err) {
+          return false
+        }
+      })
     },
-    onReset () {
+    onReset: function () {
+      /*
+      // resets the input values
+      // notify the submission was a sucess
+      */
+
       this.user = {}
       this.webpage = {}
-
-      for (let ref in this.$refs) {
-        this.$refs[ref].resetValidation()
-      }
-
-      this.loading = false
 
       this.$q.notify({
         icon: 'done',
@@ -182,9 +196,15 @@ export default {
         closeBtn: 'Okay!'
       })
 
+      this.loading = false
       this.$emit('added')
     },
     checkEmail: function (entry) {
+      /*
+      // TODO: function description
+      // params:
+      // // @entry:
+      */
       // TODO
       if (!this.emailList.includes(entry) && entry.includes('@')) {
         this.emailDomainCheck(entry)
@@ -193,6 +213,12 @@ export default {
       }
     },
     emailDomainCheck: function (email) {
+      /*
+      // TODO: function description
+      // params:
+      // // @email:
+      */
+
       let validEmail = false
       email = email.toLowerCase()
 
@@ -219,7 +245,14 @@ export default {
         this.user.email = email
       }
     },
-    getDb: function () {
+    loadFireRefs: function () {
+      /*
+      // load firebase database reference
+      // load firebase storage reference (if applicable)
+      // load firebase cloud functions reference (if applicable)
+      // return: Promise<String>
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
         return new Promise((resolve, reject) => {
@@ -253,36 +286,48 @@ export default {
         })
       }
     },
-    getConfig: function () {
-      this.db.collection('config').doc('project').get()
+    loadAllowedDomain: function () {
+      /*
+      // TODO: function description
+      // return: Promise<Boolean>
+      */
+      // TODO: no need to load from db
+      return this.db.collection('config').doc('project').get()
         .then(doc => {
           if (doc.exists) {
             this.allowedDomain = doc.data()['allowedDomain']
+          } else {
+            throw new Error('config/project is not available!')
           }
+          return true
         })
         .catch(function (error) {
           if (error) {
-            /* console.log(error) */
+            return false
           }
         })
     },
-    getUserList: function () {
-      this.db.collection('users').doc('ToC').get()
+    loadUserList: function () {
+      /*
+      // TODO: function description
+      // return: Promise<Boolean>
+      */
+
+      return this.db.collection('users').doc('ToC').get()
         .then(doc => {
           if (doc.exists) {
             let tocUserData = doc.data()
+
             for (let user in tocUserData) {
               this.emailList.push(tocUserData[user].email)
             }
           } else {
-            /* console.log('No -ToC- document!') */
+            throw new Error('users/ToC is not available!')
           }
+
+          return true
         })
-        .catch(function (error) {
-          if (error) {
-            /* console.log(error) */
-          }
-        })
+        .catch(() => false)
     }
   }
 }
@@ -290,26 +335,4 @@ export default {
 
 <style lang="stylus">
 
-hr.newLine {
-  border: 1px solid #ce2029;
-}
-
-hr.newLine2 {
-  display: block; height: 1px;
-  border: 1; border-top: 1px solid #ccc;
-  margin: 0em; padding: 0em;
-}
-
-br.small {
-  display: block; /* makes it have a width */
-  content: "";    /* clears default height */
-  margin-top: 0em;  /* change this to whatever height you want it */
-}
-
-h4 {
-  font-size: 2.0em;
-  /* background-color: #ccc; width: 80%; */
-  margin: 10px;
-  padding: 10px;
-}
 </style>

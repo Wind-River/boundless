@@ -168,17 +168,10 @@ export default {
         this.$q.sessionStorage.getItem('boundless_timeout') < Date.now()
       ) {
         this.loadConfig()
-      }
-      // TODO: chain with else
-      if (this.$q.sessionStorage.has('boundless_config')) {
-        let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
-        this.layoutConfig = layoutConfig
-
-        if (typeof cachedConfig.enabledChallenges === 'boolean') {
-          this.layoutConfig.challenges = cachedConfig.enabledChallenges
-        }
       } else {
-        this.layoutConfig = layoutConfig
+        let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+        this.loadChallengeFlag(cachedConfig)
       }
     })
   },
@@ -196,6 +189,13 @@ export default {
     }
   },
   methods: {
+    loadChallengeFlag: function (config) {
+      this.layoutConfig = layoutConfig
+
+      if (typeof config.enabledChallenges === 'boolean') {
+        this.layoutConfig.challenges = config.enabledChallenges
+      }
+    },
     loadFireRefs: function () {
       /*
       // load firebase database reference
@@ -319,16 +319,29 @@ export default {
               this.$q.sessionStorage.set(
                 'boundless_timeout', Date.now() + 5 * 60 * 1000
               )
+
+              this.loadChallengeFlag(tempData)
+
+              this.$forceUpdate()
             } else {
               this.$q.sessionStorage.set('boundless_config', doc.data())
               this.$q.sessionStorage.set(
                 'boundless_timeout', Date.now() + 5 * 60 * 1000
               )
+
+              this.loadChallengeFlag(doc.data())
+
+              this.$forceUpdate()
             }
+          } else {
+            throw new Error('Fresh db!')
           }
         })
         .catch(err => {
           if (err) {
+            this.layoutConfig = layoutConfig
+
+            this.$forceUpdate()
           }
         })
     },

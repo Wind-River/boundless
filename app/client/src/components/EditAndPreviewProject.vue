@@ -2057,11 +2057,12 @@ export default {
     advancedSettingSet: function () {
       /*
       // TODO: function description
-      // return:
+      // return: Promise<Boolean>
       */
 
       let alias = ''
       let oldAlias = this.curData.alias
+
       if (this.aliasVals.includes(this.curData.uuid)) {
         alias = this.aliasKeys[this.aliasVals.indexOf(this.curData.uuid)]
         this.curData.alias = alias
@@ -2083,19 +2084,25 @@ export default {
         alias: alias
       }
 
-      this.db.collection('projects').doc('ToC').set({
+      this.loading = true
+
+      return this.db.collection('projects').doc('ToC').set({
         [this.curData.uuid]: tmpTocContent,
         alias: tmpAliasMap
-      }, { merge: true })
+      }, { merge: true }).then(() => {
+        this.$q.notify({
+          icon: 'done',
+          color: 'positive',
+          message: 'Submitted sucessfully!',
+          closeBtn: 'Okay!'
+        })
 
-      this.$q.notify({
-        icon: 'done',
-        color: 'positive',
-        message: 'Submitted sucessfully!',
-        closeBtn: 'Okay!'
-      })
+        this.emitAdded()
 
-      this.emitAdded()
+        this.loading = false
+
+        return true
+      }).catch(() => false)
     },
     addToAliasKeys: function () {
       /*
