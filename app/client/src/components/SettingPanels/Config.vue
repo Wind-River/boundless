@@ -44,7 +44,7 @@ Methods:
         <div class="col">
           <q-chip
             v-for="(arrVal, arrInd) in data.progressBar.tags" :key="arrInd"
-            color="secondary" text-color="white"
+            color="primary" text-color="white"
             :label='arrVal'
             removable
             @remove="deleteProgressTag(arrInd)"
@@ -527,13 +527,32 @@ export default {
         cancel: true,
         persistent: true
       }).onOk(data => {
-        if (data) {
-          if (!(data in this.data.progressBar.tags)) {
-            this.data.progressBar.tags.push(data)
+        if (
+          data && data.length < 7 &&
+          !(data in this.data.progressBar.tags) &&
+          this.data.progressBar.tags.length < 4
+        ) {
+          this.data.progressBar.tags.push(data)
 
-            this.$forceUpdate()
-          }
+          this.$forceUpdate()
+        } else if (data.length > 6) {
+          this.$q.notify({
+            message: 'Tag must be at most 6 characters!',
+            icon: 'warning',
+            color: 'negative'
+          })
+        } else if (this.data.progressBar.tags.length >= 4) {
+          this.$q.notify({
+            message: 'Must have at most 4 tag for the progress bar!',
+            icon: 'warning',
+            color: 'negative'
+          })
         } else {
+          this.$q.notify({
+            message: 'Tag cannot be empty!',
+            icon: 'warning',
+            color: 'negative'
+          })
         }
       }).onCancel(() => {
       }).onDismiss(() => {

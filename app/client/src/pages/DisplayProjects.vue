@@ -220,7 +220,11 @@ Methods:
                 >
                   {{ props.row.description }}
                 </div>
-                <div class="col-2" :hidden="!(props.row.description.length > 40)">
+
+                <div
+                  :hidden="!(props.row.description.length > 40)"
+                  class="col-2"
+                >
                   <div
                     class="text-blue cursor-pointer"
                     @click="popDialog(props.row.description)"

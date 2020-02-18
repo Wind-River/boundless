@@ -190,7 +190,6 @@ import testingDb, { testingStorage } from '../firebase/init_testing'
 import sha256 from 'sha256'
 
 export default {
-  name: 'Firebase_Config',
   created () {
     this.getDb().then(res => {
       this.getInformation()
