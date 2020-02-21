@@ -29,6 +29,51 @@ export default {
 </script>
 
 <style lang="stylus">
+// https://tobiasahlin.com/blog/how-to-animate-box-shadow/
+.hoverable {
+  cursor: pointer;
+  // position: relative;
+  // display: inline-block;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  -webkit-transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.hoverable::after {
+  content: "";
+  border-radius: 5px;
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  -webkit-transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.hoverable:hover {
+  -webkit-transform: scale(1.0, 1.0);
+  transform: scale(1.0, 1.0);
+}
+
+.hoverable:hover::after {
+  opacity: 1;
+}
+// -----------------------------------------------------------------------------
+
+// Sets mouse hovering background color
+// .highlight:hover {
+//   background-color: rgba(236, 233, 233, 0.884);
+//   border-radius: 3px;
+//   cursor: pointer;
+// }
+
 br.small {
   display: block; /* makes it have a width */
   content: "";    /* clears default height */
@@ -53,6 +98,26 @@ div::-webkit-scrollbar-thumb {
   border-radius: 3px;
 }
 
+textarea {
+  cursor: auto;
+}
+
+textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+// Scrollbar track's color and width
+textarea::-webkit-scrollbar-track {
+  background: #ddd;
+  border-radius: 2px;
+}
+
+// Scrollbar color
+textarea::-webkit-scrollbar-thumb {
+  background: rgb(219, 122, 122);
+  border-radius: 3px;
+}
+
 // Coloring even child of the table
 tr:nth-child(even) {
   background-color: #3498db14;
@@ -63,13 +128,6 @@ tr:nth-child(even) {
   position: relative;
   top: 50%;
   transform: translateY(-50%);
-}
-
-// Sets mouse hovering background color
-.hoverable:hover {
-  background-color: rgba(236, 233, 233, 0.884);
-  border-radius: 3px;
-  cursor: pointer;
 }
 
 // From Quasar

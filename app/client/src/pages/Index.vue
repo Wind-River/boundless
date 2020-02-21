@@ -222,8 +222,12 @@ Methods:
       <!-- -------------------- Right QCard -------------------- -->
       <div class="col q-pa-sm">
         <div
-          class="q-pa-sm row bg-primary"
+          class="q-pa-sm row"
           style="height: 100%; border-radius: 3px; overflow: auto;"
+          :style="{
+            backgroundColor: aboutData ? aboutData.bgColor : 'black',
+            color: aboutData ? aboutData.txtColor : 'white'
+          }"
         >
 
           <!-- -------------------- Image -------------------- -->
@@ -244,50 +248,60 @@ Methods:
           </div>
 
           <!-- -------------------- Text -------------------- -->
-          <div class="col-9 q-pa-lg overviewCSS bg-primary">
-            <div v-if="layoutConfig.companyName" class="text-h4 text-white">
-              Innovation Tracking @ {{ layoutConfig.companyName }}
+          <div class="col-9">
+
+            <!-- ---------------- IF MARKDOWN FOUND ----------------- -->
+            <div v-if="aboutData && aboutData.data">
+              <q-markdown :src="aboutData.data" />
             </div>
-            <div v-else class="text-h4 text-white">
-              Innovation Tracking
-            </div>
 
-            <hr class="newColor">
-
-            <div
-              class="text-white"
-              style="
-                font-size: 16px;
-                font-family: Tahoma, Verdana, Segoe, sans-serif;
-              "
-            >
-
-              <p>
-                Employee driven innovations {{ layoutConfig.companyName ? `@ ${layoutConfig.companyName}` : '' }} are tracked here. An innovation may include (but not limited to):
-                <ul>
-                  <li> cool fun demo (e.g., Internet connected coffee maker);</li>
-                  <li> new tool or process that make other Wind River groups or customers more productive;</li>
-                  <li> new product feature;</li>
-                  <li> platform extensions (e.g., VxWorks, Linux, Titanium);</li>
-                  <li> customer or trade show demo;</li>
-                  <li> new open source solution; or</li>
-                  <li> explore a technology you have an interest in </li>
-                </ul>
-              </p><br>
+            <!-- ---------------- IF MARKDOWN NOT FOUND ----------------- -->
+            <div v-else class="q-pa-lg">
+              <div v-if="layoutConfig.companyName" class="text-h4 text-white">
+                Innovation Tracking @ {{ layoutConfig.companyName }}
+              </div>
+              <div v-else class="text-h4 text-white">
+                Innovation Tracking
+              </div>
 
               <hr class="newColor">
 
-              <q-icon name="visibility" style="font-size: 1.5em; bottom: 2px;" />&nbsp;<router-link class="text-info" :to="'/project/display'">View Projects</router-link> &nbsp;
+              <div
+                class="text-white"
+                style="
+                  font-size: 16px;
+                  font-family: Tahoma, Verdana, Segoe, sans-serif;
+                "
+              >
 
-              <q-icon name="add_box" style="font-size: 1.5em; bottom: 2px;" />&nbsp;<router-link class="text-info" :to="'/project/add'">Submit Project</router-link> &nbsp;
+                <p>
+                  Employee driven innovations {{ layoutConfig.companyName ? `@ ${layoutConfig.companyName}` : '' }} are tracked here. An innovation may include (but not limited to):
+                  <ul>
+                    <li> cool fun demo (e.g., Internet connected coffee maker);</li>
+                    <li> new tool or process that make other Wind River groups or customers more productive;</li>
+                    <li> new product feature;</li>
+                    <li> platform extensions (e.g., VxWorks, Linux, Titanium);</li>
+                    <li> customer or trade show demo;</li>
+                    <li> new open source solution; or</li>
+                    <li> explore a technology you have an interest in </li>
+                  </ul>
+                </p><br>
 
-              <span v-if="layoutConfig.homeName && layoutConfig.homeURL">
-                <q-icon name="home" style="font-size: 1.5em; bottom: 2px;" /> <a :href="layoutConfig.homeURL" class="text-info">Boundless Program {{ layoutConfig.homeName }} Home Page</a> &nbsp;
-              </span>
+                <hr class="newColor">
 
+                <q-icon name="visibility" style="font-size: 1.5em; bottom: 2px;" />&nbsp;<router-link class="text-info" :to="'/project/display'">View Projects</router-link> &nbsp;
+
+                <q-icon name="add_box" style="font-size: 1.5em; bottom: 2px;" />&nbsp;<router-link class="text-info" :to="'/project/add'">Submit Project</router-link> &nbsp;
+
+                <span v-if="layoutConfig.homeName && layoutConfig.homeURL">
+                  <q-icon name="home" style="font-size: 1.5em; bottom: 2px;" /> <a :href="layoutConfig.homeURL" class="text-info">Boundless Program {{ layoutConfig.homeName }} Home Page</a> &nbsp;
+                </span>
+
+              </div>
             </div>
+
           </div>
-          <!-- ---------------------------------------- -->
+
         </div>
       </div>
 
@@ -315,6 +329,8 @@ export default {
         let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
         this.layoutConfig = layoutConfig
 
+        this.aboutData = cachedConfig.generalConfig
+
         if (typeof cachedConfig.enabledChallenges === 'boolean') {
           this.layoutConfig.challenges = cachedConfig.enabledChallenges
         }
@@ -326,6 +342,7 @@ export default {
   data () {
     return {
       db: null, // <Object>: firebase credentials
+      aboutData: null, // <Object>
       layoutConfig: null, // <Object>
       loading: true, // <Boolean>
       projectList: [], // <Array<Object>>
@@ -530,10 +547,6 @@ ul li::before {
   border: 1px solid DimGray;
   border-radius: 4px;
   padding: 5px
-}
-
-.overviewCSS {
-  max-height: 450px;
 }
 
 .hairCutTarget {

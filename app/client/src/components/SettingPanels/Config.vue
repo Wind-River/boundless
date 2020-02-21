@@ -151,7 +151,9 @@ Methods:
                 />
               </q-item>
 
-              <q-item v-if="!data.listingTable.bannerImg.url" style="height: 27vh;">
+              <q-item
+                v-if="!data.listingTable.bannerImg.url" style="height: 27vh;"
+              >
                 <q-item-section
                   class="hoverable"
                   :style="
@@ -428,8 +430,14 @@ Methods:
     </div>
 
     <!-- -------------------- Button -------------------- -->
-    <div align="center">
-      <q-btn no-caps color="secondary" label="Submit" @click="onSubmit" />
+    <div class="q-px-lg q-pb-lg">
+      <div class="q-px-md q-pb-md q-gutter-sm" align="right">
+        <q-btn
+          no-caps
+          color="secondary" label="Submit"
+          @click="onSubmit"
+        />
+      </div>
     </div>
   </div>
 </template>

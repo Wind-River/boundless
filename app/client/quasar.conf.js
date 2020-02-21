@@ -76,7 +76,9 @@ module.exports = function (ctx) {
         'QSpinnerGears',
         'QTree',
         'QAvatar',
-        'QKnob'
+        'QKnob',
+        'QColor',
+        'QPopupProxy'
       ],
 
       directives: [

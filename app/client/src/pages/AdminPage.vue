@@ -95,25 +95,31 @@ Methods:
           <q-tab-panel name="systems">
             <q-splitter
               disable
-              class="shadow-2 console-content-tab"
+              class="shadow-1 console-content-tab"
               v-model="splitterModel"
             >
               <template v-slot:before>
                 <q-tabs
                   vertical inline-label stretch
                   class="text-primary"
+                  indicator-color="secondary"
+                  active-color="secondary"
                   v-model="optionTab"
                 >
                   <q-tab
                     no-caps
-                    name="general" icon="bubble_chart" label="General"
+                    class="q-ml-xs"
+                    name="general" label="General"
+                    style="justify-content: left;"
                   />
 
                   <q-separator />
 
                   <q-tab
                     no-caps
-                    name="database" icon="storage" label="Database"
+                    class="q-ml-xs"
+                    name="database" label="Database"
+                    style="justify-content: left;"
                   />
 
                   <q-separator />
@@ -121,25 +127,33 @@ Methods:
                   <q-tab
                     v-if="layoutConfig && layoutConfig.challenges"
                     no-caps
-                    name="challenges" icon="fas fa-mountain" label="Challenges"
+                    class="q-ml-xs"
+                    name="challenges" label="Challenges"
+                    style="justify-content: left;"
                   />
 
                   <q-separator />
 
                   <q-tab
                     no-caps
-                    name="projects" icon="list_alt" label="Projects"
+                    class="q-ml-xs"
+                    name="projects" label="Projects"
+                    style="justify-content: left;"
                   />
 
                   <q-separator />
 
                   <q-tab
                     no-caps
-                    name="users" icon="person" label="Users"
+                    class="q-ml-xs"
+                    name="users" label="Users"
+                    style="justify-content: left;"
                   />
 
                   <q-separator />
+
                 </q-tabs>
+
               </template>
 
               <template v-slot:after>
@@ -216,7 +230,9 @@ Methods:
                             v-model="configs.users.socialNetwork.use"
                           />
 
-                          <q-btn no-caps color="secondary" label="Submit" />
+                          <div class="q-py-md">
+                            <q-btn no-caps color="secondary" label="Submit" />
+                          </div>
                         </div>
                       </div>
                     </div>

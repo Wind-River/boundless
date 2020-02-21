@@ -18,14 +18,14 @@ Methods:
 
 <template>
   <div class="q-pa-sm full-width">
-    <q-card class="q-pa-md">
+    <div class="q-pa-md">
       <hr>
       <div
         v-for="(val, field, index) in data"
         :key="index"
       >
         <!-- TODO: REMOVE THIS ONCE EXTRAKEYWORDSDATA IS REMOVED -->
-        <div v-if="field !== 'extraKeywordsData'">
+        <div v-if="!['extraKeywordsData', 'generalConfig'].includes(field)">
           <div class="row">
 
             <div class="text-h6 col-2">{{ fieldParser(field) }}:</div>
@@ -165,21 +165,85 @@ Methods:
         </div>
       </div>
 
-      <div class="q-pa-md q-gutter-sm" align="center">
+      <div class="q-pa-md q-gutter-sm">
         <q-btn
           no-caps
+          class="float-right"
           color="secondary" label="Submit"
           @click="onSubmit"
         />
 
         <q-btn
           v-if="$q.sessionStorage.has('admin_token')"
+          no-caps outline
+          label="Edit About"
+          @click="aboutDialog.dialog = true"
+        />
+
+        <q-btn
+          v-if="$q.sessionStorage.has('admin_token')"
           flat no-caps
+          class="float-right"
           label="Change Admin Password"
           @click="invokeAdminPassChange"
         />
       </div>
-    </q-card>
+    </div>
+
+    <q-dialog
+      v-model="aboutDialog.dialog"
+      persistent
+      :maximized="aboutDialog.maximizedToggle"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <q-card>
+        <q-bar>
+          <q-space />
+
+          <q-btn
+            :disable="!aboutDialog.maximizedToggle"
+            dense flat
+            icon="minimize"
+            @click="aboutDialog.maximizedToggle = false"
+          >
+            <q-tooltip
+              v-if="aboutDialog.maximizedToggle"
+              content-class="bg-white text-primary"
+            >
+              Minimize
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
+            :disable="aboutDialog.maximizedToggle"
+            dense flat
+            icon="crop_square"
+            @click="aboutDialog.maximizedToggle = true"
+          >
+            <q-tooltip
+              v-if="!aboutDialog.maximizedToggle"
+              content-class="bg-white text-primary"
+            >
+              Maximize
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+          </q-btn>
+
+        </q-bar>
+
+        <q-card-section>
+          <div class="text-h6">Editing About</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <EditableMarkdown :db="db" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -189,7 +253,12 @@ import testingDb, { testingStorage } from '../firebase/init_testing'
 
 import sha256 from 'sha256'
 
+import EditableMarkdown from '../components/Markdown'
+
 export default {
+  components: {
+    EditableMarkdown
+  },
   created () {
     this.getDb().then(res => {
       this.getInformation()
@@ -204,7 +273,11 @@ export default {
       db: null,
       storage: null,
       fileDeleteQueue: [],
-      data: {}
+      data: {},
+      aboutDialog: {
+        dialog: false,
+        maximizedToggle: true
+      }
     }
   },
   methods: {
