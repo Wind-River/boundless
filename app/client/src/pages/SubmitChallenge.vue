@@ -41,9 +41,8 @@ Methods:
         style="max-width: 80%;"
       >
 
-      If you have a problem or challenge you would like others to consider solving  you can post it here.
-      <br>
-      <br>
+        If you have a problem or challenge you would like others to consider solving  you can post it here.
+        <br><br>
 
         <hr class="newLine2">
 

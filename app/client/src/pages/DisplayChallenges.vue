@@ -32,6 +32,13 @@ Methods:
     <div v-else>
       <Banner :bannerObj="bannerObj" />
 
+      <div
+        align="center" class="text-caption text-italic"
+        style="font-size: 18px;"
+      >
+        List of Challenges for Others to Consider Solving
+      </div>
+
       <!-- --------------- By The Numbers on Project Display --------------- -->
       <div class="q-pa-sm q-mb-sm">
         <div class="row" align="center">

@@ -25,27 +25,28 @@ Methods:
         :key="index"
       >
         <!-- TODO: REMOVE THIS ONCE EXTRAKEYWORDSDATA IS REMOVED -->
-        <div v-if="!['extraKeywordsData', 'generalConfig'].includes(field)">
+        <div
+          v-if="!['extraKeywordsData', 'generalConfig', 'enabledChallenges']
+            .includes(field)
+          "
+        >
           <div class="row">
 
             <div class="text-h6 col-2">{{ fieldParser(field) }}:</div>
 
-            <div
-              class="col-2 q-gutter-sm"
-              align="left"
-            >
+            <div class="col-2 q-pl-xl q-ml-xs" >
               <div v-if="field === 'keywords'">
                 <q-btn
                   dense round
-                  color="accent" size="md" icon="add" style="margin: 0;"
+                  color="accent" size="md" icon="add"
                   @click="addKeywords"
                 />
               </div>
 
-              <div v-else-if="field === 'customChips'">
+              <div v-else-if="field === 'customChips'" class="q-pt-md">
                 <q-btn
                   dense round
-                  color="accent" size="md" icon="add" style="margin: 0;"
+                  color="accent" size="md" icon="add"
                   @click="addCustomChips"
                 />
               </div>
@@ -109,7 +110,9 @@ Methods:
                     <img
                       class="cursor-pointer"
                       :ref="`img${key}`"
-                      :src="data.extraKeywordsData[key] || '../statics/images/other-icon.png'"
+                      :src="data.extraKeywordsData[key] ||
+                        '../statics/images/other-icon.png'
+                      "
                       style="height: 40px; max-width: 45px"
                       @click="invokeFilePicker(`input${key}`)"
                     >
@@ -131,23 +134,6 @@ Methods:
 
             </div>
 
-            <div
-              v-else-if="field === 'enabledChallenges'"
-              class="col"
-            >
-              <q-item tag="label" v-ripple style="border-radius: 3px;">
-                <!-- <q-item-section>
-                </q-item-section> -->
-                <q-item-section avatar>
-                  <q-toggle
-                    color="green"
-                    v-model="data.enabledChallenges"
-                    @input="invokeChallengesEnabler"
-                  />
-                </q-item-section>
-              </q-item>
-            </div>
-
             <div v-else class="cursor-pointer col q-mt-sm" >
               <b>{{ val }}</b>
               <q-popup-edit
@@ -160,14 +146,37 @@ Methods:
                 />
               </q-popup-edit>
             </div>
-          </div>
-          <hr>
+          </div><hr>
+
         </div>
+
+        <div v-else-if="field === 'enabledChallenges'">
+          <div class="row">
+
+            <div class="text-h6 col-2">{{ fieldParser(field) }}:</div>
+
+            <div class="col q-pl-lg" >
+              <q-item tag="label" v-ripple style="border-radius: 3px;">
+                <!-- <q-item-section>
+                </q-item-section> -->
+                <q-item-section avatar>
+                  <q-toggle
+                    color="green"
+                    v-model="data.enabledChallenges"
+                    @input="invokeChallengesEnabler"
+                  />
+                </q-item-section>
+              </q-item>
+            </div>
+          </div><hr>
+
+        </div>
+
       </div>
 
       <div class="q-pa-md q-gutter-sm">
         <q-btn
-          no-caps
+          :disabled="!updateFlag" no-caps
           class="float-right"
           color="secondary" label="Submit"
           @click="onSubmit"
@@ -176,14 +185,13 @@ Methods:
         <q-btn
           v-if="$q.sessionStorage.has('admin_token')"
           no-caps outline
-          label="Edit About"
+          label="Edit About Page"
           @click="aboutDialog.dialog = true"
         />
 
         <q-btn
           v-if="$q.sessionStorage.has('admin_token')"
           flat no-caps
-          class="float-right"
           label="Change Admin Password"
           @click="invokeAdminPassChange"
         />
@@ -236,7 +244,7 @@ Methods:
         </q-bar>
 
         <q-card-section>
-          <div class="text-h6">Editing About</div>
+          <div class="text-h6">Editing About Page</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -277,7 +285,8 @@ export default {
       aboutDialog: {
         dialog: false,
         maximizedToggle: true
-      }
+      },
+      updateFlag: false
     }
   },
   methods: {

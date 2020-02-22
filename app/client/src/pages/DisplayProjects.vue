@@ -23,9 +23,14 @@ Methods:
       <q-spinner color="primary" size="8em" />
     </div>
     <div v-else>
-      <Banner
-        :bannerObj="bannerObj"
-      />
+      <Banner :bannerObj="bannerObj" />
+
+      <div
+        align="center" class="text-caption text-italic"
+        style="font-size: 18px;"
+      >
+        List of Employee Proposed Projects, Ideas, and Explorations
+      </div>
 
       <!-- --------------- By The Numbers on Project Display --------------- -->
       <div class="q-pa-sm q-mb-sm">
@@ -342,14 +347,7 @@ export default {
       keywordsInUse: [],
       keywordsCounter: {},
       keywordsValToKeyMap: {},
-      keywordsImage: {
-        vxworks: '../statics/images/VxWorksLogoB-n-W.png',
-        linux: '../statics/images/Linux-icon.png',
-        simics: '../statics/images/simics-icon.png',
-        helix: '../statics/images/other-icon.png',
-        titanium: '../statics/images/TiS-icon.png',
-        complier: '../statics/images/other-icon.png'
-      },
+      keywordsImage: {},
       popkeywords: [],
       //
       todayDate: '',
@@ -601,7 +599,7 @@ export default {
               for (let prop in data.extraKeywordsData) {
                 key = prop.toLowerCase()
                 this.keywordsImage[key] = data.extraKeywordsData[prop] ||
-                  this.keywordsImage[key]
+                  '../statics/images/other-icon.png'
               }
             }
 

@@ -35,7 +35,10 @@ Methods:
         @submit="onSubmit"
         class="q-pd-md" style="max-width: 80%;"
       >
-        <hr>
+        Submit a problem or challenge (an itch)  you would like solve or explore (scratch).
+        <br><br>
+
+        <hr class="newLine2">
 
         <!-- -------------------- Project Name -------------------- -->
         <q-input

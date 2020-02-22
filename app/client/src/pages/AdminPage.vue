@@ -43,22 +43,20 @@ Methods:
           v-model="parentOption"
         >
           <q-tab
-            no-caps
-            name="projects" label="Projects" icon="fas fa-tasks"
-          />
+            no-caps icon="img:statics/images/projects-icon.png"
+            name="projects" label="Projects"
+          >
+          </q-tab>
+
           <q-tab
             v-if="layoutConfig && layoutConfig.challenges"
-            no-caps
-            name="challenges" label="Challenges" icon="fas fa-flag"
+            no-caps icon="img:statics/images/challenge-icon1.png"
+            name="challenges" label="Challenges"
           />
-          <q-tab
-            no-caps
-            name="users" label="Users" icon="person"
-          />
-          <q-tab
-            no-caps
-            name="systems" label="Settings" icon="settings"
-          />
+
+          <q-tab no-caps name="users" label="Users" icon="person"/>
+
+          <q-tab no-caps name="systems" label="Settings" icon="settings"/>
         </q-tabs>
 
         <!-- -------------------- Tab Content -------------------- -->
@@ -108,47 +106,47 @@ Methods:
                 >
                   <q-tab
                     no-caps
-                    class="q-ml-xs"
-                    name="general" label="General"
+                    class="q-ml-xs" name="general" label="General"
                     style="justify-content: left;"
                   />
+                    <!-- icon="person" -->
 
                   <q-separator />
 
                   <q-tab
                     no-caps
-                    class="q-ml-xs"
-                    name="database" label="Database"
+                    class="q-ml-xs" name="database" label="Database"
                     style="justify-content: left;"
                   />
+                    <!-- icon="person" -->
 
                   <q-separator />
 
                   <q-tab
                     v-if="layoutConfig && layoutConfig.challenges"
                     no-caps
-                    class="q-ml-xs"
-                    name="challenges" label="Challenges"
+                    class="q-ml-xs" name="challenges" label="Challenges"
                     style="justify-content: left;"
                   />
+                    <!-- icon="img:statics/images/challenge-icon1.png" -->
 
                   <q-separator />
 
                   <q-tab
                     no-caps
-                    class="q-ml-xs"
-                    name="projects" label="Projects"
+                    class="q-ml-xs" name="projects" label="Projects"
                     style="justify-content: left;"
                   />
+                    <!-- icon="img:statics/images/projects-icon.png" -->
 
                   <q-separator />
 
                   <q-tab
                     no-caps
-                    class="q-ml-xs"
-                    name="users" label="Users"
+                    class="q-ml-xs" name="users" label="Users"
                     style="justify-content: left;"
                   />
+                    <!-- icon="person" -->
 
                   <q-separator />
 

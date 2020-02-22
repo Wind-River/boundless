@@ -33,10 +33,10 @@ Methods:
           Tags:
         </div>
 
-        <div class="col-2">
+        <div class="col-2 q-pl-lg q-ml-xs">
           <q-btn
             dense round
-            color="accent" size="md" icon="add" style="margin: 0;"
+            color="accent" size="md" icon="add"
             @click="addProgressTag"
           />
         </div>
@@ -54,11 +54,11 @@ Methods:
       </div>
 
       <div class="row">
-        <div class="col-4 q-px-lg q-my-md">
+        <div class="col-2 q-px-lg q-my-md">
           Half-step:
         </div>
 
-        <div class="col" align="left">
+        <div class="col q-pt-sm">
           <q-item tag="label" v-ripple style="border-radius: 3px;">
             <!-- <q-item-section>
             </q-item-section> -->

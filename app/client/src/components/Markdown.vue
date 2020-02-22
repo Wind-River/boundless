@@ -59,6 +59,10 @@ Methods:
             Submit
           </q-btn>
 
+          <q-btn flat v-close-popup class="float-right" >
+            Cancel
+          </q-btn>
+
         </div>
       </template>
 

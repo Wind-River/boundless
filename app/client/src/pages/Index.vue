@@ -69,6 +69,16 @@ Methods:
 
         <!-- -------------------- BY THE NUMBER SESSION -------------------- -->
         <div>
+          <div class="q-px-md">
+            <!-- TODO -->
+            <q-img
+              :ratio="4/3"
+              contain
+              :src="`../statics/images/boundless-logo1.png`"
+              spinner-color="primary"
+            />
+          </div>
+
           <div>
             <hr>
             <strong class="title-font-1">By The Numbers</strong>
@@ -349,18 +359,12 @@ export default {
       challengeList: [], // <Array<Object>>
       innovatorList: [],
       sponsorList: [],
+      // the following are deprecated
       keywords: [], // <Array<String>>
       keywordsInUse: [],
       keywordsCounter: {},
       keywordsValToKeyMap: {},
-      keywordsImage: {
-        vxworks: '../statics/images/VxWorksLogo.png',
-        linux: '../statics/images/Linux-icon.png',
-        simics: '../statics/images/simics-icon.png',
-        helix: '../statics/images/other-icon.png',
-        titanium: '../statics/images/TiS-icon.png',
-        complier: '../statics/images/other-icon.png'
-      }
+      keywordsImage: {}
     }
   },
   methods: {
