@@ -8,7 +8,7 @@ ARG storageBucket
 ARG messagingSenderId
 ARG appId
 
-COPY ./boundless1/client/. /app
+COPY ./app/client/. /app
 
 RUN cd /app && \
   apiKey=${apiKey//\"} && \

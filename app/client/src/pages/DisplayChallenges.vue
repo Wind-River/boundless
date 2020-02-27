@@ -366,14 +366,7 @@ export default {
       keywordsInUse: [],
       keywordsCounter: {},
       keywordsValToKeyMap: {},
-      keywordsImage: {
-        vxworks: '../statics/images/VxWorksLogoB-n-W.png',
-        linux: '../statics/images/Linux-icon.png',
-        simics: '../statics/images/simics-icon.png',
-        helix: '../statics/images/other-icon.png',
-        titanium: '../statics/images/TiS-icon.png',
-        complier: '../statics/images/other-icon.png'
-      },
+      keywordsImage: {},
       popkeywords: [],
       //
       todayDate: '',
