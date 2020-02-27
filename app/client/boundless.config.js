@@ -18,11 +18,6 @@ export const defaultImages = {
 export const firebaseConfigs = databaseConfig
 
 export const layoutConfig = {
-  // // Wind River Specifics
-  // homeName: 'Jive',
-  // homeURL: 'https://jive.windriver.com/groups/boundless-innovation',
-  // companyName: 'Wind River',
-  // defaultImg: 'images/project-img-6.jpg',
   homeName: '',
   homeURL: '',
   companyName: '',

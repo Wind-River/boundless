@@ -82,7 +82,7 @@ Methods:
                     style="max-height: 15vh;"
                   >
                     <div class="absolute-bottom-right text-subtitle2">
-                      File
+                      Custom
                     </div>
                   </q-img>
                 </div>
@@ -155,7 +155,7 @@ Methods:
                     style="max-height: 15vh;"
                   >
                     <div class="absolute-bottom-right text-subtitle2">
-                      Storage
+                      Custom
                     </div>
                   </q-img>
                 </div>
@@ -465,6 +465,7 @@ Methods:
 <script>
 import productionDb, { productionStorage } from '../firebase/init_production'
 import testingDb, { testingStorage } from '../firebase/init_testing'
+import { layoutConfig } from '../../boundless.config'
 
 import sha256 from 'sha256'
 
@@ -477,6 +478,17 @@ export default {
   created () {
     this.getDb().then(res => {
       this.getInformation()
+
+      if (this.$q.sessionStorage.getItem('boundless_config')) {
+        let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
+        this.layoutConfig = layoutConfig
+
+        if (typeof cachedConfig.enabledChallenges === 'boolean') {
+          this.layoutConfig.challenges = cachedConfig.enabledChallenges
+        }
+      } else {
+        this.layoutConfig = layoutConfig
+      }
     })
   },
   beforeDestroy () {
@@ -504,6 +516,7 @@ export default {
     return {
       db: null,
       storage: null,
+      layoutConfig: null,
       fileDeleteQueue: [],
       data: {},
       aboutDialog: {
@@ -519,7 +532,7 @@ export default {
         url: ''
       },
       selectedStyle: {
-        boxShadow: '0px 0px 0px 3px black inset',
+        boxShadow: '0px 0px 0px 3px orange inset',
         borderRadius: '3px'
       },
       updated: false,
@@ -527,6 +540,24 @@ export default {
     }
   },
   methods: {
+    staticDataChange: function () {
+      // handle page loading via child event
+      // params:
+      //   @loadVal <Boolean>: event emitter value to render loading
+
+      let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
+      if (typeof storedConfig.enabledChallenges === 'boolean') {
+        this.layoutConfig.challenges = storedConfig.enabledChallenges
+      }
+
+      if (
+        storedConfig.wikiInfo &&
+        typeof storedConfig.wikiInfo.name === 'string'
+      ) {
+        this.layoutConfig.homeName = storedConfig.wikiInfo.name
+        this.layoutConfig.homeURL = storedConfig.wikiInfo.url || ''
+      }
+    },
     wikiSubmit: function () {
       this.$emit('submitting', true)
       let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
@@ -827,9 +858,11 @@ export default {
       // getting ready to put keywords images into storage
       let promises = []
       let keysWithNewImage = []
-
       for (let prop in this.data.keywords) {
-        if (this.$refs[`input${prop}`][0].files[0]) {
+        if (
+          this.$refs[`input${prop}`][0] &&
+          this.$refs[`input${prop}`][0].files[0]
+        ) {
           let storagePath = `configs/keywords/${prop}.png`
           let file = this.$refs[`input${prop}`][0].files[0]
 
@@ -914,6 +947,8 @@ export default {
 
         // update the keywords for Challenges and Projects Config
         this.$emit('keywords', this.data.keywords)
+
+        this.staticDataChange()
 
         // finish loading
         this.submitted = true

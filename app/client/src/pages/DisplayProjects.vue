@@ -467,8 +467,19 @@ export default {
     //   window.open('https://www.youtube.com', '_blank')
     // },
     displayProjectPage: function (entry) {
-      let routeData = this.$router.resolve('project/' + entry, '/')
-      window.open(routeData.href, '_blank')
+      // TODO: explain the function and param
+      // give better name for the param
+      const eventHandler = (e, entry) => {
+        if (e.ctrlKey) {
+          let routeData = this.$router.resolve(`project/${entry}`, '/')
+          window.open(routeData.href, '_blank')
+        } else {
+          this.$router.push(`/project/${entry}`)
+        }
+      }
+
+      // calling the event handler
+      eventHandler(event, entry)
     },
     displayMembers: function (entry) {
       let retMembers = ''

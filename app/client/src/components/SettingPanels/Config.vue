@@ -253,7 +253,7 @@ Methods:
                       style="max-height: 15vh;"
                     >
                       <div class="absolute-bottom-right text-subtitle2">
-                        Storage or File
+                        Custom
                       </div>
                     </q-img>
                   </div>
@@ -393,7 +393,7 @@ Methods:
                       style="max-height: 15vh;"
                     >
                       <div class="absolute-bottom-right text-subtitle2">
-                        Storage or File
+                        Custom
                       </div>
                     </q-img>
                   </div>
@@ -478,7 +478,7 @@ Methods:
                       style="max-height: 15vh;"
                     >
                       <div class="absolute-bottom-right text-subtitle2">
-                        Storage or File
+                        Custom
                       </div>
                     </q-img>
                   </div>
@@ -579,7 +579,7 @@ export default {
     return {
       loading: true,
       selectedStyle: {
-        boxShadow: '0px 0px 0px 3px black inset',
+        boxShadow: '0px 0px 0px 3px orange inset',
         borderRadius: '3px'
       },
       db: null,
