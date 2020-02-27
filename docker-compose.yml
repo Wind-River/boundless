@@ -13,7 +13,7 @@ services:
         appId: "[VALUE]"
       dockerfile: boundless.Dockerfile
     image: boundless:0.1.12-alpine
-    container_name: phyo
+    container_name: boundlessApp
     expose:
       - '80'
     ports:

@@ -548,7 +548,7 @@ export default {
   beforeDestroy () {
     if (!this.submitted && this.updated) {
       this.$q.dialog({
-        title: 'Are you sure you want to leave without submitting? (All data will be lost).',
+        title: 'Are you sure you want to leave without submitting changes? (All changes will be lost).',
         cancel: {
           flat: true,
           noCaps: true,
