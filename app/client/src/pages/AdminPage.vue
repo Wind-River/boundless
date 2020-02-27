@@ -141,11 +141,13 @@ Methods:
 
                   <q-separator />
 
-                  <q-tab
+                  <!-- TODO: Pruning users out for Feb release -->
+                  <!-- <q-tab
+                    v-if="configs.users"
                     no-caps
                     class="q-ml-xs" name="users" label="Users"
                     style="justify-content: left;"
-                  />
+                  /> -->
                     <!-- icon="person" -->
 
                   <q-separator />
@@ -189,7 +191,6 @@ Methods:
                       <SettingsConfigPanel
                         :keywords="configs.keywords"
                         :type="'challenges'"
-                        :configs="configs.challenges"
                         :ratio="previewRatio"
                         @submitting="consoleLoading"
                         @submitted="getChallengeConfig"
@@ -203,7 +204,6 @@ Methods:
                       <SettingsConfigPanel
                         :keywords="configs.keywords"
                         :type="'projects'"
-                        :configs="configs.projects"
                         :ratio="previewRatio"
                         @submitting="consoleLoading"
                         @submitted="getProjectConfig"
@@ -211,8 +211,9 @@ Methods:
                     </div>
                   </q-tab-panel>
 
+                  <!-- TODO: Pruning users out for Feb release -->
                   <!-- ------------------- User Settings ------------------- -->
-                  <q-tab-panel name="users">
+                  <!-- <q-tab-panel name="users">
                     <div v-if="configs.users">
                       <div class="text-h4 q-mb-md">
                         Users
@@ -220,9 +221,15 @@ Methods:
                       </div>
 
                       <div>
-                        <div v-if="configs.users.socialNetwork !== undefined" class="q-pa-lg" >
+                        <div
+                          v-if="configs.users.socialNetwork !== undefined" class="q-pa-lg"
+                        >
+                          <label for="socialNetworks" class="text-h6">
+                            Social Networks:
+                          </label>
+
                           <q-option-group
-                            inline
+                            inline id="socialNetworks"
                             color="primary" type="checkbox"
                             :options="configs.users.socialNetwork.list"
                             v-model="configs.users.socialNetwork.use"
@@ -234,7 +241,7 @@ Methods:
                         </div>
                       </div>
                     </div>
-                  </q-tab-panel>
+                  </q-tab-panel> -->
 
                   <!-- ------------------ System Settings ------------------ -->
                   <q-tab-panel name="general">
@@ -287,6 +294,7 @@ import ManageUsers from '../components/ManageUser'
 import SystemSettings from '../components/SystemSettings'
 import ManageDatabase from '../components/GetDataFromFirestore'
 import SettingsConfigPanel from '../components/SettingPanels/Config'
+// import SettingsUsersPanel from '../components/SettingPanels/Users'
 
 import NotFound from './Error404'
 
@@ -298,6 +306,7 @@ export default {
     SystemSettings,
     ManageDatabase,
     SettingsConfigPanel,
+    // SettingsUsersPanel,
     NotFound
   },
   created () {
@@ -360,6 +369,14 @@ export default {
         let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
         if (typeof storedConfig.enabledChallenges === 'boolean') {
           this.layoutConfig.challenges = storedConfig.enabledChallenges
+        }
+
+        if (
+          storedConfig.wikiInfo &&
+          typeof storedConfig.wikiInfo.name === 'string'
+        ) {
+          this.layoutConfig.homeName = storedConfig.wikiInfo.name
+          this.layoutConfig.homeURL = storedConfig.wikiInfo.url || ''
         }
       }
     },

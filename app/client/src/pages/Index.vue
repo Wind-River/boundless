@@ -74,7 +74,10 @@ Methods:
             <q-img
               :ratio="4/3"
               contain
-              :src="`../statics/images/boundless-logo1.png`"
+              :src="
+                (aboutData && aboutData.leftImg && aboutData.leftImg.active) ?
+                aboutData.leftImg.url : '../statics/images/boundless-logo2.png'
+              "
               spinner-color="primary"
             />
           </div>
@@ -235,8 +238,10 @@ Methods:
           class="q-pa-sm row"
           style="height: 100%; border-radius: 3px; overflow: auto;"
           :style="{
-            backgroundColor: aboutData ? aboutData.bgColor : 'black',
-            color: aboutData ? aboutData.txtColor : 'white'
+            backgroundColor:
+              aboutData && aboutData.bgColor ? aboutData.bgColor : 'black',
+            color:
+              aboutData && aboutData.txtColor ? aboutData.txtColor : 'white'
           }"
         >
 

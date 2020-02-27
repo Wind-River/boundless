@@ -106,7 +106,9 @@ Methods:
 
       <p v-if="data.keywords" class="q-px-lg q-py-md">
         Selected keywords: {{ data.keywords }} <br >
-        This is the order in which the keywords appear in banner.
+        <dir class="text-italic text-grey">
+          This is the order in which the keywords appear in banner.
+        </dir>
       </p>
     </div>
 
@@ -139,16 +141,17 @@ Methods:
               Listing Banner:
             </strong>
             <q-list>
-              <q-item tag="label" v-ripple style="border-radius: 3px;">
+              <q-item style="border-radius: 3px;">
                 <q-item-section>
-                  <q-item-label>Choose Custom Banner</q-item-label>
+                  <input
+                    type="file" accept="image/*"
+                    @change="
+                      filePickerOnChange(type, 'listingTable.bannerImg');
+                      updated = true
+                    "
+                  />
                 </q-item-section>
 
-                <input
-                  hidden
-                  type="file" accept="image/*"
-                  @change="filePickerOnChange(type, 'listingTable.bannerImg'); updated = true"
-                />
               </q-item>
 
               <q-item
@@ -170,8 +173,12 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.challenges.tableBanner}`"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 22vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
 
                     <q-img
                       v-else
@@ -179,8 +186,12 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.projects.tableBanner}`"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 22vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
               </q-item>
@@ -188,8 +199,12 @@ Methods:
               <q-item v-else style="height: 20vh;">
                 <q-item-section
                   class="hoverable"
-                  :style="!data.listingTable.bannerImg.active ? selectedStyle : ''"
-                  @click="data.listingTable.bannerImg.active = false; updated = true"
+                  :style="
+                    !data.listingTable.bannerImg.active ? selectedStyle : ''
+                  "
+                  @click="
+                    data.listingTable.bannerImg.active = false; updated = true
+                  "
                 >
                   <div>
                     <q-img
@@ -198,8 +213,12 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.challenges.tableBanner}`"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 15vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
 
                     <q-img
                       v-else
@@ -207,15 +226,23 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.projects.tableBanner}`"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 15vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
 
                 <q-item-section
                   class="hoverable"
-                  :style="data.listingTable.bannerImg.active ? selectedStyle : ''"
-                  @click="data.listingTable.bannerImg.active = true; updated = true"
+                  :style="
+                    data.listingTable.bannerImg.active ? selectedStyle : ''
+                  "
+                  @click="
+                    data.listingTable.bannerImg.active = true; updated = true
+                  "
                 >
                   <div>
                     <q-img
@@ -223,8 +250,12 @@ Methods:
                       class="center-img"
                       :src="data.listingTable.bannerImg.url"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 15vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Storage or File
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
               </q-item>
@@ -264,16 +295,17 @@ Methods:
               Page Banner:
             </strong>
             <q-list>
-              <q-item tag="label" v-ripple style="border-radius: 3px;">
+              <q-item style="border-radius: 3px;">
                 <q-item-section>
-                  <q-item-label>Choose Custom Banner</q-item-label>
+                  <input
+                    type="file" accept="image/*"
+                    @change="
+                      filePickerOnChange(type, 'webpage.bannerImg');
+                      updated = true
+                    "
+                  />
                 </q-item-section>
 
-                <input
-                  hidden
-                  type="file" accept="image/*"
-                  @change="filePickerOnChange(type, 'webpage.bannerImg'); updated = true"
-                />
               </q-item>
 
               <q-item v-if="!data.webpage.bannerImg.url" style="height: 27vh;">
@@ -289,8 +321,12 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.challenges.webBanner}`"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 22vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
 
                     <q-img
                       v-else
@@ -298,8 +334,12 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.projects.webBanner}`"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 22vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
               </q-item>
@@ -317,8 +357,12 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.challenges.webBanner}`"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 15vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
 
                     <q-img
                       v-else
@@ -326,8 +370,12 @@ Methods:
                       class="center-img"
                       :src="`../statics/${staticImages.projects.webBanner}`"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 15vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
 
@@ -342,8 +390,12 @@ Methods:
                       class="center-img"
                       :src="data.webpage.bannerImg.url"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 15vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Storage or File
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
               </q-item>
@@ -356,19 +408,17 @@ Methods:
               Page Image:
             </strong>
             <q-list>
-              <q-item tag="label" v-ripple style="border-radius: 3px;">
+              <q-item style="border-radius: 3px;">
                 <q-item-section>
-                  <q-item-label>Choose Custom Image</q-item-label>
+                  <input
+                    type="file" accept="image/*"
+                    @change="
+                      filePickerOnChange(type, 'webpage.mainImg');
+                      updated = true
+                    "
+                  />
                 </q-item-section>
 
-                <input
-                  hidden
-                  type="file" accept="image/*"
-                  @change="
-                    filePickerOnChange(type, 'webpage.mainImg');
-                    updated = true
-                  "
-                />
               </q-item>
 
               <q-item v-if="!data.webpage.mainImg.url" style="height: 27vh;">
@@ -381,10 +431,14 @@ Methods:
                     <q-img
                       contain
                       class="center-img"
-                      src="https://placeimg.com/500/300/nature"
+                      src="../../statics/images/computer-keyboard.jpg"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 22vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
               </q-item>
@@ -399,10 +453,14 @@ Methods:
                     <q-img
                       contain
                       class="center-img"
-                      src="https://placeimg.com/500/300/nature"
+                      src="../../statics/images/computer-keyboard.jpg"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 15vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Default
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
 
@@ -417,8 +475,12 @@ Methods:
                       class="center-img"
                       :src="data.webpage.mainImg.url"
                       :ratio="ratio"
-                      style="max-height: 150px;"
-                    />
+                      style="max-height: 15vh;"
+                    >
+                      <div class="absolute-bottom-right text-subtitle2">
+                        Storage or File
+                      </div>
+                    </q-img>
                   </div>
                 </q-item-section>
               </q-item>
@@ -433,6 +495,7 @@ Methods:
     <div class="q-px-lg q-pb-lg">
       <div class="q-px-md q-pb-md q-gutter-sm" align="right">
         <q-btn
+          :disabled="!updated"
           no-caps
           color="secondary" label="Submit"
           @click="onSubmit"
@@ -452,7 +515,6 @@ export default {
   props: {
     keywords: Object,
     type: String,
-    configs: Object,
     ratio: String
   },
   created () {
@@ -462,7 +524,8 @@ export default {
 
     this.getDb().then(() => {
       // data fetching goes here
-      this.data = this.deepObjCopy(this.configs)
+      this.data = this.$q.sessionStorage.getItem('boundless_config')
+      this.data = this.data[`${this.type}Config`]
 
       if (
         this.type === 'projects' &&
@@ -485,10 +548,16 @@ export default {
   beforeDestroy () {
     if (!this.submitted && this.updated) {
       this.$q.dialog({
-        title: 'You sure you want to leave without submitting? All the changes will be lost.',
+        title: 'Are you sure you want to leave without submitting? (All data will be lost).',
         cancel: {
           flat: true,
+          noCaps: true,
           label: 'Submit'
+        },
+        ok: {
+          flat: true,
+          noCaps: true,
+          label: 'Leave'
         },
         persistent: true
       }).onOk(() => {
@@ -510,7 +579,7 @@ export default {
     return {
       loading: true,
       selectedStyle: {
-        border: 'solid 3px',
+        boxShadow: '0px 0px 0px 3px black inset',
         borderRadius: '3px'
       },
       db: null,
@@ -542,7 +611,7 @@ export default {
         ) {
           this.data.progressBar.tags.push(data)
 
-          this.$forceUpdate()
+          this.forceUpdate()
         } else if (data.length > 6) {
           this.$q.notify({
             message: 'Tag must be at most 6 characters!',
@@ -569,7 +638,8 @@ export default {
     deleteProgressTag: function (index) {
       if (this.data.progressBar.tags.length > 1) {
         this.data.progressBar.tags.splice(index, 1)
-        this.$forceUpdate()
+
+        this.forceUpdate()
       } else {
         this.$q.notify({
           message: 'Must have at least 1 tag for the progress bar!',
@@ -579,6 +649,7 @@ export default {
       }
     },
     forceUpdate: function () {
+      this.updated = true
       this.$forceUpdate()
     },
     checkMax: function (entry) {
@@ -593,11 +664,13 @@ export default {
 
         entry.pop()
         this.data.keywords = entry
+      } else {
+        this.updated = true
       }
     },
     getBlobAndSubmitFromURL: function (url, property, obj) {
       // https://stackoverflow.com/questions/11876175/how-to-get-a-file-or-blob-from-an-object-url
-      fetch(url).then(res => {
+      return fetch(url).then(res => {
         return res.blob()
       })
         .then(res => {

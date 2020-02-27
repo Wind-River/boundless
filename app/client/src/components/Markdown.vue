@@ -99,8 +99,16 @@ export default {
   created () {
     if (this.$q.sessionStorage.has('boundless_config')) {
       let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
+      let oldPlaceHolder = this.generalConfig
 
       this.generalConfig = cachedConfig.generalConfig || this.generalConfig
+
+      for (let field in oldPlaceHolder) {
+        this.generalConfig[field] = this.generalConfig[field] ||
+          oldPlaceHolder[field]
+      }
+
+      this.generalConfig = this.deepObjCopy(this.generalConfig)
     }
   },
   data () {
@@ -122,11 +130,34 @@ export default {
 
       return this.db.collection('config').doc('project').update({
         generalConfig: this.generalConfig
+      }).then(() => {
+        this.$q.notify({
+          color: 'green',
+          message: '<div align="center">Sucessful!<div>',
+          html: true,
+          timeout: 750
+        })
+        return true
       }).catch(err => {
         if (err) {
           throw new Error(err)
         }
       })
+    },
+    deepObjCopy: function (aObject) {
+      // https://stackoverflow.com/questions/4459928/how-to-deep-clone-in-javascript/34624648#34624648
+      if (!aObject) {
+        return aObject
+      }
+
+      let v
+      let bObject = Array.isArray(aObject) ? [] : {}
+      for (const k in aObject) {
+        v = aObject[k]
+        bObject[k] = (typeof v === 'object') ? this.deepObjCopy(v) : v
+      }
+
+      return bObject
     }
   }
 }

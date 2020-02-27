@@ -2638,12 +2638,25 @@ export default {
     },
     getMainPhoto: function () {
       /*
-      // TODO: function description
+      // TODO: add function description
       */
 
-      let max = 5
-      let photoId = Math.floor(Math.random() * (max - 1 + 1)) + 1
-      return 'statics/images/project-img-' + photoId + '.jpg'
+      let val = `statics/images/computer-keyboard.jpg`
+
+      if (this.$q.sessionStorage.has('boundless_config')) {
+        let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+        if (
+          storedConfig && storedConfig.challengesConfig &&
+          storedConfig.challengesConfig.webpage &&
+          storedConfig.challengesConfig.webpage.mainImg.url &&
+          storedConfig.challengesConfig.webpage.mainImg.active
+        ) {
+          val = storedConfig.challengesConfig.webpage.mainImg.url
+        }
+      }
+
+      return val
     },
     priorityCountUp: function () {
       /*

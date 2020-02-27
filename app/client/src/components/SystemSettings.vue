@@ -19,22 +19,176 @@ Methods:
 <template>
   <div class="q-pa-sm full-width">
     <div class="q-pa-md">
+      <div>
+        <div class="row">
+          <div class="text-h6 col-2 q-pt-sm" >
+            About Logo:
+          </div>
+
+          <q-list class="col q-pl-lg">
+            <q-item style="border-radius: 3px;">
+              <q-item-section>
+                <input
+                  label="Choose Custom Logo"
+                  type="file" accept="image/*"
+                  @change="aboutLogoImageSelect"
+                />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+
+        <div>
+          <q-list>
+            <q-item
+              v-if="file.file"
+              style="height: 27vh;"
+            >
+              <q-item-section
+                class="hoverable"
+                :style="!data.generalConfig.leftImg.active ? selectedStyle : ''"
+                @click="
+                  data.generalConfig.leftImg.active = false; updated = true
+                "
+              >
+                <div>
+                  <q-img
+                    contain
+                    class="center-img"
+                    :src="`../statics/images/boundless-logo2.png`"
+                    :ratio="4/3"
+                    style="max-height: 15vh;"
+                  >
+                    <div class="absolute-bottom-right text-subtitle2">
+                      Default
+                    </div>
+                  </q-img>
+                </div>
+              </q-item-section>
+
+              <q-item-section
+                class="hoverable"
+                :style="data.generalConfig.leftImg.active ? selectedStyle : ''"
+                @click="
+                  data.generalConfig.leftImg.active = true; updated = true
+                "
+              >
+                <div>
+                  <q-img
+                    contain
+                    class="center-img"
+                    :src="file.url"
+                    :ratio="4/3"
+                    style="max-height: 15vh;"
+                  >
+                    <div class="absolute-bottom-right text-subtitle2">
+                      File
+                    </div>
+                  </q-img>
+                </div>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              v-else-if="
+                !data.generalConfig || !data.generalConfig.leftImg ||
+                !data.generalConfig.leftImg.url
+              "
+              style="height: 20vh;"
+            >
+              <q-item-section
+                class="hoverable"
+                :style="selectedStyle"
+              >
+                <div>
+                  <q-img
+                    contain
+                    class="center-img"
+                    :src="`../statics/images/boundless-logo2.png`"
+                    :ratio="4/3"
+                    style="max-height: 15vh;"
+                  >
+                    <div class="absolute-bottom-right text-subtitle2">
+                      Default
+                    </div>
+                  </q-img>
+                </div>
+              </q-item-section>
+            </q-item>
+
+            <q-item v-else style="height: 27vh;" >
+              <q-item-section
+                class="hoverable"
+                :style="!data.generalConfig.leftImg.active ? selectedStyle : ''"
+                @click="
+                  data.generalConfig.leftImg.active = false; updated = true
+                "
+              >
+                <div>
+                  <q-img
+                    contain
+                    class="center-img"
+                    :src="`../statics/images/boundless-logo2.png`"
+                    :ratio="4/3"
+                    style="max-height: 15vh;"
+                  >
+                    <div class="absolute-bottom-right text-subtitle2">
+                      Default
+                    </div>
+                  </q-img>
+                </div>
+              </q-item-section>
+
+              <q-item-section
+                class="hoverable"
+                :style="data.generalConfig.leftImg.active ? selectedStyle : ''"
+                @click="
+                  data.generalConfig.leftImg.active = true; updated = true
+                "
+              >
+                <div>
+                  <q-img
+                    contain
+                    class="center-img"
+                    :src="data.generalConfig.leftImg.url"
+                    :ratio="10/3"
+                    style="max-height: 15vh;"
+                  >
+                    <div class="absolute-bottom-right text-subtitle2">
+                      Storage
+                    </div>
+                  </q-img>
+                </div>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+      </div>
+
       <hr>
+
       <div
         v-for="(val, field, index) in data"
         :key="index"
       >
         <!-- TODO: REMOVE THIS ONCE EXTRAKEYWORDSDATA IS REMOVED -->
         <div
-          v-if="!['extraKeywordsData', 'generalConfig', 'enabledChallenges']
-            .includes(field)
+          v-if="
+            ![
+              'extraKeywordsData', 'generalConfig',
+              'enabledChallenges', 'wikiInfo'
+            ].includes(field)
           "
         >
           <div class="row">
 
             <div class="text-h6 col-2">{{ fieldParser(field) }}:</div>
 
-            <div class="col-2 q-pl-xl q-ml-xs" >
+            <!-- Column For Buttons -->
+            <div
+              v-if="field !== 'newFlag' && field !== 'pagination'"
+              class="col-2 q-pl-xl q-ml-xs"
+            >
               <div v-if="field === 'keywords'">
                 <q-btn
                   dense round
@@ -134,11 +288,13 @@ Methods:
 
             </div>
 
-            <div v-else class="cursor-pointer col q-mt-sm" >
+            <div v-else class="highlight col q-py-sm q-pl-lg q-ml-lg" >
               <b>{{ val }}</b>
               <q-popup-edit
-                title="Edit the Name"
+                :title="`Edit ${fieldParser(field)}`"
                 v-model="data[field]"
+                buttons
+                @save="updated = true"
               >
                 <q-input
                   dense autofocus filled
@@ -176,7 +332,7 @@ Methods:
 
       <div class="q-pa-md q-gutter-sm">
         <q-btn
-          :disabled="!updateFlag" no-caps
+          :disabled="!updated" no-caps
           class="float-right"
           color="secondary" label="Submit"
           @click="onSubmit"
@@ -189,15 +345,25 @@ Methods:
           @click="aboutDialog.dialog = true"
         />
 
+        <!-- TODO: dialog for edit wiki -->
         <q-btn
           v-if="$q.sessionStorage.has('admin_token')"
-          flat no-caps
+          no-caps outline
+          label="Wiki URL"
+          @click="wikiDialog.dialog = true"
+        />
+
+        <q-btn
+          v-if="$q.sessionStorage.has('admin_token')"
+          no-caps outline
           label="Change Admin Password"
           @click="invokeAdminPassChange"
         />
+
       </div>
     </div>
 
+    <!-- -------------------- Edit About Page Dialog -------------------- -->
     <q-dialog
       v-model="aboutDialog.dialog"
       persistent
@@ -252,6 +418,47 @@ Methods:
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- -------------------- Edit Wiki URL Dialog -------------------- -->
+    <q-dialog
+      v-model="wikiDialog.dialog"
+      persistent buttons
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <q-card style="min-width: 30%;">
+        <q-card-section class="">
+          <div class="text-h6">Editing Wiki URL</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <!-- <EditableMarkdown :db="db" /> -->
+          <div v-if="data.wikiInfo" class="q-gutter-md">
+            <q-input
+              outlined dense
+              v-model="data.wikiInfo.name"
+              label="Wiki Name"
+              @input="forceUpdateWOSubmit"
+            />
+            <q-input
+              outlined dense
+              v-model="data.wikiInfo.url"
+              label="Wiki Link"
+              @input="forceUpdateWOSubmit"
+            />
+          </div>
+        </q-card-section>
+
+        <q-card-actions class="" align="right">
+          <q-btn v-close-popup outline color="primary" label="Cancel" />
+          <q-btn
+            v-close-popup outline
+            color="primary" label="Submit"
+            @click="wikiSubmit"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -272,9 +479,26 @@ export default {
       this.getInformation()
     })
   },
-  beforeUpdate () {
-  },
-  updated () {
+  beforeDestroy () {
+    if (!this.submitted && this.updated) {
+      this.$q.dialog({
+        title: 'Are you sure you want to leave without submitting? (All data will be lost).',
+        cancel: {
+          flat: true,
+          noCaps: true,
+          label: 'Submit'
+        },
+        ok: {
+          flat: true,
+          noCaps: true,
+          label: 'Leave'
+        },
+        persistent: true
+      }).onOk(() => {
+      }).onCancel(() => {
+        this.onSubmit()
+      })
+    }
   },
   data () {
     return {
@@ -286,11 +510,61 @@ export default {
         dialog: false,
         maximizedToggle: true
       },
-      updateFlag: false
+      wikiDialog: {
+        dialog: false
+      },
+      file: {
+        file: '',
+        prev: '',
+        url: ''
+      },
+      selectedStyle: {
+        boxShadow: '0px 0px 0px 3px black inset',
+        borderRadius: '3px'
+      },
+      updated: false,
+      submitted: false
     }
   },
   methods: {
+    wikiSubmit: function () {
+      this.$emit('submitting', true)
+      let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+      storedConfig.wikiInfo = this.data.wikiInfo
+
+      return this.db.collection('config').doc('project').update(storedConfig)
+        .then(() => {
+          this.$q.sessionStorage.set('boundless_config', storedConfig)
+          this.$emit('submitting', false)
+          return true
+        })
+    },
+    forceUpdateWOSubmit: function () {
+      this.$forceUpdate()
+    },
+    aboutLogoImageSelect: function (e) {
+      let reader = new FileReader()
+      this.file.file = e.target.files[0]
+
+      if (this.file.file) {
+        this.data.generalConfig.leftImg.active = true
+        this.file.prev = this.data.generalConfig.leftImg.url
+
+        reader.onload = (event) => {
+          this.file.url = event.target.result
+        }
+
+        reader.readAsDataURL(this.file.file)
+      } else {
+        this.data.generalConfig.leftImg.active = false
+        this.file.url = this.file.prev
+      }
+
+      this.updated = true
+    },
     invokeChallengesEnabler: function () {
+      this.updated = true
       this.$forceUpdate()
     },
     addCustomChips: function () {
@@ -325,6 +599,7 @@ export default {
               tmpChip.value = data
 
               this.data.customChips.push(tmpChip)
+              this.updated = true
             } else {
             }
           }).onCancel(() => {
@@ -338,6 +613,7 @@ export default {
     },
     deleteCustomChips: function (index) {
       // confirm with dialog
+      this.updated = true
       this.data.customChips.splice(index, 1)
     },
     invokeAdminPassChange: function () {
@@ -451,6 +727,7 @@ export default {
         } else {
           try {
             await this.onFileSelected(e.target.files[0], this.$refs[entry][0])
+            this.updated = true
           } catch (err) {
             if (err) {
               // error
@@ -477,6 +754,7 @@ export default {
       }
       delete this.data.keywords[key]
 
+      this.updated = true
       this.$forceUpdate()
     },
     addKeywords: function () {
@@ -493,6 +771,7 @@ export default {
           if (!(data in this.data.keywords)) {
             this.data.keywords[data] = data.toLowerCase()
 
+            this.updated = true
             this.$forceUpdate()
           }
         } else {
@@ -591,7 +870,32 @@ export default {
 
         return Promise.all(promises)
       }).then(() => {
+        if (this.file.file) {
+          // write logo to storage
+          return this.storage.ref().child(
+            'configs/about/left.png'
+          ).put(this.file.file).then(res => {
+            // get the logo url
+            return res.ref.getDownloadURL().then(res => {
+              this.data.generalConfig.leftImg.url = res
+              return true
+            })
+          })
+        } else {
+          return 'NO NEED'
+        }
+      }).then(() => {
         // finally updating to the database
+        let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+        storedConfig.generalConfig = storedConfig.generalConfig || {}
+        storedConfig.generalConfig = {
+          ...storedConfig.generalConfig,
+          leftImg: this.data.generalConfig.leftImg
+        }
+
+        this.data.generalConfig = storedConfig.generalConfig
+
         return this.db.collection('config').doc('project').update(this.data)
       }).then(() => {
         // write to SessionStorage to save some read
@@ -600,12 +904,19 @@ export default {
         storedConfig.keywords = this.data.keywords
         storedConfig.enabledChallenges = this.data.enabledChallenges
 
+        storedConfig.generalConfig = storedConfig.generalConfig || {}
+        storedConfig.generalConfig = {
+          ...storedConfig.generalConfig,
+          leftImg: this.data.generalConfig.leftImg
+        }
+
         this.$q.sessionStorage.set('boundless_config', storedConfig)
 
         // update the keywords for Challenges and Projects Config
         this.$emit('keywords', this.data.keywords)
 
         // finish loading
+        this.submitted = true
         this.$emit('submitting', false)
         return 'SUCCESS'
       }).catch(err => {
@@ -616,12 +927,43 @@ export default {
       })
     },
     getInformation: function () {
-      this.db.collection('config').doc('project').get()
+      return this.db.collection('config').doc('project').get()
         .then(doc => {
           if (doc.exists) {
             this.data = doc.data()
 
             this.data.enabledChallenges = this.data.enabledChallenges || false
+
+            // dealing with about logo to bind with 'Edit About Page'
+            if (!this.data.generalConfig) {
+              this.data.generalConfig = {
+                leftImg: {
+                  url: '',
+                  active: false
+                }
+              }
+            } else {
+              let ssRef = this.$q.sessionStorage
+              let storedConfig = ssRef.getItem('boundless_config')
+
+              if (!storedConfig.generalConfig.leftImg) {
+                this.data.generalConfig = {
+                  ...storedConfig.generalConfig,
+                  leftImg: {
+                    url: '',
+                    active: false
+                  }
+                }
+              }
+            }
+
+            // dealing with 'Wiki URL'
+            if (!this.data.wikiInfo) {
+              this.data.wikiInfo = {
+                name: '',
+                url: ''
+              }
+            }
 
             // TODO: take these out once the functions are done
             delete this.data.db

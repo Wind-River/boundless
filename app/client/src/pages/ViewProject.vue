@@ -809,9 +809,22 @@ export default {
       // TODO: add function description
       */
 
-      let max = 5
-      let photoId = Math.floor(Math.random() * (max - 1 + 1)) + 1
-      return 'statics/images/project-img-' + photoId + '.jpg'
+      let val = `statics/images/computer-keyboard.jpg`
+
+      if (this.$q.sessionStorage.has('boundless_config')) {
+        let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+        if (
+          storedConfig && storedConfig.projectsConfig &&
+          storedConfig.projectsConfig.webpage &&
+          storedConfig.projectsConfig.webpage.mainImg.url &&
+          storedConfig.projectsConfig.webpage.mainImg.active
+        ) {
+          val = storedConfig.projectsConfig.webpage.mainImg.url
+        }
+      }
+
+      return val
     },
     sortBody: function () {
       /*

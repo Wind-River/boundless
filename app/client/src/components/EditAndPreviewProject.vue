@@ -406,7 +406,7 @@ Methods:
                           </div>
 
                           <!-- --------------- Team Panel ----------------- -->
-                          <div class="col-3">
+                          <div class="col">
 
                             <div class="text-h5">
                               <div class="row">
@@ -414,12 +414,13 @@ Methods:
                                 <q-space/>
 
                                 <!-- Adding Member/s to Project -->
-                                <q-btn
-                                  dense round
-                                  size="sm" color="accent" icon="add"
-                                  style="top: 5px;"
-                                  @click="addProjectMember"
-                                />
+                                <div>
+                                  <q-btn
+                                    dense round
+                                    size="sm" color="accent" icon="add"
+                                    @click="addProjectMember"
+                                  />
+                                </div>
                               </div>
 
                               <q-separator class="q-mb-sm" color="secondary" />
@@ -427,14 +428,14 @@ Methods:
 
                             <div
                               class="overviewCSS q-mt-sm"
-                              style="overflow-x: hidden;"
+                              style="overflow-x: hidden; padding: 2px 2px;"
                             >
                               <q-list dense>
                                 <q-item
                                   v-for="(teamMember, index) in curData.members"
                                   :key="index"
                                   clickable v-ripple
-                                  class="q-my-sm"
+                                  style="border-radius: 3px;"
                                 >
                                   <q-item-section avatar>
                                     <q-avatar color="primary" text-color="secondary"  >
@@ -454,21 +455,29 @@ Methods:
                                     </q-item-label>
                                   </q-item-section>
 
-                                  <q-toggle
-                                    dense
-                                    color="accent"
-                                    true-value="lead" false-value="member"
-                                    v-model="curData.members[index].role"
-                                    @input="updated = true"
-                                  />
+                                  <div class="column q-pl-sm items-end">
+                                    <div class="col">
+                                      <q-toggle
+                                        dense
+                                        color="accent" true-value="lead"
+                                        false-value="member"
+                                        v-model="curData.members[index].role"
+                                        @input="updated = true"
+                                      />
+                                    </div>
 
-                                  <q-btn
-                                    :disable="curData.members.length === 1"
-                                    dense round
-                                    class="q-my-md"
-                                    color="accent" size="sm" icon="delete"
-                                    @click="curData.members.splice(index, 1); updated = true"
-                                  />
+                                    <div class="col">
+                                      <q-btn
+                                        :disable="curData.members.length === 1"
+                                        dense round
+                                        color="accent" size="sm" icon="delete"
+                                        @click="
+                                          curData.members.splice(index, 1);
+                                          updated = true
+                                        "
+                                      />
+                                    </div>
+                                  </div>
                                 </q-item>
                               </q-list>
 
@@ -2456,12 +2465,25 @@ export default {
     },
     getMainPhoto: function () {
       /*
-      // TODO: function description
+      // TODO: add function description
       */
 
-      let max = 5
-      let photoId = Math.floor(Math.random() * (max - 1 + 1)) + 1
-      return 'statics/images/project-img-' + photoId + '.jpg'
+      let val = `statics/images/computer-keyboard.jpg`
+
+      if (this.$q.sessionStorage.has('boundless_config')) {
+        let storedConfig = this.$q.sessionStorage.getItem('boundless_config')
+
+        if (
+          storedConfig && storedConfig.projectsConfig &&
+          storedConfig.projectsConfig.webpage &&
+          storedConfig.projectsConfig.webpage.mainImg.url &&
+          storedConfig.projectsConfig.webpage.mainImg.active
+        ) {
+          val = storedConfig.projectsConfig.webpage.mainImg.url
+        }
+      }
+
+      return val
     },
     progressCountUp: function () {
       /*
@@ -2512,6 +2534,8 @@ export default {
           })
         }
       }
+
+      itemOptions.sort((a, b) => a.value.name.localeCompare(b.value.name))
 
       this.$q.dialog({
         title: 'Add Members',

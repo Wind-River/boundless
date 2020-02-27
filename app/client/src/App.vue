@@ -68,11 +68,11 @@ export default {
 // -----------------------------------------------------------------------------
 
 // Sets mouse hovering background color
-// .highlight:hover {
-//   background-color: rgba(236, 233, 233, 0.884);
-//   border-radius: 3px;
-//   cursor: pointer;
-// }
+.highlight:hover {
+  background-color: rgba(236, 233, 233, 0.884);
+  border-radius: 3px;
+  cursor: pointer;
+}
 
 br.small {
   display: block; /* makes it have a width */

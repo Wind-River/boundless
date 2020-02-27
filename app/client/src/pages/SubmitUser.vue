@@ -154,6 +154,7 @@ export default {
       let key = firestore.id
 
       this.user = {
+        ...this.user,
         timestamp: timeOfSubmit,
         created: timeOfSubmit,
         uuid: key,
@@ -162,6 +163,7 @@ export default {
       }
 
       this.webpage = {
+        ...this.webpage,
         socialNetwork: {},
         projects: [],
         achievements: {}

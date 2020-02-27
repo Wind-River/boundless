@@ -68,7 +68,7 @@ Methods:
 
         <q-route-tab to="/project/display" label="Projects" />
 
-        <q-route-tab to="/project/add" label="Submit Project" />
+        <q-route-tab to="/project/add" label="Add Project" />
 
         <q-route-tab
           v-if="layoutConfig && layoutConfig.challenges"
@@ -77,7 +77,7 @@ Methods:
 
         <q-route-tab
           v-if="layoutConfig && layoutConfig.challenges"
-          to="/challenge/add" label="Submit Challenge"
+          to="/challenge/add" label="Add Challenge"
         />
 
         <q-route-tab
@@ -194,6 +194,11 @@ export default {
 
       if (typeof config.enabledChallenges === 'boolean') {
         this.layoutConfig.challenges = config.enabledChallenges
+      }
+
+      if (config.wikiInfo && config.wikiInfo.name) {
+        this.layoutConfig.homeName = config.wikiInfo.name
+        this.layoutConfig.homeURL = config.wikiInfo.url || ''
       }
     },
     loadFireRefs: function () {
@@ -437,7 +442,7 @@ export default {
                   if (correctPass) {
                     this.$q.sessionStorage.set('admin_token', 'admin')
                     this.$q.cookies.set(
-                      'userToken', 'admin', { sameSite: 'Strict' }
+                      'userToken', 'admin', { sameSite: 'Strict', secure: true }
                     )
 
                     this.$router.go()
