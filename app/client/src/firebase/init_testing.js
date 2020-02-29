@@ -7,6 +7,7 @@ import { firebaseConfigs } from '../../boundless.config'
 
 // Your web app's Firebase configuration
 let firebaseConfig = firebaseConfigs.testing
+
 // Initialize Firebase
 const firebaseAppTesting = firebase.initializeApp(firebaseConfig, 'secondary')
 
@@ -18,4 +19,3 @@ export const testAppCall = firebaseAppTesting.functions()
 
 // Export firebase to be used in other parts of the application
 export default firebaseAppTesting.firestore()
-// export default firebaseAppTesting.database()

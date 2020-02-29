@@ -193,7 +193,7 @@ Methods:
                         :type="'challenges'"
                         :ratio="previewRatio"
                         @submitting="consoleLoading"
-                        @submitted="getChallengeConfig"
+                        @submitted="loadChallengeConfig"
                       />
                     </div>
                   </q-tab-panel>
@@ -206,7 +206,7 @@ Methods:
                         :type="'projects'"
                         :ratio="previewRatio"
                         @submitting="consoleLoading"
-                        @submitted="getProjectConfig"
+                        @submitted="loadProjectConfig"
                       />
                     </div>
                   </q-tab-panel>
@@ -261,10 +261,10 @@ Methods:
 
                     <div>
                       <SystemSettings
-                        @usersConfigInfo="getUserConfig"
-                        @challengesConfigInfo="getChallengeConfig"
-                        @projectsConfigInfo="getProjectConfig"
-                        @keywords="getKeywords"
+                        @usersConfigInfo="loadUserConfig"
+                        @challengesConfigInfo="loadChallengeConfig"
+                        @projectsConfigInfo="loadProjectConfig"
+                        @keywords="loadKeywords"
                         @submitting="consoleLoading"
                       />
                     </div>
@@ -340,19 +340,18 @@ export default {
   },
   data () {
     return {
-      // TODO: add quick succint explanation
+      notFound: false, // <Boolean>: flag for 404
       layoutConfig: null, // <Object>: dictionary of layout values
-      optionTab: 'general', // <String>
-      splitterModel: 15, // <Number>
-      notFound: false, // <Boolean>
+      optionTab: 'general', // <String>: name of the option tab
+      splitterModel: 15, // <Number>: % of vw that left splitter is located
       db: null, // <String>: name of the database
-      parentOption: 'projects', // <String>
-      previewRatio: '5', // <String>
-      configs: { // <Object<Object>>
-        users: {},
-        projects: {},
-        challenges: {},
-        keywords: {}
+      parentOption: 'projects', // <String>: name of the parent tab
+      previewRatio: '5', // <String>: ratio for preview of imges in child
+      configs: { // <Object<Object>>: overall configs object
+        users: {}, // <Object>: users config object
+        projects: {}, // <Object>: projects config object
+        challenges: {}, // <Object>: challenges config object
+        keywords: {} // <Object>: object containing keywards
       },
       haltConsole: false // <Boolean>
     }
@@ -380,7 +379,7 @@ export default {
         }
       }
     },
-    getKeywords: function (val) {
+    loadKeywords: function (val) {
       // load keywords from the child component and convert to
       // map to assign as one of the object inside this.configs var
       // params:
@@ -393,7 +392,7 @@ export default {
         }
       }
     },
-    getProjectConfig: function (val) {
+    loadProjectConfig: function (val) {
       // load project configuartion from the child component and
       // assign as one of the object inside this.configs var
       // params:
@@ -403,7 +402,7 @@ export default {
         this.configs.projects = val
       }
     },
-    getChallengeConfig: function (val) {
+    loadChallengeConfig: function (val) {
       // load challenge configuartion from the child component and
       // assign as one of the object inside this.configs var
       // params:
@@ -413,7 +412,7 @@ export default {
         this.configs.challenges = val
       }
     },
-    getUserConfig: function (val) {
+    loadUserConfig: function (val) {
       // load user configuartion from the child component and assign
       // as one of the object inside this.configs var
       // params:
@@ -428,7 +427,7 @@ export default {
       }
     },
     switchDatabase: function () {
-      // switch database namespace
+      // switch database namespace and reload the page
 
       this.$q.localStorage.set('boundless_db', this.db)
       if (this.$q.sessionStorage.has('boundless_timeout')) {

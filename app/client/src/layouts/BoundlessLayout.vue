@@ -383,6 +383,7 @@ export default {
     },
     logInLogOut: function () {
       if (this.$q.sessionStorage.has('admin_token')) {
+        console.log('386')
         this.$q.sessionStorage.remove('admin_token')
         this.$q.cookies.remove('userToken')
 
@@ -442,7 +443,7 @@ export default {
                   if (correctPass) {
                     this.$q.sessionStorage.set('admin_token', 'admin')
                     this.$q.cookies.set(
-                      'userToken', 'admin', { sameSite: 'Strict', secure: true }
+                      'userToken', 'admin', { sameSite: 'Strict' }
                     )
 
                     this.$router.go()

@@ -7,6 +7,7 @@ import { firebaseConfigs } from '../../boundless.config'
 
 // Your web app's Firebase configuration
 let firebaseConfig = firebaseConfigs.production
+
 // Initialize Firebase
 const firebaseAppProduction = firebase.initializeApp(firebaseConfig)
 
@@ -18,4 +19,3 @@ export const proAppCall = firebaseAppProduction.functions()
 
 // Export firebase to be used in other parts of the application
 export default firebaseAppProduction.firestore()
-// export default firebaseAppProduction.database()

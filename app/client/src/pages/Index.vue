@@ -84,8 +84,8 @@ Methods:
 
           <div>
             <hr>
-            <strong class="title-font-1">By The Numbers</strong>
-            <hr>
+            <!-- <strong class="title-font-1">By The Numbers</strong>
+            <hr> -->
           </div>
 
           <div>
