@@ -170,4 +170,24 @@ tr:nth-child(even) {
   border: solid 1.5px;
   border-color: gray;
 }
+
+/* Colors from: https://www.december.com/html/spec/color2.html */
+.green-priority {
+  background-image: linear-gradient(#00EE00, #9AFF9A, #00EE00)
+}
+
+/* Colors from: https://www.december.com/html/spec/color1.html */
+.yellow-priority {
+  background-image: linear-gradient(#FFE600, #FFF68F, #FFE600)
+}
+
+/* Colors from: https://www.december.com/html/spec/color1.html */
+.red-priority {
+  background-image: linear-gradient(#ED0C0C, #ED8C8C, #ED0C0C)
+}
+
+/* Colors from: https://www.december.com/html/spec/color0.html */
+.null-priority {
+  background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
+}
 </style>

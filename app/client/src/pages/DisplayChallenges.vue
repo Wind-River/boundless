@@ -10,14 +10,13 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     pages/DisplayChallenges.vue
-Purpose:  Display the header information of all challenges in a table
-          TODO: explain what 'header information' mean
+Purpose:  Display the short summary of of all challenges in a table
 Methods:
   * Filters challenges via string matching
   * Searchbar for filter param
   * Dropbox for filter param
   * Clickable icons for filter param
-  * Redirect to individual chanllenge
+  * Redirect to individual challenge
 
 ## -->
 
@@ -346,16 +345,14 @@ export default {
     // fetech data from database
     this.loadFireRefs().then(res => {
       this.loadConfig()
-      this.getChallengeList()
+      this.loadChallengeList()
     })
   },
   data () {
     return {
-      // TODO: explain what each variable is used for inside the Vue Component
-      // At the very least, mention what type each var is
-      layoutConfig: null,
-      db: null,
-      bannerObj: {
+      layoutConfig: null, // <Object>: object
+      db: null, // <Object>: object
+      bannerObj: { // <Object>: object
         path: `../statics/${defaultImages.challenges.tableBanner}`,
         ratio: '8',
         type: 'table',
@@ -369,14 +366,14 @@ export default {
       keywordsImage: {},
       popkeywords: [],
       //
-      todayDate: '',
-      rowMessage: '',
+      todayDate: '', // <Date>: today's date
+      rowMessage: '', // <String>: description of the challenge to be displayed
       fixedDialog: false,
       filter: '',
       loading: true,
       challengeList: [],
-      sponsorList: [],
-      pagination: {
+      sponsorList: [], // <Array<String>>: array of emails
+      pagination: { // <Object>: pagination object for the table
         sortBy: 'new',
         rowsPerPage: 50
       },
@@ -436,9 +433,13 @@ export default {
   },
   methods: {
     loadFireRefs: function () {
+      /*
       // load firebase database reference
       // load firebase storage reference (if applicable)
       // load firebase cloud functions reference (if applicable)
+      // return: <Promise<String>>
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
 
@@ -475,8 +476,13 @@ export default {
       }
     },
     displayProjectPage: function (entry) {
-      // TODO: explain the function and param
-      // give better name for the param
+      /*
+      // either route push to the project page or open new window
+      // params:
+      //    @entry <String>: uuid or the alias of the project
+      // return: <void>
+      */
+
       const eventHandler = (e, entry) => {
         if (e.ctrlKey) {
           let routeData = this.$router.resolve(`challenge/${entry}`, '/')
@@ -490,8 +496,15 @@ export default {
       eventHandler(event, entry)
     },
     displayMembers: function (entry) {
-      // TODO: explain the function
+      /*
+      // create a list of sponsors who are in charge of of the challenge
+      // params:
+      //    @entry <Array<Object>>: list of sponsor objects
+      // return: <String>
+      */
+
       let retMembers = ''
+
       entry.forEach(sponsor => {
         if (sponsor.role === 'lead') {
           retMembers += ', ' + sponsor.name
@@ -501,104 +514,147 @@ export default {
       return retMembers.substring(2, retMembers.length)
     },
     joinKeywords: function (entry) {
+      /*
+      // helper function to join keywords
+      // params:
+      //    @entry <Array<String>>: string array with keywords to be appeneded
+      // return: <String>
+      */
+
       return entry.join(', ')
     },
     popDialog: function (entry) {
+      /*
+      // trigger the description pop-up dialog
+      // params:
+      //    @entry <String>: description of the challenge
+      // return: <void>
+      */
+
       this.fixedDialog = true
       this.rowMessage = entry
     },
-    getChallengeList: function () {
-      this.db.collection('challenges').doc('ToC').get()
-        .then(doc => {
-          if (doc.exists) {
-            for (let challenge in doc.data()) {
-              if (challenge !== 'alias') {
-                if (!doc.data()[challenge].hidden) {
-                  // getting the project list
-                  this.challengeList.push(doc.data()[challenge])
+    loadChallengeList: function () {
+      /*
+      // loads the list of all the challenges from the db and
+      // assign them to component states
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
 
-                  doc.data()[challenge].sponsors.forEach(sponsor => {
-                    if (sponsor.email && !this.sponsorList.includes(sponsor.email)) {
-                      this.sponsorList.push(sponsor.email)
-                    } else if (sponsor.uuid && !this.sponsorList.includes(sponsor.uuid)) {
-                      this.sponsorList.push(sponsor.uuid)
-                    }
-                  })
+      return this.db.collection('challenges').doc('ToC').get().then(doc => {
+        if (doc.exists) {
+          for (let challenge in doc.data()) {
+            if (challenge !== 'alias') {
+              if (!doc.data()[challenge].hidden) {
+                // getting the project list
+                this.challengeList.push(doc.data()[challenge])
 
-                  // getting the keywords
-                  if (doc.data()[challenge].keywords.length > 0) {
-                    doc.data()[challenge].keywords.forEach(keyword => {
-                      this.keywords.push(keyword)
-                    })
+                doc.data()[challenge].sponsors.forEach(sponsor => {
+                  if (sponsor.email && !this.sponsorList.includes(sponsor.email)) {
+                    this.sponsorList.push(sponsor.email)
+                  } else if (sponsor.uuid && !this.sponsorList.includes(sponsor.uuid)) {
+                    this.sponsorList.push(sponsor.uuid)
                   }
+                })
+
+                // getting the keywords
+                if (doc.data()[challenge].keywords.length > 0) {
+                  doc.data()[challenge].keywords.forEach(keyword => {
+                    this.keywords.push(keyword)
+                  })
                 }
               }
             }
-          } else {
-            // No document named ToC inside the collection.
           }
-          this.gettingCount()
-        })
-        .then(() => {
-          // done loading
-          this.loading = false
-        })
-        .catch(error => {
-          if (error) {
-            /* console.log(error) */
-          }
-        })
+        } else {
+          throw new Error('No document named ToC inside the collection.')
+        }
+        this.gettingCount()
+
+        return true
+      }).then(() => {
+        // done loading
+        this.loading = false
+        return true
+      }).catch(error => {
+        if (error) {
+          // error
+          return false
+        }
+      })
     },
     loadConfig: function () {
-      this.db.collection('config').doc('project').get()
-        .then(doc => {
-          if (doc.exists) {
-            let data = doc.data()
+      /*
+      // load the config form the db
+      // TODO: this should be replaced since config/project is cached in session
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
 
-            // extracting keywords for the banner and dropdown filter
-            // non-sorted to maintain order for now
-            // let cachedKeywords = data.challengesConfig.keywords.sort()
-            // let cachedKeywords = data.challengesConfig.keywords
+      return this.db.collection('config').doc('project').get().then(doc => {
+        if (doc.exists) {
+          let data = doc.data()
 
-            for (let key in data['keywords']) {
-              this.popkeywords.push({
-                label: key,
-                value: data['keywords'][key]
-              })
+          // extracting keywords for the banner and dropdown filter
+          // non-sorted to maintain order for now
+          // let cachedKeywords = data.challengesConfig.keywords.sort()
+          // let cachedKeywords = data.challengesConfig.keywords
 
-              this.keywordsValToKeyMap[data['keywords'][key]] = key
+          for (let key in data['keywords']) {
+            this.popkeywords.push({
+              label: key,
+              value: data['keywords'][key]
+            })
 
-              // if (
-              //   !cachedKeywords.includes(data['keywords'][key]) &&
-              //   cachedKeywords.length < 5
-              // ) {
-              //   cachedKeywords.push(data['keywords'][key])
-              // }
-            }
+            this.keywordsValToKeyMap[data['keywords'][key]] = key
 
-            // this.keywordsInUse = cachedKeywords
-            this.keywordsInUse = data.challengesConfig.keywords
-
-            // make sure the database response has extraKeywordsData
-            if (data.extraKeywordsData) {
-              // loading the image url from extraKeywordsData
-              let key = ''
-              for (let prop in data.extraKeywordsData) {
-                key = prop.toLowerCase()
-                this.keywordsImage[key] = data.extraKeywordsData[prop] ||
-                  this.keywordsImage[key]
-              }
-            }
-
-            if (typeof data['pagination'] === 'number') {
-              this.pagination.rowsPerPage = data['pagination']
-            }
-
-            this.todayDate = new Date(Date.now() - data.newFlag * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+            // if (
+            //   !cachedKeywords.includes(data['keywords'][key]) &&
+            //   cachedKeywords.length < 5
+            // ) {
+            //   cachedKeywords.push(data['keywords'][key])
+            // }
           }
-        })
+
+          // this.keywordsInUse = cachedKeywords
+          this.keywordsInUse = data.challengesConfig.keywords
+
+          // make sure the database response has extraKeywordsData
+          if (data.extraKeywordsData) {
+            // loading the image url from extraKeywordsData
+            let key = ''
+            for (let prop in data.extraKeywordsData) {
+              key = prop.toLowerCase()
+              this.keywordsImage[key] = data.extraKeywordsData[prop] ||
+                this.keywordsImage[key]
+            }
+          }
+
+          if (typeof data['pagination'] === 'number') {
+            this.pagination.rowsPerPage = data['pagination']
+          }
+
+          let expireDate = data.newFlag * 24 * 60 * 60 * 1000
+          this.todayDate = new Date(Date.now() - expireDate)
+          this.todayDate = this.todayDate.toISOString().substring(0, 10)
+
+          return true
+        }
+        throw new Error('File not found!')
+      }).catch(err => {
+        if (err) {
+          return false
+        }
+      })
     },
     gettingCount: function () {
+      /*
+      // counting how many times the keywords appear inside the ToC
+      // params: <void>
+      // return: <void>
+      */
+
       this.keywords.forEach(val => {
         if (val in this.keywordsCounter) {
           this.keywordsCounter[val] = this.keywordsCounter[val] + 1
@@ -612,23 +668,5 @@ export default {
 </script>
 
 <style lang="stylus">
-/* Colors from: https://www.december.com/html/spec/color2.html */
-.green-priority {
-  background-image: linear-gradient(#00EE00, #9AFF9A, #00EE00)
-}
 
-/* Colors from: https://www.december.com/html/spec/color1.html */
-.yellow-priority {
-  background-image: linear-gradient(#FFE600, #FFF68F, #FFE600)
-}
-
-/* Colors from: https://www.december.com/html/spec/color1.html */
-.red-priority {
-  background-image: linear-gradient(#ED0C0C, #ED8C8C, #ED0C0C)
-}
-
-/* Colors from: https://www.december.com/html/spec/color0.html */
-.null-priority {
-  background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
-}
 </style>

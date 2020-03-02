@@ -10,9 +10,11 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     components/EditAndPreviewChallenge.vue
-Purpose:
+Purpose:  The user insterface to allow the admin to eidt and preview the
+          resulting edits of challenge before submitting
 Methods:
-  *
+  * Allows the admin to edit challenge
+  * Allows the admin to preview challenges
 
 ## -->
 
@@ -1800,35 +1802,29 @@ export default {
   },
   data () {
     return {
-      // Reference for the database
-      db: null,
-      storage: null,
-      userEmailToObjMap: {},
-      // "Alias URL" related variables
-      aliasMap: {},
-      aliasKeys: [],
-      aliasVals: [],
-      aliasEditObj: {
+      db: null, // <Object>: firebase object referencing the database
+      storage: null, // <Object>: firebase object referencing the storage
+      userEmailToObjMap: {}, // <Map>: map of email to user's data
+      aliasMap: {}, // <Map>:
+      aliasKeys: [], // <Array<String>>
+      aliasVals: [], // <Array<>>
+      aliasEditObj: { // <Object>: error object for edit for alias
         error: false,
         message: ''
       },
-      // "Advanced Settings" dialog proctor
-      advancedDialog: false,
-      oldAdvancedSettings: {},
-      // "File Attachment" dialog proctor
-      fileAttachmentDialog: false,
-      // "Edit Mode" related variables
-      newKeyword: '', // not used currently
-      configData: {},
-      chipType: '',
-      bodyType: '',
+      advancedDialog: false, // <Boolean>: flag to pop-up advanced dialog
+      oldAdvancedSettings: {}, // <Object>: old settings to reasign on cancel
+      fileAttachmentDialog: false, // <Boolean>: flag to pop-up file upload
+      configData: {}, // <Object>: object storing configs of the application
+      chipType: '', // <String>: type of the chip that the admin is inserting
+      bodyType: '', // <String>: type of the body that the admin is inserting
       keywordsOptions: [],
       addedTeam: false,
       addedChip: false,
       addedContent: false,
-      // childMode represent either 'Edit' or 'Preview' Mode
-      childMode: '',
-      // submitMode let us know, either to switch between Preview/Edit or push to DB
+      childMode: '', // <String>: keep tracks of view mode ['Edit', 'Preview']
+      // submitMode <String>: keep track of submit mode
+      //                      ['Edit', 'Preview', 'DB']
       submitMode: '',
       mainImage: {
         prev: '',

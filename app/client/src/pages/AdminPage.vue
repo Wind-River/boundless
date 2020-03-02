@@ -358,9 +358,12 @@ export default {
   },
   methods: {
     consoleLoading: function (loadVal) {
+      /*
       // handle page loading via child event
       // params:
       //   @loadVal <Boolean>: event emitter value to render loading
+      // return: <void>
+      */
 
       this.haltConsole = loadVal
 
@@ -380,10 +383,13 @@ export default {
       }
     },
     loadKeywords: function (val) {
+      /*
       // load keywords from the child component and convert to
       // map to assign as one of the object inside this.configs var
       // params:
       //   @val <Object>: event emitter value containing keywords from database
+      // return: <void>
+      */
 
       if (val) {
         this.configs.keywords = {}
@@ -393,30 +399,39 @@ export default {
       }
     },
     loadProjectConfig: function (val) {
+      /*
       // load project configuartion from the child component and
       // assign as one of the object inside this.configs var
       // params:
       //   @val <Object>: event emitter value containing database information
+      // return: <void>
+      */
 
       if (val) {
         this.configs.projects = val
       }
     },
     loadChallengeConfig: function (val) {
+      /*
       // load challenge configuartion from the child component and
       // assign as one of the object inside this.configs var
       // params:
       //   @val <Object>: event emitter value containing database information
+      // return: <void>
+      */
 
       if (val) {
         this.configs.challenges = val
       }
     },
     loadUserConfig: function (val) {
+      /*
       // load user configuartion from the child component and assign
       // as one of the object inside this.configs var
       // params:
       //   @val <Object>: event emitter value contating database information
+      // retur: <void>
+      */
 
       if (val) {
         val.list = val.list.sort(
@@ -427,7 +442,11 @@ export default {
       }
     },
     switchDatabase: function () {
+      /*
       // switch database namespace and reload the page
+      // params: <void>
+      // return: <void>
+      */
 
       this.$q.localStorage.set('boundless_db', this.db)
       if (this.$q.sessionStorage.has('boundless_timeout')) {
@@ -440,7 +459,7 @@ export default {
 }
 </script>
 
-<style lang="stylus">
+<style lang="stylus" scoped>
 // console-page page loadout
 .console-page {
   min-width: 800px;

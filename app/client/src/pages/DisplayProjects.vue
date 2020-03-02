@@ -636,18 +636,5 @@ export default {
 </script>
 
 <style lang="stylus">
-/* Colors from: https://www.december.com/html/spec/color2.html */
-.full-color {
-  background-image: linear-gradient(#00EE00, #9AFF9A, #00EE00)
-}
 
-/* Colors from: https://www.december.com/html/spec/color1.html */
-.half-full-color {
-  background-image: linear-gradient(#FFE600, #FFF68F, #FFE600)
-}
-
-/* Colors from: https://www.december.com/html/spec/color0.html */
-.null-color {
-  background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
-}
 </style>
