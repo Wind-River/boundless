@@ -10,9 +10,13 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     pages/Index.vue
-Purpose:  About page of the boundless innovation program
+Purpose:  About page of the program
 Methods:
-  * Displays the quick summary of how many projects, innovators, and challanges are currently registered
+  * About page of the portal
+  * Shows quick count of projects
+  * Shows quick count of innovators
+  * Shows quick count of challenges (if enabled)
+  * Shows quick coount of sponsors (if enabled)
 
 ## -->
 
@@ -356,20 +360,20 @@ export default {
   },
   data () {
     return {
-      db: null, // <Object>: firebase credentials
-      aboutData: null, // <Object>
-      layoutConfig: null, // <Object>
-      loading: true, // <Boolean>
-      projectList: [], // <Array<Object>>
-      challengeList: [], // <Array<Object>>
-      innovatorList: [],
-      sponsorList: [],
-      // the following are deprecated
-      keywords: [], // <Array<String>>
-      keywordsInUse: [],
-      keywordsCounter: {},
-      keywordsValToKeyMap: {},
-      keywordsImage: {}
+      db: null, // <Object>: firebase firestore credentials
+      aboutData: null, // <Object>:
+      layoutConfig: null, // <Object>: configurations related to layout
+      loading: true, // <Boolean>: flag for loading animation
+      projectList: [], // <Array<Object>>: list of visible projects
+      challengeList: [], // <Array<Object>>: list of visible challenges
+      innovatorList: [], // <Array<Object>>: list of innovators for the projects
+      sponsorList: [], // <Array<Object>>: list of sponsors for the challenges
+      // keywords <Array<String>>: list of keywords appearing in all challenges
+      keywords: [],
+      keywordsInUse: [], // <Array<String>>: list of keywords in use
+      keywordsCounter: {}, // <Map>: map of how many times each keywords appear
+      keywordsValToKeyMap: {}, // <Map>: map of value to key of keywords
+      keywordsImage: {} // <Map>: map of keyword's images
     }
   },
   methods: {
@@ -395,7 +399,7 @@ export default {
         })
       } else {
         return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
+          return productionDb.collection('config').doc('project').get()
             .then(doc => {
               if (doc.exists) {
                 if (doc.data().db === 'testing') {
@@ -419,7 +423,9 @@ export default {
     },
     gettingCount: function () {
       /*
-      // TODO: function description
+      // counting how many times the keywords appear inside the ToC
+      // params: <void>
+      // return: <void>
       */
 
       this.keywords.forEach(val => {
@@ -433,6 +439,8 @@ export default {
     routeHairCutPage: function () {
       /*
       // routes to the HairCut page by opening a new tab
+      // params: <void>
+      // return: <void>
       */
 
       let routeData = this.$router.resolve({
@@ -442,94 +450,99 @@ export default {
     },
     loadInformation: function () {
       /*
-      // load the minimun database information to the respective component var
-      // return:
+      // load list of projects and challenges from the db
+      // TODO: cache the projects and challenges with a timer
+      // params: <void>
+      // return: <Promise<Boolean>>
       */
 
-      return this.db.collection('projects').doc('ToC').get()
-        .then(doc => {
-          if (doc.exists) {
-            for (let project in doc.data()) {
-              if (project !== 'alias') {
-                if (!doc.data()[project].hidden) {
-                  // getting the project list
-                  this.projectList.push(project)
+      return this.db.collection('projects').doc('ToC').get().then(doc => {
+        if (doc.exists) {
+          for (let project in doc.data()) {
+            if (project !== 'alias') {
+              if (!doc.data()[project].hidden) {
+                // getting the project list
+                this.projectList.push(project)
 
-                  // getting the innovator list
-                  if (doc.data()[project].members.length > 0) {
-                    doc.data()[project].members.forEach(member => {
-                      if (
-                        member.email &&
-                        !this.innovatorList.includes(member.email)
-                      ) {
-                        this.innovatorList.push(member.email)
-                      } else if (
-                        member.uuid && !this.innovatorList.includes(member.uuid)
-                      ) {
-                        this.innovatorList.push(member.uuid)
-                      }
-                    })
-                  }
+                // getting the innovator list
+                if (doc.data()[project].members.length > 0) {
+                  doc.data()[project].members.forEach(member => {
+                    if (
+                      member.email &&
+                      !this.innovatorList.includes(member.email)
+                    ) {
+                      this.innovatorList.push(member.email)
+                    } else if (
+                      member.uuid && !this.innovatorList.includes(member.uuid)
+                    ) {
+                      this.innovatorList.push(member.uuid)
+                    }
+                  })
+                }
 
-                  // getting the keywords
-                  if (doc.data()[project].keywords.length > 0) {
-                    doc.data()[project].keywords.forEach(keyword => {
-                      this.keywords.push(keyword)
-                    })
-                  }
+                // getting the keywords
+                if (doc.data()[project].keywords.length > 0) {
+                  doc.data()[project].keywords.forEach(keyword => {
+                    this.keywords.push(keyword)
+                  })
                 }
               }
             }
-          } else {
-            throw new Error('Required document not found!')
           }
+        } else {
+          throw new Error('Required document/s not found!')
+        }
 
-          this.gettingCount()
-        })
-        .then(() => {
-          this.db.collection('challenges').doc('ToC').get()
-            .then(doc => {
-              if (doc.exists) {
-                for (let challenge in doc.data()) {
-                  if (challenge !== 'alias') {
-                    if (!doc.data()[challenge].hidden) {
-                      this.challengeList.push(challenge)
+        this.gettingCount()
 
-                      doc.data()[challenge].sponsors.forEach(sponsor => {
-                        if (
-                          sponsor.email &&
-                          !this.sponsorList.includes(sponsor.email)
-                        ) {
-                          this.sponsorList.push(sponsor.email)
-                        } else if (
-                          sponsor.uuid &&
-                          !this.sponsorList.includes(sponsor.uuid)
-                        ) {
-                          this.sponsorList.push(sponsor.uuid)
-                        }
-                      })
+        return true
+      }).then(() => {
+        return this.db.collection('challenges').doc('ToC').get()
+      }).then(doc => {
+        if (doc.exists) {
+          for (let challenge in doc.data()) {
+            if (challenge !== 'alias') {
+              if (!doc.data()[challenge].hidden) {
+                this.challengeList.push(challenge)
 
-                      // // ommiting the keywords from challenges
-                      // if (doc.data()[challenge].keywords.length > 0) {
-                      //   doc.data()[challenge].keywords.forEach(keyword => {
-                      //     this.keywords.push(keyword)
-                      //   })
-                      // }
-                    }
+                doc.data()[challenge].sponsors.forEach(sponsor => {
+                  if (
+                    sponsor.email &&
+                    !this.sponsorList.includes(sponsor.email)
+                  ) {
+                    this.sponsorList.push(sponsor.email)
+                  } else if (
+                    sponsor.uuid &&
+                    !this.sponsorList.includes(sponsor.uuid)
+                  ) {
+                    this.sponsorList.push(sponsor.uuid)
                   }
-                }
-              }
+                })
 
-              this.loading = false
-            })
-        })
-        .catch(err => {
-          if (err) {
-            setTimeout(() => {
-              this.loading = false
-            }, 300)
+                // // ommiting the keywords from challenges
+                // if (doc.data()[challenge].keywords.length > 0) {
+                //   doc.data()[challenge].keywords.forEach(keyword => {
+                //     this.keywords.push(keyword)
+                //   })
+                // }
+              }
+            }
           }
-        })
+        } else {
+          throw new Error('Required document/s not found!')
+        }
+
+        this.loading = false
+
+        return true
+      }).catch(err => {
+        if (err) {
+          setTimeout(() => {
+            this.loading = false
+            return false
+          }, 300)
+        }
+      })
     }
   }
 }

@@ -311,6 +311,7 @@ export default {
   },
   created () {
     // TODO: handle inside routes
+    // route guarding for the component
     if (this.$q.sessionStorage.has('admin_token')) {
       this.notFound = false
     } else {
@@ -347,13 +348,13 @@ export default {
       db: null, // <String>: name of the database
       parentOption: 'projects', // <String>: name of the parent tab
       previewRatio: '5', // <String>: ratio for preview of imges in child
-      configs: { // <Object<Object>>: overall configs object
-        users: {}, // <Object>: users config object
-        projects: {}, // <Object>: projects config object
-        challenges: {}, // <Object>: challenges config object
-        keywords: {} // <Object>: object containing keywards
+      configs: { // <Object<Object>>: configuration records of all collections
+        users: {}, // <Object>: configuration record for users
+        projects: {}, // <Object>: configuration record for projects
+        challenges: {}, // <Object>: configuration record for challenges
+        keywords: {} // <Object>: dictionary containing keywords
       },
-      haltConsole: false // <Boolean>
+      haltConsole: false // <Boolean>: flag for loading animation
     }
   },
   methods: {

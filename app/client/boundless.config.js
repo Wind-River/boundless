@@ -22,8 +22,8 @@ export const layoutConfig = {
   homeURL: '',
   companyName: '',
   defaultImg: '',
-  challenges: false,
-  hairCut: false
+  // hairCut: false, // feature for later
+  challenges: false
 }
 
 export const dbMeta = {

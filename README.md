@@ -1,5 +1,3 @@
-<< Back
-
 # Boundless Portal
 Employee driven innovations are tracked here. An innovation may include 
 (but not limited to):

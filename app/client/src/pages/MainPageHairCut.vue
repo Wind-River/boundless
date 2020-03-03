@@ -10,9 +10,9 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     pages/MainPageHairCut.vue
-Purpose:
+Purpose:  Fun feature
 Methods:
-  *
+  * TBD
 
 ## -->
 
@@ -182,21 +182,30 @@ import testingDb from '../firebase/init_testing'
 export default {
   created () {
     this.loadFireRefs().then(res => {
-      this.getInformation()
+      this.loadInformation()
     })
   },
   data () {
     return {
-      db: null,
-      loading: true,
-      hairCount: 250,
-      projectList: []
+      db: null, // <Object>: firebase firestore credentials
+      loading: true, // <Boolean>: flag for component loading animation
+      hairCount: 250, // <Integer>: number for target
+      projectList: [] // <Array<Object>>: list of visible projects from toc
     }
   },
   methods: {
     loadFireRefs: function () {
+      /*
+      // load firebase database reference
+      // load firebase storage reference (if applicable)
+      // load firebase cloud functions reference (if applicable)
+      // params: <void>
+      // return: <Promise<String>>
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
+
         return new Promise((resolve, reject) => {
           if (sessionDb === 'testing') {
             this.db = testingDb
@@ -207,7 +216,7 @@ export default {
         })
       } else {
         return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
+          return productionDb.collection('config').doc('project').get()
             .then(doc => {
               if (doc.exists) {
                 if (doc.data().db === 'testing') {
@@ -228,52 +237,62 @@ export default {
         })
       }
     },
-    getInformation: function () {
-      return this.db.collection('projects').doc('ToC').get()
-        .then(doc => {
+    loadInformation: function () {
+      /*
+      // load list of projects and challenges from the db
+      // TODO: cache the projects and challenges with a timer
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
+
+      return this.db.collection('projects').doc('ToC').get().then(doc => {
+        if (doc.exists) {
+          for (let project in doc.data()) {
+            if (project !== 'alias') {
+              if (!doc.data()[project].hidden) {
+                this.projectList.push(project)
+              }
+            }
+          }
+
+          return true
+        } else {
+          throw new Error('"projects/TOC" missing! (MainPageHairCut)')
+        }
+      }).then(() => {
+        return this.db.collection('challenges').doc('ToC').get().then(doc => {
           if (doc.exists) {
-            for (let project in doc.data()) {
-              if (project !== 'alias') {
-                if (!doc.data()[project].hidden) {
-                  this.projectList.push(project)
+            for (let challenge in doc.data()) {
+              if (challenge !== 'alias') {
+                if (!doc.data()[challenge].hidden) {
+                  this.projectList.push(challenge)
                 }
               }
             }
+            this.hairCount = this.hairCount - this.projectList.length
 
             return true
           } else {
-            throw new Error('"projects/TOC" missing! (MainPageHairCut)')
+            throw new Error('"challenges/ToC" missing! (MainPageHairCut)')
           }
         })
-        .then(() => {
-          this.db.collection('challenges').doc('ToC').get()
-            .then(doc => {
-              if (doc.exists) {
-                for (let challenge in doc.data()) {
-                  if (challenge !== 'alias') {
-                    if (!doc.data()[challenge].hidden) {
-                      this.projectList.push(challenge)
-                    }
-                  }
-                }
-                this.hairCount = this.hairCount - this.projectList.length
-
-                return true
-              } else {
-                throw new Error('"challenges/ToC" missing! (MainPageHairCut)')
-              }
-            })
-        })
-        .catch(err => {
-          if (err) {
-            setTimeout(() => {
-              this.hairCount = this.hairCount - this.projectList.length
-              this.loading = false
-            }, 300)
-          }
-        })
+      }).catch(err => {
+        if (err) {
+          setTimeout(() => {
+            this.hairCount = this.hairCount - this.projectList.length
+            this.loading = false
+            return false
+          }, 300)
+        }
+      })
     },
     doneLoading: function () {
+      /*
+      // stops the component from loading
+      // params: <void>
+      // return: <void>
+      */
+
       this.loading = false
     }
   },
@@ -284,7 +303,6 @@ export default {
 </script>
 
 <style lang="stylus">
-
 .bold-3 {
   font-size: 32px;
 }

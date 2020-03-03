@@ -10,9 +10,13 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     pages/DisplayProjects.vue
-Purpose:
+Purpose:  Display the short summary of of all projects in a table
 Methods:
-  *
+  * Filters projects via string matching
+  * Searchbar for filter param
+  * Dropbox for filter param
+  * Clickable icons for filter param
+  * Redirect to individual project
 
 ## -->
 
@@ -116,22 +120,6 @@ Methods:
         <template v-slot:top-right>
 
           <q-toolbar>
-            <!-- TODO -->
-            <!-- <q-btn
-              dense flat round
-              @click="openTutorialVideo"
-            >
-              <q-icon
-                name="ondemand_video" size="24px" color="secondary"
-              />
-              <q-tooltip
-                anchor="center left" self="center right"
-                :offset="[10, 10]"
-              >
-                'Search' video tutorial
-              </q-tooltip>
-            </q-btn> -->
-
             <q-btn
               round dense flat
               class="q-mr-xs" icon="menu"
@@ -318,9 +306,9 @@ export default {
   },
   created () {
     // fetches data from database
-    this.getDb().then(res => {
-      this.getProjectList()
-      this.loadInformation()
+    this.loadFireRefs().then(res => {
+      this.loadProjectList()
+      this.loadConfig()
       this.loadProgressBarConf()
     })
   },
@@ -329,37 +317,34 @@ export default {
   },
   data () {
     return {
-      progressBar: {
-        tags: ['Idea', 'PoC', 'Value'],
-        half: true
-      },
-      db: null,
-      bannerObj: {
+      db: null, // <Object>: firebase firestore credentials
+      bannerObj: { // <Object>: default banner object
+        // path <String>: file path of the default image
         path: `../statics/${defaultImages.projects.tableBanner}`,
-        ratio: '8',
-        type: 'table',
-        category: 'projects'
+        ratio: '8', // <String>: ratio of the banner
+        type: 'table', // <String>: type of the banner
+        category: 'projects' // <String>: category of the banner
       },
-      userToC: {},
-      memberList: [],
-      // keywords related variables should be consolidated
+      userToC: {}, // <Map<Object>>: ToC content of user collection
+      memberList: [], // <Array<String>>: list of emails
+      // keywords <Array<String>>: list of keywords appearing in all projects
       keywords: [],
-      keywordsInUse: [],
-      keywordsCounter: {},
-      keywordsValToKeyMap: {},
-      keywordsImage: {},
-      popkeywords: [],
-      //
-      todayDate: '',
-      rowMessage: '',
-      fixedDialog: false,
-      filter: '',
-      loading: true,
-      projectList: [],
-      pagination: {
-        sortBy: 'new',
-        rowsPerPage: 50
+      keywordsInUse: [], // <Array<String>>: list of keywords in use
+      keywordsCounter: {}, // <Map>: map of how many times each keywords appear
+      keywordsValToKeyMap: {}, // <Map>: map of value to key of keywords
+      keywordsImage: {}, // <Map>: map of keyword's images
+      popkeywords: [], // <Array<Object>>: dropdown menu values
+      todayDate: '', // <Date>: today's date
+      rowMessage: '', // <String>: description of the project to be displayed
+      fixedDialog: false, // <Boolean>: trigger for pop-up dialog
+      filter: '', // <String>: value of the search
+      loading: true, // <Boolean>: flag for the page loading
+      projectList: [], // <Array<Object>>: list of all the projects in ToC
+      pagination: { // <Object>: pagination object for the table
+        sortBy: 'new', // <String>: name of the column to be sorted
+        rowsPerPage: 50 // <Integer>: numbers of projects to display by default
       },
+      // columns <Array<Object>>: column layout of the display table
       columns: [
         {
           name: 'new',
@@ -416,11 +401,22 @@ export default {
           label: 'Details',
           field: row => row.keywords
         }
-      ]
+      ],
+      progressBar: { // <Object>: default object of the progress bar
+        // <Array<String>>: list of default values for the progress bar
+        tags: ['Idea', 'PoC', 'Value'],
+        half: true // <Boolean>: flag for the half step
+      }
     }
   },
   methods: {
     loadProgressBarConf: function () {
+      /*
+      // loads progress bar configuration from session cache
+      // params: <void>
+      // return: <void>
+      */
+
       if (this.$q.sessionStorage.has('boundless_config')) {
         let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
 
@@ -429,7 +425,15 @@ export default {
         }
       }
     },
-    getDb: function () {
+    loadFireRefs: function () {
+      /*
+      // load firebase database reference
+      // load firebase storage reference (if applicable)
+      // load firebase cloud functions reference (if applicable)
+      // params: <void>
+      // return: <Promise<String>>
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
         return new Promise((resolve, reject) => {
@@ -442,7 +446,7 @@ export default {
         })
       } else {
         return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
+          return productionDb.collection('config').doc('project').get()
             .then(doc => {
               if (doc.exists) {
                 if (doc.data().db === 'testing') {
@@ -463,12 +467,14 @@ export default {
         })
       }
     },
-    // openTutorialVideo: function () {
-    //   window.open('https://www.youtube.com', '_blank')
-    // },
     displayProjectPage: function (entry) {
-      // TODO: explain the function and param
-      // give better name for the param
+      /*
+      // either route push to the project page or open new window
+      // params:
+      //    @entry <String>: uuid or the alias of the project
+      // return: <void>
+      */
+
       const eventHandler = (e, entry) => {
         if (e.ctrlKey) {
           let routeData = this.$router.resolve(`project/${entry}`, '/')
@@ -482,7 +488,15 @@ export default {
       eventHandler(event, entry)
     },
     displayMembers: function (entry) {
+      /*
+      // create a list of members who are in charge of of the challenge
+      // params:
+      //    @entry <Array<Object>>: list of member objects
+      // return: <String>
+      */
+
       let retMembers = ''
+
       entry.forEach(member => {
         if (member.role === 'lead') {
           if (member.email) {
@@ -496,133 +510,165 @@ export default {
           }
         }
       })
+
       return retMembers.substring(2, retMembers.length)
     },
     joinKeywords: function (entry) {
+      /*
+      // helper function to join keywords
+      // params:
+      //    @entry <Array<String>>: string array with keywords to be appeneded
+      // return: <String>
+      */
+
       return entry.join(', ')
     },
     popDialog: function (entry) {
+      /*
+      // trigger the description pop-up dialog
+      // params:
+      //    @entry <String>: description of the challenge
+      // return: <void>
+      */
+
       this.fixedDialog = true
       this.rowMessage = entry
     },
-    // columnsFont: function () {
-    //   this.columns.forEach(entry => {
-    //     entry.style = {
-    //       fontSize: '18px'
-    //       // fontWeight: 'bold'
-    //     }
-    //   })
-    // },
-    getProjectList: function () {
-      this.db.collection('projects').doc('ToC').get()
-        .then(doc => {
-          if (doc.exists) {
-            for (let project in doc.data()) {
-              if (project !== 'alias') {
-                if (!doc.data()[project].hidden) {
-                  // getting the project list
-                  this.projectList.push(doc.data()[project])
+    loadProjectList: function () {
+      /*
+      // loads the list of all the projects from the db and
+      // assign them to component states
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
 
-                  // getting the innovator list
-                  if (doc.data()[project].members.length > 0) {
-                    doc.data()[project].members.forEach(member => {
-                      if (member.email && !this.memberList.includes(member.email)) {
-                        this.memberList.push(member.email)
-                      } else if (member.uuid && !this.memberList.includes(member.uuid)) {
-                        this.memberList.push(member.uuid)
-                      }
-                    })
-                  }
+      return this.db.collection('projects').doc('ToC').get().then(doc => {
+        if (doc.exists) {
+          for (let project in doc.data()) {
+            if (project !== 'alias') {
+              if (!doc.data()[project].hidden) {
+                // getting the project list
+                this.projectList.push(doc.data()[project])
 
-                  // getting the keywords
-                  if (doc.data()[project].keywords.length > 0) {
-                    doc.data()[project].keywords.forEach(keyword => {
-                      this.keywords.push(keyword)
-                    })
-                  }
+                // getting the innovator list
+                if (doc.data()[project].members.length > 0) {
+                  doc.data()[project].members.forEach(member => {
+                    if (
+                      member.email && !this.memberList.includes(member.email)
+                    ) {
+                      this.memberList.push(member.email)
+                    } else if (
+                      member.uuid && !this.memberList.includes(member.uuid)
+                    ) {
+                      this.memberList.push(member.uuid)
+                    }
+                  })
+                }
+
+                // getting the keywords
+                if (doc.data()[project].keywords.length > 0) {
+                  doc.data()[project].keywords.forEach(keyword => {
+                    this.keywords.push(keyword)
+                  })
                 }
               }
             }
-          } else {
-            /* console.log('No document named ToC inside the collection.') */
           }
-          this.gettingCount()
-        })
-        .then(() => {
-          this.db.collection('users').doc('ToC').get()
-            .then(doc => {
-              if (doc.exists) {
-                this.userToC = doc.data()
-              } else {
-                // console.log('No ToC!')
-              }
+        } else {
+          throw new Error('ToC not found!')
+        }
+        this.gettingCount()
 
-              this.loading = false
-            })
-            .catch(err => {
-              if (err) {
-                // console.log(err)
-              }
-            })
-        })
-        .catch(error => {
-          if (error) {
-            /* console.log(error) */
-          }
-        })
+        return true
+      }).then(() => {
+        return this.db.collection('users').doc('ToC').get()
+      }).then(doc => {
+        if (doc.exists) {
+          this.userToC = doc.data()
+        } else {
+          throw new Error('No ToC!')
+        }
+
+        this.loading = false
+
+        return true
+      }).catch(error => {
+        if (error) {
+          return false
+        }
+      })
     },
-    loadInformation: function () {
-      // load the minimun database information to the respective component var
+    loadConfig: function () {
+      /*
+      // load the config form the db
+      // TODO: this should be replaced since config/project is cached in session
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
 
-      return this.db.collection('config').doc('project').get()
-        .then(doc => {
-          if (doc.exists) {
-            let data = doc.data()
+      return this.db.collection('config').doc('project').get().then(doc => {
+        if (doc.exists) {
+          let data = doc.data()
 
-            // extracting keywords for the banner and dropdown filter
-            // non-sorted to maintain order for now
-            // let cachedKeywords = data.projectsConfig.keywords.sort()
-            // let cachedKeywords = data.projectsConfig.keywords
+          // extracting keywords for the banner and dropdown filter
+          // non-sorted to maintain order for now
+          // let cachedKeywords = data.projectsConfig.keywords.sort()
+          // let cachedKeywords = data.projectsConfig.keywords
 
-            for (let key in data['keywords']) {
-              this.popkeywords.push({
-                label: key,
-                value: data['keywords'][key]
-              })
+          for (let key in data['keywords']) {
+            this.popkeywords.push({
+              label: key,
+              value: data['keywords'][key]
+            })
 
-              this.keywordsValToKeyMap[data['keywords'][key]] = key
+            this.keywordsValToKeyMap[data['keywords'][key]] = key
 
-              // if (
-              //   !cachedKeywords.includes(data['keywords'][key]) &&
-              //   cachedKeywords.length < 5
-              // ) {
-              //   cachedKeywords.push(data['keywords'][key])
-              // }
-            }
-
-            // this.keywordsInUse = cachedKeywords
-            this.keywordsInUse = data.projectsConfig.keywords
-
-            // make sure the database response has extraKeywordsData
-            if (data.extraKeywordsData) {
-              // loading the image url from extraKeywordsData
-              let key = ''
-              for (let prop in data.extraKeywordsData) {
-                key = prop.toLowerCase()
-                this.keywordsImage[key] = data.extraKeywordsData[prop] ||
-                  '../statics/images/other-icon.png'
-              }
-            }
-
-            if (typeof data['pagination'] === 'number') {
-              this.pagination.rowsPerPage = data['pagination']
-            }
-
-            this.todayDate = new Date(Date.now() - data.newFlag * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+            // if (
+            //   !cachedKeywords.includes(data['keywords'][key]) &&
+            //   cachedKeywords.length < 5
+            // ) {
+            //   cachedKeywords.push(data['keywords'][key])
+            // }
           }
-        })
+
+          // this.keywordsInUse = cachedKeywords
+          this.keywordsInUse = data.projectsConfig.keywords
+
+          // make sure the database response has extraKeywordsData
+          if (data.extraKeywordsData) {
+            // loading the image url from extraKeywordsData
+            let key = ''
+            for (let prop in data.extraKeywordsData) {
+              key = prop.toLowerCase()
+              this.keywordsImage[key] = data.extraKeywordsData[prop] ||
+                '../statics/images/other-icon.png'
+            }
+          }
+
+          if (typeof data['pagination'] === 'number') {
+            this.pagination.rowsPerPage = data['pagination']
+          }
+
+          let expireDate = data.newFlag * 24 * 60 * 60 * 1000
+          this.todayDate = new Date(Date.now() - expireDate)
+          this.todayDate = this.todayDate.toISOString().substring(0, 10)
+
+          return true
+        }
+        throw new Error('File not found!')
+      }).catch(err => {
+        if (err) {
+          return false
+        }
+      })
     },
     gettingCount: function () {
+      /*
+      // counting how many times the keywords appear inside the ToC
+      // params: <void>
+      // return: <void>
+      */
+
       this.keywords.forEach(val => {
         if (val in this.keywordsCounter) {
           this.keywordsCounter[val] = this.keywordsCounter[val] + 1

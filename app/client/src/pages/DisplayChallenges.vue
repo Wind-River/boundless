@@ -273,7 +273,7 @@ Methods:
                 dense clickable
                 color="info" text-color="white"
                 label="more..."
-                @click="displayProjectPage(props.row.alias || props.row.uuid)"
+                @click="displayChallengePage(props.row.alias || props.row.uuid)"
               />
             </q-td>
 
@@ -350,33 +350,34 @@ export default {
   },
   data () {
     return {
-      layoutConfig: null, // <Object>: object
-      db: null, // <Object>: object
-      bannerObj: { // <Object>: object
+      db: null, // <Object>: firebase firestore credentials
+      layoutConfig: null, // <Object>: configurations related to layout
+      bannerObj: { // <Object>: default banner object
+        // path <String>: file path of the default image
         path: `../statics/${defaultImages.challenges.tableBanner}`,
-        ratio: '8',
-        type: 'table',
-        category: 'challenges'
+        ratio: '8', // <String>: ratio of the banner
+        type: 'table', // <String>: type of the banner
+        category: 'challenges' // <String>: category of the banner
       },
-      // keywords related variables should be consolidated
+      // keywords <Array<String>>: list of keywords appearing in all challenges
       keywords: [],
-      keywordsInUse: [],
-      keywordsCounter: {},
-      keywordsValToKeyMap: {},
-      keywordsImage: {},
-      popkeywords: [],
-      //
+      keywordsInUse: [], // <Array<String>>: list of keywords in use
+      keywordsCounter: {}, // <Map>: map of how many times each keywords appear
+      keywordsValToKeyMap: {}, // <Map>: map of value to key of keywords
+      keywordsImage: {}, // <Map>: map of keyword's images
+      popkeywords: [], // <Array<Object>>: dropdown menu values
       todayDate: '', // <Date>: today's date
       rowMessage: '', // <String>: description of the challenge to be displayed
-      fixedDialog: false,
-      filter: '',
-      loading: true,
-      challengeList: [],
+      fixedDialog: false, // <Boolean>: trigger for pop-up dialog
+      filter: '', // <String>: value of the search
+      loading: true, // <Boolean>: flag for the page loading
+      challengeList: [], // <Array<Object>>: list of all the challenges in ToC
       sponsorList: [], // <Array<String>>: array of emails
       pagination: { // <Object>: pagination object for the table
-        sortBy: 'new',
-        rowsPerPage: 50
+        sortBy: 'new', // <String>: name of the column to be sorted
+        rowsPerPage: 50 // <Integer>: numbers of projects to display by default
       },
+      // columns <Array<Object>>: column layout of the display table
       columns: [
         {
           name: 'new',
@@ -424,7 +425,7 @@ export default {
           field: row => row.keywords
         }
       ],
-      priorityGague: {
+      priorityGague: { // <Object>: data for knob animation
         val: [0, 90, 180, 270],
         color: ['green', 'green', 'yellow-8', 'red'],
         text: ['Null', 'Long', 'Med', 'Short']
@@ -437,6 +438,7 @@ export default {
       // load firebase database reference
       // load firebase storage reference (if applicable)
       // load firebase cloud functions reference (if applicable)
+      // params: <void>
       // return: <Promise<String>>
       */
 
@@ -454,7 +456,7 @@ export default {
         })
       } else {
         return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
+          return productionDb.collection('config').doc('project').get()
             .then(doc => {
               if (doc.exists) {
                 if (doc.data().db === 'testing') {
@@ -475,11 +477,11 @@ export default {
         })
       }
     },
-    displayProjectPage: function (entry) {
+    displayChallengePage: function (entry) {
       /*
-      // either route push to the project page or open new window
+      // either route push to the challenge page or open new window
       // params:
-      //    @entry <String>: uuid or the alias of the project
+      //    @entry <String>: uuid or the alias of the challenge
       // return: <void>
       */
 
