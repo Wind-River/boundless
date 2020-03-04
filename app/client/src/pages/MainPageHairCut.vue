@@ -10,7 +10,7 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     pages/MainPageHairCut.vue
-Purpose:  Fun feature
+Purpose:  Under development
 Methods:
   * TBD
 

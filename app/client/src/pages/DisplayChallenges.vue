@@ -588,7 +588,7 @@ export default {
     },
     loadConfig: function () {
       /*
-      // load the config form the db
+      // load the config from the db
       // TODO: this should be replaced since config/project is cached in session
       // params: <void>
       // return: <Promise<Boolean>>

@@ -10,9 +10,9 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     pages/ViewChallenge.vue
-Purpose:
+Purpose:  Webpage layout for the individual challenge
 Methods:
-  *
+  * Renders the dyanmic webpage for the individual challenge
 
 ## -->
 
@@ -498,6 +498,7 @@ export default {
     ProjectTable
   },
   created () {
+    // get the layout information from session cache
     if (this.$q.sessionStorage.has('boundless_config')) {
       let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
       this.layoutConfig = layoutConfig
@@ -528,37 +529,37 @@ export default {
       data: this.data
     })
   },
-  updated () {
-  },
   beforeDestroy () {
     this.$q.sessionStorage.remove('boundless_page_info')
   },
   data () {
     return {
+      db: null, // <Object>: firebase firestore credentials
+      storage: null, // <Object>: firebase storage credentials
       layoutConfig: null,
-      db: null,
-      storage: null,
-      bannerObj: {
+      bannerObj: { // <Object>: default banner information
+        // path <String>: file path of the default image
         path: `../statics/${defaultImages.projects.webBanner}`,
-        ratio: '8',
-        type: 'webpage',
-        category: 'challenges'
+        ratio: '8', // <String>: ratio of the banner
+        type: 'webpage', // <String>: type of the banner
+        category: 'challenges' // <String>: category of the banner
       },
-      challengeImagePath: '',
-      fixedDialog: false,
-      dialogJSON: {
-        title: '',
-        message: ''
+      challengeImagePath: '', // <String>: url of the main image
+      fixedDialog: false, // <Boolean>: trigger for chip pop-up dialog
+      dialogJSON: { // <Object>: information to display inside chip pop-up
+        title: '', // <String>: label of the chip
+        message: '' // <String>: message of the chip
       },
       extraSponsorInfo: {
         img: {}
       },
+      // challengeId <String>: UID of the project
       challengeId: this.$route.params.challenge_id,
-      loading: true,
-      data: {},
-      notFound: false,
-      pageTab: '',
-      splitterModel: 15,
+      loading: true, // <Boolean>: flag for the page loading
+      data: {}, // <Object>: webpage information regarding the specifc project
+      notFound: false, // <Boolean>: flag for 404
+      pageTab: '', // <String>: tab tracker for the webpage
+      splitterModel: 15, // <Number>: % of vw that left splitter is located
       priorityGague: {
         val: [0, 90, 180, 270],
         color: ['green', 'green', 'yellow-8', 'red'],
@@ -567,9 +568,6 @@ export default {
     }
   },
   methods: {
-    test: function () {
-      // test param goes here
-    },
     setPageTab: function () {
       /*
       // TODO: add function description
@@ -898,7 +896,9 @@ export default {
     },
     sortBody: function () {
       /*
-      // TODO: add function description
+      // sort the content of this.data.webpage.body in order by index field
+      // params: <void>
+      // return: <void>
       */
 
       this.data.webpage.body.sort((a, b) => {
@@ -915,7 +915,9 @@ export default {
     },
     sortChip: function () {
       /*
-      // TODO: add function description
+      // sort the content of this.data.webpage.chips in order by index field
+      // params: <void>
+      // return: <void>
       */
 
       this.data.webpage.chips.sort((a, b) => {
@@ -925,7 +927,9 @@ export default {
     copyURLtoClipboard: function () {
       /*
       // https://stackoverflow.com/questions/6725890/location-host-vs-location-hostname-and-cross-browser-compatibility
-      // TODO: add function description
+      // copy the current url onto the clipboard
+      // params: <void>
+      // return: <void>
       */
 
       if (!window.location.origin) {
@@ -952,7 +956,9 @@ export default {
     fallbackCopyTextToClipboard: function (entry) {
       /*
       // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
-      // TODO: add function description
+      // fall back url copy to clipboard if not hosted on https
+      // params: <void>
+      // return: <void>
       */
 
       let textArea = document.createElement('textarea')
@@ -974,7 +980,10 @@ export default {
     copyTextToClipboard: function (entry) {
       /*
       // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
-      // TODO: add function description
+      // logic handler to call either fallback or built-in
+      // params:
+      //    @entry <String>: current url
+      //  return: <void>
       */
 
       if (!navigator.clipboard) {
@@ -991,7 +1000,10 @@ export default {
     },
     openNewTab: function (entry) {
       /*
-      // TODO: add function description
+      // open new tab given a link
+      // params:
+      //    @entry <String>: url of the link
+      // return: <void>
       */
 
       window.open(entry, '_blank')
@@ -1004,74 +1016,10 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.shadow-box {
-  width 90px
-  height 90px
-  margin 25px
-  border-radius 50%
-  font-size 12px
-}
-
-hr.newLine {
-  border: 1px solid #ce2029;
-}
-
-hr.newLine2 {
-  display: block; height: 1px;
-  border: 1; border-top: 1px solid #ccc;
-  margin: 0em; padding: 0em;
-}
-
-br.small {
-  display: block; /* makes it have a width */
-  content: "";    /* clears default height */
-  margin-top: 0em;  /* change this to whatever height you want it */
-}
-
-h4 {
-  font-size: 2.0em;
-  /* background-color: #ccc; width: 80%; */
-  margin: 10px;
-  padding: 10px;
-}
-
 .project-img {
   border: 3px solid #ddd;
   border-radius: 4px;
   padding: 5px
-}
-
-.progress-bar {
-  min-width: 150px;
-  max-width: 35%
-  min-height: 50px;
-  height: 30px;
-  line-height: 45px;
-  text-align: center;
-  font-family: Verdana, Arial, sans-serif;
-  font-weight: 500;
-  border: solid 1.5px;
-  border-color: gray;
-}
-
-/* Colors from: https://www.december.com/html/spec/color2.html */
-.green-priority {
-  background-image: linear-gradient(#00EE00, #9AFF9A, #00EE00)
-}
-
-/* Colors from: https://www.december.com/html/spec/color1.html */
-.yellow-priority {
-  background-image: linear-gradient(#FFE600, #FFF68F, #FFE600)
-}
-
-/* Colors from: https://www.december.com/html/spec/color1.html */
-.red-priority {
-  background-image: linear-gradient(#ED0C0C, #ED8C8C, #ED0C0C)
-}
-
-/* Colors from: https://www.december.com/html/spec/color0.html */
-.null-priority {
-  background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
 }
 
 ul {
@@ -1085,11 +1033,6 @@ ul li::before {
   display: inline-block;  // add space between the bullet and the text
   width: 1em; // space between bullet and text
   margin-left: -2em; // space between bullet and margin
-}
-
-.overviewCSS {
-  max-height: 240px;
-  overflow: auto;
 }
 
 pre {

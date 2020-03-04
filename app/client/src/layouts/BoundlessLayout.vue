@@ -383,7 +383,6 @@ export default {
     },
     logInLogOut: function () {
       if (this.$q.sessionStorage.has('admin_token')) {
-        console.log('386')
         this.$q.sessionStorage.remove('admin_token')
         this.$q.cookies.remove('userToken')
 

@@ -10,9 +10,13 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     pages/SubmitChallenge.vue
-Purpose:
+Purpose:  Form to allow the users to submit innovation challenges
+          which the users have in mind to be solved
 Methods:
-  *
+  * Allow the users to submit challenges
+  * Creates new user as the challenges are submitted
+  * Instantiates the individual webpage for the challenge
+  * Instantiates the user profile for the newly created users
 
 ## -->
 
@@ -644,8 +648,9 @@ import testingDb from '../firebase/init_testing'
 import { layoutConfig } from '../../boundless.config'
 
 export default {
-  name: 'Submit_Project',
   created () {
+    // load the layout information from the cache and load the required
+    // data from the db
     if (this.$q.sessionStorage.has('boundless_config')) {
       let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
       this.layoutConfig = layoutConfig
@@ -661,49 +666,60 @@ export default {
       this.$router.push('/err')
     }
 
-    this.getDb().then(res => {
-      this.getUserList()
-      this.getConfig()
+    // fetch data from db
+    this.loadFireRefs().then(res => {
+      this.loadUserList()
+      this.loadConfig()
     })
   },
   data () {
     return {
-      layoutConfig: null,
-      // Reference for the database
-      db: null,
-      // Submit Project related variables
-      emailToUuidMap: {}, // Map of emails to uuid
-      emailToNameMap: {}, // Map of emails to names
-      challengeName: '',
-      challengeDescription: '',
-      challengeRationale: '',
-      sponsors: [{
-        name: '',
-        email: ''
-      }],
-      webpage: {
-        imgURL: '',
-        chips: [],
-        body: []
+      db: null, // <Object>: firebase firestore credentials
+      layoutConfig: null, // <Object>: configurations related to layout
+      emailToUuidMap: {}, // <Map>: dictionary of emails to uuid
+      emailToNameMap: {}, // <Map>: dictionary of emails to names
+      challengeName: '', // <String>: name of the new challenge
+      challengeDescription: '', // <String>: description of the new challenge
+      challengeRationale: '', // <String>: rationale of the new challenge
+      sponsors: [ // <Array<Object>>: list of sponsor/s
+        {
+          name: '', // <String>: name of the sponsor
+          email: '' // <String>: email of the sponsor
+        }
+      ],
+      webpage: { // <Object>: record of extra information for the webpage
+        imgURL: '', // <String>: url of the image
+        chips: [], // <Array<Object>>: list of chips for the webpage
+        body: [] // <Array<Object>>: list of body contents for the webpage
       },
-      bodyType: '',
-      chipType: '',
-      chosenKeywords: [], // keywords chosen by the user
-      keywordsOptions: [], // list of keywords from database
-      allowedDomain: [],
-      bodyTypeOptions: [],
-      chipTypeOptions: [],
-      addedChip: false,
+      bodyType: '', // <String>: type of body content
+      chipType: '', // <String>: type of chip
+      // chosenKeywords <Array<String>>: associated keywords of the challenge
+      chosenKeywords: [],
+      keywordsOptions: [], // <Array<Object>>: list of keywords from database
+      allowedDomain: [], // <Array<String>>: list of allowed domain for users
+      bodyTypeOptions: [], // <Array<Object>>: list of body types from db
+      chipTypeOptions: [], // <Array<Object>>: list of chip types from db
+      addedChip: false, // <Boolean>: flag to check if chip type is selected
+      // addedContent <Boolean>: flag to check if content type is selected
       addedContent: false,
-      loading: false,
-      adminMode: false
+      loading: false, // <Boolean>: flag for loading animation
+      adminMode: false // <Boolean>: flag for activating admin mode
     }
   },
   methods: {
-    // Database calls
-    getDb: function () {
+    loadFireRefs: function () {
+      /*
+      // load firebase database reference
+      // load firebase storage reference (if applicable)
+      // load firebase cloud functions reference (if applicable)
+      // params: <void>
+      // return: <Promise<String>>
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
+
         return new Promise((resolve, reject) => {
           if (sessionDb === 'testing') {
             this.db = testingDb
@@ -714,7 +730,7 @@ export default {
         })
       } else {
         return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
+          return productionDb.collection('config').doc('project').get()
             .then(doc => {
               if (doc.exists) {
                 if (doc.data().db === 'testing') {
@@ -735,51 +751,78 @@ export default {
         })
       }
     },
-    getConfig: function () {
-      this.db.collection('config').doc('project').get()
-        .then(doc => {
-          if (doc.exists) {
-            let data = doc.data()
+    loadConfig: function () {
+      /*
+      // load the config from the db
+      // TODO: this should be replaced since config/project is cached in session
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
 
-            for (let key in data['keywords']) {
-              this.keywordsOptions.push({
-                label: key,
-                value: data['keywords'][key]
-              })
-            }
+      return this.db.collection('config').doc('project').get().then(doc => {
+        if (doc.exists) {
+          let data = doc.data()
 
-            this.allowedDomain = data['allowedDomain']
-            this.bodyTypeOptions = data['bodyContentType']
-            this.chipTypeOptions = data['chipContentType']
+          for (let key in data['keywords']) {
+            this.keywordsOptions.push({
+              label: key,
+              value: data['keywords'][key]
+            })
           }
-        })
-        .catch(function (error) {
-          if (error) {
-            /* console.log(error) */
-          }
-        })
+
+          this.allowedDomain = data['allowedDomain']
+          this.bodyTypeOptions = data['bodyContentType']
+          this.chipTypeOptions = data['chipContentType']
+        } else {
+          throw new Error('Required file/s not found!')
+        }
+
+        return true
+      }).catch(function (error) {
+        if (error) {
+          return false
+        }
+      })
     },
-    getUserList: function () {
-      this.db.collection('users').doc('ToC').get()
-        .then(doc => {
+    loadUserList: function () {
+      /*
+      // load the user list from the db and store the data into component state
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
+
+      return this.db.collection('users').doc('ToC').get()
+        .then(function (doc) {
           if (doc.exists) {
             let tocUserData = doc.data()
+
             for (let uuid in tocUserData) {
+              let userName = tocUserData[uuid].name
+
               this.emailToUuidMap[tocUserData[uuid].email] = uuid
-              this.emailToNameMap[tocUserData[uuid].email] = tocUserData[uuid].name
+              this.emailToNameMap[tocUserData[uuid].email] = userName
             }
           } else {
-            /* console.log('No -ToC- document!') */
+            throw new Error('No -ToC- document!')
           }
+
+          return true
         })
         .catch(function (error) {
           if (error) {
-            /* console.log(error) */
+            return false
           }
         })
     },
-    // Form functions
     onSubmit () {
+      /*
+      // submits the challenge once all the required fields are checked,
+      // creates the new users who are not in the db, and notifies
+      // the user on both success and failure
+      // params: <void>
+      // return: <void>
+      */
+
       // variables for challenge submission
       this.loading = true
       let timeOfSubmit = new Date(Date.now()).toISOString()
@@ -828,6 +871,13 @@ export default {
       this.onReset()
     },
     onReset () {
+      /*
+      // helper function which resets the input fields of the form and
+      // emits 'added' event when the component is a child componenet
+      // params: <void>
+      // return: <void>
+      */
+
       this.challengeName = ''
       this.challengeDescription = ''
       this.challengeRationale = ''
@@ -864,6 +914,13 @@ export default {
       this.$emit('added')
     },
     addUserOnSubmit: function () {
+      /*
+      // submits the new users related to the challenge as the user submits
+      // the challenge
+      // params: <void>
+      // return: <void>
+      */
+
       this.sponsors.forEach(member => {
         if (!(member.email in this.emailToUuidMap)) {
           let timeOfSubmit = new Date(Date.now()).toISOString()
@@ -896,6 +953,15 @@ export default {
       })
     },
     emailDomainCheck: function (indexEmail, index) {
+      /*
+      // check allowed domain for the new users and
+      // notifies the user if the domain is not allowed
+      // params:
+      //    @indexEmail <String>: email at the index
+      //    @index <Integer>: index of the email
+      // return: <void>
+      */
+
       let validEmail = false
       indexEmail = indexEmail.toLowerCase()
 
@@ -959,6 +1025,14 @@ export default {
       }
     },
     capitalizeFirstChar: function (index) {
+      /*
+      // healper function to help capitalize first character of
+      // the input at a given index and notifies the user on fail
+      // params:
+      //    @index <Integer>: index of the input DOM
+      // return: <void>
+      */
+
       let nameToken = this.sponsors[index].name.split(' ')
 
       if (nameToken.length < 2 && nameToken[0] !== '') {
@@ -985,6 +1059,12 @@ export default {
       }
     },
     addSponsor: function () {
+      /*
+      // adds sponsors with the instantiated values
+      // params: <void>
+      // return: <void>
+      */
+
       this.sponsors.push({
         name: '',
         email: '',
@@ -992,6 +1072,13 @@ export default {
       })
     },
     addCustomField: function () {
+      /*
+      // allow the user to add custom content on the body section
+      // which will be displayed on their individual webpage
+      // params: <void>
+      // return: <void>
+      */
+
       let tmpBody = {}
 
       if (this.bodyType.value === 'TEXT_BOX') {
@@ -1038,15 +1125,14 @@ export default {
       this.webpage.body.push(tmpBody)
     },
     addChip: function () {
-      let tmpChip = {}
-      // let unique = true
+      /*
+      // allow the user to add custom chip for the chips section
+      // which will be displayed on their individual webpage
+      // params: <void>
+      // return: <void>
+      */
 
-      // this.webpage.chips.forEach(chip => {
-      /* //   console.log(chip.content.type) */
-      //   if (chip.content.type === this.chipType.value) {
-      //     unique = false
-      //   }
-      // })
+      let tmpChip = {}
 
       if (this.chipType.value === 'SOURCE') {
         tmpChip = {
@@ -1078,8 +1164,15 @@ export default {
       tmpChip['hidden'] = false
       this.webpage.chips.push(tmpChip)
     },
-    // Helper functions
     activateAdmin: function () {
+      /*
+      // allows the user to see body content and chips on the Add Challenge page
+      // and notifies the user on success
+      // TODO: will be deprecated later
+      // params: <void>
+      // return: <void>
+      */
+
       this.adminMode = true
       this.$q.notify({
         message: 'Admin mode activated! Enjoy.',
@@ -1091,44 +1184,5 @@ export default {
 </script>
 
 <style lang="stylus">
-hr.newLine {
-  border: 1px solid #ce2029;
-}
 
-hr.newLine2 {
-  display: block; height: 1px;
-  border: 1; border-top: 1px solid #ccc;
-  margin: 0em; padding: 0em;
-}
-
-br.small {
-  display: block; /* makes it have a width */
-  content: "";    /* clears default height */
-  margin-top: 0em;  /* change this to whatever height you want it */
-}
-
-h4 {
-  font-size: 2.0em;
-  /* background-color: #ccc; width: 80%; */
-  margin: 10px;
-  padding: 10px;
-}
-
-.header {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-ul {
-  list-style: none; /* Remove default bullets */
-}
-
-ul li::before {
-  content: "\25A0";       // Add content: \25A0 is the CSS Code/unicode for a block bullet
-  color: $secondary;      // Set the color
-  font-weight: bold;
-  display: inline-block;  // add space between the bullet and the text
-  width: 1em; // space between bullet and text
-  margin-left: -2em; // space between bullet and margin
-}
 </style>

@@ -9,10 +9,10 @@
 ## under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
-Name:    pages/ViewProject.vue
-Purpose:
+Name:     pages/ViewProject.vue
+Purpose:  Webpage layout for the individual project
 Methods:
-  *
+  * Renders the dynamic webpage for the individual project
 
 ## -->
 
@@ -481,37 +481,42 @@ export default {
   },
   data () {
     return {
-      progressBar: {
-        tags: ['Idea', 'PoC', 'Value'],
-        half: true
-      },
-      db: null,
-      storage: null,
-      bannerObj: {
+      db: null, // <Object>: firebase firestore credentials
+      storage: null, // <Object>: firebase storage credentials
+      bannerObj: { // <Object>: default banner information
+        // path <String>: file path of the default image
         path: `../statics/${defaultImages.projects.webBanner}`,
-        ratio: '8',
-        type: 'webpage',
-        category: 'projects'
+        ratio: '8', // <String>: ratio of the banner
+        type: 'webpage', // <String>: type of the banner
+        category: 'projects' // <String>: category of the banner
       },
-      projectImagePath: '',
-      fixedDialog: false,
-      dialogJSON: {
-        title: '',
-        message: ''
+      projectImagePath: '', // <String>: url of the main image
+      fixedDialog: false, // <Boolean>: trigger for chip pop-up dialog
+      dialogJSON: { // <Object>: information to display inside chip pop-up
+        title: '', // <String>: label of the chip
+        message: '' // <String>: message of the chip
       },
-      projectId: this.$route.params.project_id,
-      loading: true,
-      data: {},
-      notFound: false,
-      pageTab: '',
-      splitterModel: 15
+      projectId: this.$route.params.project_id, // <String>: UID of the project
+      loading: true, // <Boolean>: flag for the page loading
+      data: {}, // <Object>: webpage information regarding the specifc project
+      notFound: false, // <Boolean>: flag for 404
+      pageTab: '', // <String>: tab tracker for the webpage
+      splitterModel: 15, // <Number>: % of vw that left splitter is located
+      progressBar: { // <Object>: default object of the progress bar
+        // tags <Array<String>>: list of default values for the progress bar
+        tags: ['Idea', 'PoC', 'Value'],
+        half: true // <Boolean>: flag for the half step
+      }
     }
   },
   methods: {
-    test: function () {
-      // test code goes here
-    },
     loadProgressBarConf: function () {
+      /*
+      // loads progress bar configuration from session cache
+      // params: <void>
+      // return: <void>
+      */
+
       if (this.$q.sessionStorage.has('boundless_config')) {
         let cachedConfig = this.$q.sessionStorage.getItem('boundless_config')
 
@@ -522,7 +527,9 @@ export default {
     },
     setPageTab: function () {
       /*
-      // TODO: add function description
+      // assigns project route extension to this.pageTab
+      // params: <void>
+      // return: <void>
       */
 
       if (this.$route.params.extraRoute === 'logs') {
@@ -533,7 +540,11 @@ export default {
     },
     replyLog: function (familyIndex, responseObj) {
       /*
-      // TODO: add function description
+      // allow the user to reply to a log and notifies user on fail
+      // params:
+      //    @familyIndex <Integer>: index number on the log list
+      //    @reponseObj <Object>: the targetted reponse
+      // return: <void>
       */
 
       this.$q.dialog({
@@ -575,9 +586,7 @@ export default {
           })
         }
       }).onCancel(() => {
-        // nothing goes here
       }).onDismiss(() => {
-        // nothing goes here
       })
     },
     loadFireRefs: function () {
@@ -627,8 +636,10 @@ export default {
     },
     updateId: function () {
       /*
-      // TODO: add function description
-      // return:
+      // update this.projectId depending on route object load the webpage
+      // information from cache if the information are already presented
+      // params: <void>
+      // return: <void>
       */
 
       this.projectId = this.$route.params.project_id
@@ -646,7 +657,10 @@ export default {
     },
     loadInformation: function () {
       /*
-      // TODO: add function description
+      // loading all the required information regarding the uid provided,
+      // and check for alias table to see if the alias can be mapped to uid
+      // params: <void>
+      // return: <Promise<String>>
       */
 
       // start loading
@@ -654,26 +668,25 @@ export default {
 
       // return the promise to check for alias
       return new Promise((resolve, reject) => {
-        this.db.collection('projects').doc('ToC').get()
-          .then(doc => {
-            if (doc.exists) {
-              if (doc.data().alias && doc.data().alias.hasOwnProperty(this.projectId)) {
-                let actualUid = doc.data().alias[this.projectId]
-                resolve(doc.data()[actualUid])
-              } else if (doc.data().hasOwnProperty(this.projectId)) {
-                resolve(doc.data()[this.projectId])
-              } else {
-                reject('UUID nor the ALIAS exists!')
-              }
+        return this.db.collection('projects').doc('ToC').get().then(doc => {
+          if (doc.exists) {
+            if (doc.data().alias && doc.data().alias.hasOwnProperty(this.projectId)) {
+              let actualUid = doc.data().alias[this.projectId]
+              resolve(doc.data()[actualUid])
+            } else if (doc.data().hasOwnProperty(this.projectId)) {
+              resolve(doc.data()[this.projectId])
             } else {
-              reject('ToC does not exists!')
+              reject('UUID nor the ALIAS exists!')
             }
-          }).catch(err => {
-            reject(err)
-          })
+          } else {
+            reject('ToC does not exists!')
+          }
+        }).catch(err => {
+          reject(err)
+        })
       }).then(res => {
         return new Promise((resolve, reject) => {
-          this.db.collection('projects').doc(res.uuid).get()
+          return this.db.collection('projects').doc(res.uuid).get()
             .then(doc => {
               if (doc.exists) {
                 for (let objField in res) {
@@ -793,7 +806,11 @@ export default {
     },
     popDialog: function (entry) {
       /*
-      // TODO: add function description
+      // allow the dialog to pop-up when the chip other than
+      // 'Copy URL' is clicked
+      // params:
+      //    @entry <String>: name of the member to access
+      // return: <void>
       */
 
       if (entry === 'awards') {
@@ -806,7 +823,9 @@ export default {
     },
     getMainPhoto: function () {
       /*
-      // TODO: add function description
+      // get the path of the main photo of the project
+      // params: <void>
+      // return: <String>
       */
 
       let val = `statics/images/computer-keyboard.jpg`
@@ -828,7 +847,9 @@ export default {
     },
     sortBody: function () {
       /*
-      // TODO: add function description
+      // sort the content of this.data.webpage.body in order by index field
+      // params: <void>
+      // return: <void>
       */
 
       this.data.webpage.body.sort((a, b) => {
@@ -845,7 +866,9 @@ export default {
     },
     sortChip: function () {
       /*
-      // TODO: add function description
+      // sort the content of this.data.webpage.chips in order by index field
+      // params: <void>
+      // return: <void>
       */
 
       this.data.webpage.chips.sort((a, b) => {
@@ -855,7 +878,9 @@ export default {
     copyURLtoClipboard: function () {
       /*
       // https://stackoverflow.com/questions/6725890/location-host-vs-location-hostname-and-cross-browser-compatibility
-      // TODO: add function description
+      // copy the current url onto the clipboard
+      // params: <void>
+      // return: <void>
       */
 
       if (!window.location.origin) {
@@ -882,7 +907,9 @@ export default {
     fallbackCopyTextToClipboard: function (entry) {
       /*
       // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
-      // TODO: add function description
+      // fall back url copy to clipboard if not hosted on https
+      // params: <void>
+      // return: <void>
       */
 
       let textArea = document.createElement('textarea')
@@ -904,7 +931,10 @@ export default {
     copyTextToClipboard: function (entry) {
       /*
       // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
-      // TODO: add function description
+      // logic handler to call either fallback or built-in
+      // params:
+      //    @entry <String>: current url
+      //  return: <void>
       */
 
       if (!navigator.clipboard) {
@@ -920,7 +950,10 @@ export default {
     },
     openNewTab: function (entry) {
       /*
-      // TODO: add function description
+      // open new tab given a link
+      // params:
+      //    @entry <String>: url of the link
+      // return: <void>
       */
 
       window.open(entry, '_blank')
@@ -933,29 +966,10 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-h4 {
-  font-size: 2.0em;
-  margin: 10px;
-  padding: 10px;
-}
-
 .project-img {
   border: 3px solid #ddd;
   border-radius: 4px;
   padding: 5px
-}
-
-ul {
-  list-style: none; /* Remove default bullets */
-}
-
-ul li::before {
-  content: "\25A0";       // Add content: \25A0 is the CSS Code/unicode for a block bullet
-  color: $secondary;      // Set the color
-  font-weight: bold;
-  display: inline-block;  // add space between the bullet and the text
-  width: 1em; // space between bullet and text
-  margin-left: -2em; // space between bullet and margin
 }
 
 .overviewCSS {

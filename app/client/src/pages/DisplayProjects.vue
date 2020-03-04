@@ -318,7 +318,7 @@ export default {
   data () {
     return {
       db: null, // <Object>: firebase firestore credentials
-      bannerObj: { // <Object>: default banner object
+      bannerObj: { // <Object>: default banner information
         // path <String>: file path of the default image
         path: `../statics/${defaultImages.projects.tableBanner}`,
         ratio: '8', // <String>: ratio of the banner
@@ -600,7 +600,7 @@ export default {
     },
     loadConfig: function () {
       /*
-      // load the config form the db
+      // load the config from the db
       // TODO: this should be replaced since config/project is cached in session
       // params: <void>
       // return: <Promise<Boolean>>

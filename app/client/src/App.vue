@@ -190,4 +190,40 @@ tr:nth-child(even) {
 .null-priority {
   background-image: linear-gradient(#E0E0E0, #F5F5F5, #E0E0E0)
 }
+
+hr.newLine2 {
+  display: block; height: 1px;
+  border: 1; border-top: 1px solid #ccc;
+  margin: 0em; padding: 0em;
+}
+
+br.small {
+  display: block; /* makes it have a width */
+  content: "";    /* clears default height */
+  margin-top: 0em;  /* change this to whatever height you want it */
+}
+
+h4 {
+  font-size: 2.0em;
+  margin: 10px;
+  padding: 10px;
+}
+
+.header {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+ul {
+  list-style: none; /* Remove default bullets */
+}
+
+ul li::before {
+  content: "\25A0";       // Add content: \25A0 is the CSS Code/unicode for a block bullet
+  color: $secondary;      // Set the color
+  font-weight: bold;
+  display: inline-block;  // add space between the bullet and the text
+  width: 1em; // space between bullet and text
+  margin-left: -2em; // space between bullet and margin
+}
 </style>

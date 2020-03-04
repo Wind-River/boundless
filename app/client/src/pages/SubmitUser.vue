@@ -10,9 +10,10 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 
 Name:     pages/SubmitUser.vue
-Purpose:
+Purpose:  Form to allow the users to submit users for the protal
 Methods:
-  *
+  * Allow the users to submit new users
+  * Instantiates the user profile for the newly created users
 
 ## -->
 
@@ -124,6 +125,7 @@ import testingDb from '../firebase/init_testing'
 
 export default {
   created () {
+    // fetch the required data for the component from the db
     this.loadFireRefs().then(res => {
       this.loadUserList()
       this.loadAllowedDomain()
@@ -131,20 +133,21 @@ export default {
   },
   data () {
     return {
-      db: null,
-      emailList: [],
-      allowedDomain: [],
-      user: {},
-      webpage: {},
-      loading: false
+      db: null, // <Object>: firebase firestore credentials
+      emailList: [], // <Array<String>>: list of emails which are in use
+      allowedDomain: [], // <Array<String>>: list of allowed domain for users
+      user: {}, // <Object>: user information to be submitted
+      webpage: {}, // <Object>: default user webpage information
+      loading: false // <Boolean>: flag for loading animation
     }
   },
   methods: {
     onSubmit: function () {
       /*
-      // submits the new user to the user database
+      // submits the new user to the user database and
       // instantiate a webpage for the new user
-      // return: Promise<Boolean>
+      // params: <void>
+      // return: <Promise<Boolean>>
       */
 
       this.loading = true
@@ -184,8 +187,10 @@ export default {
     },
     onReset: function () {
       /*
-      // resets the input values
-      // notify the submission was a sucess
+      // helper function which resets the input fields of the form and
+      // emits 'added' event when the component is a child componenet
+      // params: <void>
+      // return: <void>
       */
 
       this.user = {}
@@ -203,11 +208,12 @@ export default {
     },
     checkEmail: function (entry) {
       /*
-      // TODO: function description
+      // naive email check for the email
       // params:
-      // // @entry:
+      //    @entry <String>: email of the new user
+      // return: <void>
       */
-      // TODO
+
       if (!this.emailList.includes(entry) && entry.includes('@')) {
         this.emailDomainCheck(entry)
       } else {
@@ -216,9 +222,11 @@ export default {
     },
     emailDomainCheck: function (email) {
       /*
-      // TODO: function description
+      // check allowed domain for the new users and
+      // notifies the user if the domain is not allowed
       // params:
-      // // @email:
+      //    @email <String>: email to be registered
+      // return: <void>
       */
 
       let validEmail = false
@@ -252,7 +260,8 @@ export default {
       // load firebase database reference
       // load firebase storage reference (if applicable)
       // load firebase cloud functions reference (if applicable)
-      // return: Promise<String>
+      // params: <void>
+      // return: <Promise<String>>
       */
 
       if (this.$q.localStorage.has('boundless_db')) {
@@ -267,7 +276,7 @@ export default {
         })
       } else {
         return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
+          return productionDb.collection('config').doc('project').get()
             .then(doc => {
               if (doc.exists) {
                 if (doc.data().db === 'testing') {
@@ -290,46 +299,45 @@ export default {
     },
     loadAllowedDomain: function () {
       /*
-      // TODO: function description
-      // return: Promise<Boolean>
+      // load the config from the db
+      // TODO: this should be replaced since config/project is cached in session
+      // params: <void>
+      // return: <Promise<Boolean>>
       */
-      // TODO: no need to load from db
-      return this.db.collection('config').doc('project').get()
-        .then(doc => {
-          if (doc.exists) {
-            this.allowedDomain = doc.data()['allowedDomain']
-          } else {
-            throw new Error('config/project is not available!')
-          }
-          return true
-        })
-        .catch(function (error) {
-          if (error) {
-            return false
-          }
-        })
+
+      return this.db.collection('config').doc('project').get().then(doc => {
+        if (doc.exists) {
+          this.allowedDomain = doc.data()['allowedDomain']
+        } else {
+          throw new Error('config/project is not available!')
+        }
+        return true
+      }).catch(function (error) {
+        if (error) {
+          return false
+        }
+      })
     },
     loadUserList: function () {
       /*
-      // TODO: function description
-      // return: Promise<Boolean>
+      // load the user list from the db and store the data into component state
+      // params: <void>
+      // return: <Promise<Boolean>>
       */
 
-      return this.db.collection('users').doc('ToC').get()
-        .then(doc => {
-          if (doc.exists) {
-            let tocUserData = doc.data()
+      return this.db.collection('users').doc('ToC').get().then(doc => {
+        if (doc.exists) {
+          let tocUserData = doc.data()
 
-            for (let user in tocUserData) {
-              this.emailList.push(tocUserData[user].email)
-            }
-          } else {
-            throw new Error('users/ToC is not available!')
+          for (let user in tocUserData) {
+            this.emailList.push(tocUserData[user].email)
           }
+        } else {
+          throw new Error('users/ToC is not available!')
+        }
 
-          return true
-        })
-        .catch(() => false)
+        return true
+      }).catch(() => false)
     }
   }
 }
