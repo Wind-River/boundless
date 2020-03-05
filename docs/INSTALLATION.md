@@ -1,27 +1,5 @@
-<!-- ##
-## Copyright (c) 2019 Wind River Systems, Inc.
-##
-## Licensed under the Apache License, Version 2.0 (the "License");
-## you may not use this file except in compliance with the License.
-## You may obtain a copy of the License at:
-##       http://www.apache.org/licenses/LICENSE-2.0
-## Unless required by applicable law or agreed to in writing, software  distributed
-## under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
-## OR CONDITIONS OF ANY KIND, either express or implied.
-## -->
-
-# Boundless Portal
-Employee driven innovations are tracked here. An innovation may include 
-(but not limited to):
-* cool fun demo (e.g., Internet connected coffee maker)
-* new tool or process that make other Wind River groups or customers more 
-productive
-* new product feature
-* platform extensions (e.g., VxWorks, Linux, Titanium)
-
-----
-
 # Installation Guide
+**Note:** Docker compose is required and must support version 3.7+
 <br />
 **Note:** Google account with Firebase enabled
 
@@ -150,6 +128,46 @@ $ sudo cp -r ./spa/. /var/www/html/
 
 This should allow the user to visit port 80 of the host machine and enjoy the
 application.
+
+### Container Hosting
+Please fill in Firebase configuration inside docker-compose.yml file.
+```yaml
+ 6|      args:
+ 7|        apiKey: "[VALUE]"
+ 8|        authDomain: "[VALUE]"
+ 9|        databaseURL: "[VALUE]"
+10|        projectId: "[VALUE]"
+11|        storageBucket: "[VALUE]"
+12|        messagingSenderId: "[VALUE]"
+13|        appId: "[VALUE]"
+```
+
+_Tip:_ Making sure docker-compose is installed.
+
+```bash
+$ docker-compose -v
+docker-compose version 1.25.0, build b42d419
+```
+
+**Note:** If docker-compose version does not work, please either reinstall
+docker-compose or try the non-dockerized hosting mentioned previously.
+
+Given docker-compose worked, the user may follow the following instructions to
+finish hosting.
+
+```bash
+$ docker-compose build
+$ docker-compose up
+```
+
+**Note:** It is possible that PORT 80 is already in use. If it was the case, 
+please run ```$ sudo systemctl stop apache2 ``` to stop apache2. If the user is 
+familiar with the TCP enabling, the user may also do so.
+
+Once the docker-compose up is up and running, you may connect to the IP via
+browser and explore the software.
+
+**Note:** Currently, Firebase-functions are not automated.
 
 ## Firebase-Functions
 Installation guide can be found on the following link:

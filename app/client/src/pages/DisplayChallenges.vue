@@ -426,8 +426,11 @@ export default {
         }
       ],
       priorityGague: { // <Object>: data for knob animation
+        // val <Array<Integer>>: the values of the possible angles
         val: [0, 90, 180, 270],
+        // color <Array<String>>: the color of the knob
         color: ['green', 'green', 'yellow-8', 'red'],
+        // text <Array<String>>: the display text of the knob
         text: ['Null', 'Long', 'Med', 'Short']
       }
     }

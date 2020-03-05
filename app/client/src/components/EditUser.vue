@@ -706,7 +706,7 @@ export default {
             this.chipTypeOptions = data['chipContentType']
           }
         })
-        .catch(function (error) {
+        .catch(error => {
           if (error) {
             /* console.log(error) */
           }

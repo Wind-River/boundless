@@ -727,7 +727,7 @@ export default {
           return true
         }
         throw new Error('Required document not found!')
-      }).catch(function (error) {
+      }).catch(error => {
         if (error) {
           return false
         }
@@ -752,7 +752,7 @@ export default {
         }
 
         throw new Error('users/ToC not found!')
-      }).catch(function (error) {
+      }).catch(error => {
         if (error) {
           return false
         }

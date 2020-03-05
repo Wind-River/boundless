@@ -778,7 +778,7 @@ export default {
         }
 
         return true
-      }).catch(function (error) {
+      }).catch(error => {
         if (error) {
           return false
         }
@@ -792,7 +792,7 @@ export default {
       */
 
       return this.db.collection('users').doc('ToC').get()
-        .then(function (doc) {
+        .then(doc => {
           if (doc.exists) {
             let tocUserData = doc.data()
 
@@ -808,7 +808,7 @@ export default {
 
           return true
         })
-        .catch(function (error) {
+        .catch(error => {
           if (error) {
             return false
           }
