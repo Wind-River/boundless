@@ -1,5 +1,5 @@
 # BOUNDLESS IDEAS Web Portal 
-![home-page-banner1](C:\Users\mgisi\Sync\Mark\mgisi\dev\boundless\docs\images\home-page-banner1.png)
+![home-page-banner1](docs/images/home-page-banner1.png)
 
 Empower all employees to be creative, to  innovate - by  tracking, fostering and recognizing their suggestions for new product features, tools, customer demos, open source projects or fun maker projects. It is great for fostering innovation,  supporting a 24/7 hack-a-thon.
 
@@ -21,7 +21,7 @@ Humans are empowered when given the chance to share their ideas and innovations.
 
 This repository contains the code of a web portal that greatly facilitates the fostering and development of ideas. It enables organizations to to track develop and realize the impact of the ideas within a community or company. 
 
-![sss](C:\Users\mgisi\Sync\Mark\mgisi\dev\boundless\docs\images\project-listing-eg.png)
+![sss](docs/images/project-listing-eg.png)
 
 
 
