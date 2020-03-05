@@ -65,8 +65,7 @@ Proceed onto next session.
 ### Webserver Hosting
 Generating the setup files.
 ```bash
-$ cd ./app
-$ ./setup.sh
+$ cd ./app && ./setup.sh
 ```
 
 Please fill in Firebase configuration inside system.yml inside config folder as 
