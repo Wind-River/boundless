@@ -10,72 +10,164 @@
 ## OR CONDITIONS OF ANY KIND, either express or implied.
 ## -->
 
-# Boundless Innovation Tracker
+# Boundless Portal
+Employee driven innovations are tracked here. An innovation may include 
+(but not limited to):
+* cool fun demo (e.g., Internet connected coffee maker)
+* new tool or process that make other Wind River groups or customers more 
+productive
+* new product feature
+* platform extensions (e.g., VxWorks, Linux, Titanium)
 
-#### Installation & Running Guide
+----
 
-**Note:** If the user has not install quasar please follow the guide below first and go back to the main installation guide:
+# Installation Guide
+<br />
+**Note:** Google account with Firebase enabled
+
+## Cloning the Repo
+```bash
+$ git clone https://github.com/Wind-River/boundless.git && cd boundless
 ```
-  // quasar installation
+Once the cloning is complete, please fetch Firebase Credentials.
 
-  install visual studio code
-  install node 
+## Firebase Credentials
+Log into firebase via the following link: https://firebase.google.com/
 
-  $ npm install -g vue-cli
-  $ npm install -g @quasar/cli
+* On upper right corner, please select <**Go to console**>
+* Click on <**Create a project**> (You may reuse your old projects).
+* Complete "_Create a project_"
+* Once done, press "**Continue**"
+* Select "**Develop**" tab on left menu
+* Select "**Database**" and press <**Create database**>
+* Select "**Start in production mode**"
+* Select region
+* Choose "Rules" tab inside "**Database**" and change it to following:
+```js
+// rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+* Select "**Storage**" tab on left menu under "**Develop**"
+* Choose <**Get started**> and complete
+* Edit the "Rules" to following:
+```js
+// rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+* Select "**Functions**" tab on left menu under "**Develop**"
+* Choose <**Get started**> and complete
+* Please select the "**Settings Cog**" icon on the upper left corner
+* Select "**Project settings**"
+* Scroll down and select "**</>**" and complete (Firebase Hosting not required)
+* Please copy from var firebaseConfigs = { ... }
+```js
+  apiKey: ...,
+    .
+    .
+    .
+  appId: ...
+```
+Proceed onto next session.
+<br />
 
-  $ quasar create {foldername} -b dev # '-b dev' is needed since 1.0 is still in beta and default build is 0.17.x
+## Application
 
-  $ cd {foldername}
-  $ quasar dev
-
-  # check for upgradable packages
-  $ quasar upgrade
-
-  # do the actual upgrade
-  $ quasar upgrade --install
+### Webserver Hosting
+Generating the setup files.
+```bash
+$ cd ./app && ./setup.sh
 ```
 
-Given that the user has already installed quasar on their local machine. Please note that this application is built with **npm** and not **yarn**.
-```
-  $ git clone {link}
-  $ cd boundless1
-```
-MORE INFORMATION ON WHAT FILES TO MODIFY BEFORE RUNNING.
-MAIN FILE IS src/firebase/init_primary.js and src/firebase/init_test.js
-Get the Firebase config...
+Please fill in Firebase configuration inside system.yml inside config folder as 
+instructed.
 
+```yml
+# Please make sure to replace all the commas
+databaseConfig:
+  production:
+    apiKey: ------------------------------------
+    authDomain: ------------------------------------
+    databaseURL: ------------------------------------
+    projectId: ------------------------------------
+    storageBucket: ------------------------------------
+    messagingSenderId: ------------------------------------
+    appId: ------------------------------------
 
-#### Running and Sandboxing Guide
-
-Once user has finished cloning the git repo, the user can simply run the Sandbox mode by running the following commands.
-```
-  $ npm i
-  $ quasar dev
-```
-
-
-
-#### Building Guide
-
-The link below covers all majority of the websever and please refer to them while building.
-```
-  // https://quasar.dev/quasar-cli/cli-documentation/commands-list#build
-  // https://quasar.dev/quasar-cli/developing-spa/deploying
-```
-
-
-#### Hosting & Deploying Guide
-
-Please follow the guides below to host or deploy software/application on the webserver of your liking.
-```
-  // https://firebase.google.com/docs/hosting
-  // https://quasar.dev/quasar-cli/developing-spa/deploying
+  testing:
+    apiKey: ------------------------------------
+    authDomain: ------------------------------------
+    databaseURL: ------------------------------------
+    projectId: ------------------------------------
+    storageBucket: ------------------------------------
+    messagingSenderId: ------------------------------------
+    appId: ------------------------------------
+    
+  dev:
+  
 ```
 
+Once the Firebase credentials are set inside 'system.yml' please proceed with 
+the following:
 
-##### Acknowledgement
+```bash
+# one must be in root dir of this repo
+$ ./database_setup.sh
 
-All the codes and guides are consolidated from https://quasar.dev/introduction-to-quasar. Please go checkout this amazing framework.
+# if running locally (ex. localhost:8080), run demo.sh
+$ ./demo.sh
 
-Please go checkout Firebase for all the amazing backend services they provide from https://firebase.google.com/.
+# if building to host on a server, run build.sh to create the distribution file
+$ ./build.sh # this will generate spa folder inside the root dir of the repo
+```
+
+After running 'build.sh', the application is ready to be served on webserver.
+This example will be showing on how to host it on Apache2.0 and the commands
+are as follows:
+
+```bash
+# check the status of apache2
+$ sudo systemctl status apache2
+
+# if not available, please install via package-manager
+# if apache2 is not runnig, please run the following command
+$ sudo systemctl start apache2
+
+# copy the files inside spa folder into var/www/html
+$ sudo cp -r ./spa/. /var/www/html/
+```
+
+This should allow the user to visit port 80 of the host machine and enjoy the
+application.
+
+## Firebase-Functions
+Installation guide can be found on the following link:
+https://firebase.google.com/docs/functions/get-started
+
+```bash
+# inside boundless root directory
+$ npm install -g firebase-tools
+
+# this could take several mins since this will be installing dependencies
+$ cd ./app/server/cloud/functions && npm i && cd ..
+
+# 'firebase login' should prompt broswer, please select proper google account since
+# this command will be grabbing credentials from the browser
+$ firebase login # please log into the google account which holds the firebase project
+
+# './deploy.sh' should take several minutes to complete
+$ ./deploy.sh
+```
+
+Now, the application is fully ready to be used.
