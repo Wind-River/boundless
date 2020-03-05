@@ -2085,7 +2085,7 @@ export default {
             // this.allowedDomain = data['allowedDomain']
           }
         })
-        .catch(function (error) {
+        .catch(error => {
           if (error) {
             /* console.log(error) */
           }

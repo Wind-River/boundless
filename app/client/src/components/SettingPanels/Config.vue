@@ -522,11 +522,12 @@ export default {
       this.loading = false
     }, 100)
 
-    this.getDb().then(() => {
+    this.loadFireRefs().then(() => {
       // data fetching goes here
       this.data = this.$q.sessionStorage.getItem('boundless_config')
       this.data = this.data[`${this.type}Config`]
 
+      // help instantiate this.data.progressBar if not found in config
       if (
         this.type === 'projects' &&
         typeof this.data.progressBar === 'undefined'
@@ -546,6 +547,7 @@ export default {
     })
   },
   beforeDestroy () {
+    // verfiy for user to leave if changes were detected
     if (!this.submitted && this.updated) {
       this.$q.dialog({
         title: 'Are you sure you want to leave without submitting changes? (All changes will be lost).',
@@ -577,24 +579,31 @@ export default {
   },
   data () {
     return {
-      loading: true,
-      selectedStyle: {
+      db: null, // <Object>: firebase firestore credentials
+      storage: null, // <Object>: firebase storage credentials
+      // staticImages <Object>: information related to the default images
+      staticImages: defaultImages,
+      keywordOptions: [], // <Array<Object>>: list of keywords and their respective values from the
+      data: {}, // <Object>:
+      counter: 0, // <Integer>:
+      endCounter: 0, // <Integer>:
+      selectedStyle: { // <Object>: style of the dom once selected
         boxShadow: '0px 0px 0px 3px orange inset',
         borderRadius: '3px'
       },
-      db: null,
-      storage: null,
-      staticImages: defaultImages,
-      keywordOptions: [],
-      data: {},
-      counter: 0,
-      endCounter: 0,
-      submitted: false,
-      updated: false
+      loading: true, // <Boolean>: flag for the page loading
+      submitted: false, // <Boolean>: flag for handling child emitted submit
+      updated: false // <Boolean>: flag for handling child emitted submit
     }
   },
   methods: {
     addProgressTag: function () {
+      /*
+      //
+      // params: <void>
+      // return: <void>
+      */
+
       this.$q.dialog({
         title: 'Add new tag for progress bar',
         prompt: {
@@ -636,6 +645,13 @@ export default {
       })
     },
     deleteProgressTag: function (index) {
+      /*
+      //
+      // params:
+      //    @index <Integer>:
+      // return: <void>
+      */
+
       if (this.data.progressBar.tags.length > 1) {
         this.data.progressBar.tags.splice(index, 1)
 
@@ -649,10 +665,24 @@ export default {
       }
     },
     forceUpdate: function () {
+      /*
+      // updates the vue component by force once called and
+      // sets true to this.updated
+      // params: <void>
+      // return: <void>
+      */
+
       this.updated = true
       this.$forceUpdate()
     },
     checkMax: function (entry) {
+      /*
+      //
+      // params:
+      //    @entry <>:
+      // return: <void>
+      */
+
       if (entry.length > 5) {
         this.$q.notify({
           color: 'negative',
@@ -669,7 +699,16 @@ export default {
       }
     },
     getBlobAndSubmitFromURL: function (url, property, obj) {
+      /*
       // https://stackoverflow.com/questions/11876175/how-to-get-a-file-or-blob-from-an-object-url
+      //
+      // params:
+      //    @url <String>:
+      //    @property <>:
+      //    @obj <>:
+      // return: <Blob>
+      */
+
       return fetch(url).then(res => {
         return res.blob()
       })
@@ -698,9 +737,18 @@ export default {
             })
         })
     },
-    getDb: function () {
+    loadFireRefs: function () {
+      /*
+      // load firebase database reference
+      // load firebase storage reference (if applicable)
+      // load firebase cloud functions reference (if applicable)
+      // params: <void>
+      // return: Promise<String>
+      */
+
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
+
         return new Promise((resolve, reject) => {
           if (sessionDb === 'testing') {
             this.db = testingDb
@@ -713,7 +761,7 @@ export default {
         })
       } else {
         return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
+          return productionDb.collection('config').doc('project').get()
             .then(doc => {
               if (doc.exists) {
                 if (doc.data().db === 'testing') {

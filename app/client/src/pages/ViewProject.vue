@@ -594,6 +594,7 @@ export default {
       // load firebase database reference
       // load firebase storage reference (if applicable)
       // load firebase cloud functions reference (if applicable)
+      // params: <void>
       // return: Promise<String>
       */
 
@@ -934,15 +935,14 @@ export default {
       // logic handler to call either fallback or built-in
       // params:
       //    @entry <String>: current url
-      //  return: <void>
+      // return: <void>
       */
 
       if (!navigator.clipboard) {
         this.fallbackCopyTextToClipboard(entry)
         // return
       } else {
-        navigator.clipboard.writeText(entry).then(function () {
-        }, function (err) {
+        navigator.clipboard.writeText(entry).then(() => {}, (err) => {
           if (err) {
           }
         })

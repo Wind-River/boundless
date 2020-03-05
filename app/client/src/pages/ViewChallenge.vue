@@ -550,19 +550,22 @@ export default {
         title: '', // <String>: label of the chip
         message: '' // <String>: message of the chip
       },
-      extraSponsorInfo: {
-        img: {}
+      extraSponsorInfo: { // <Object>: extra information regarding sponors
+        img: {} // <Map>: dictionary of sponsor uid to avatar image
       },
-      // challengeId <String>: UID of the project
+      // challengeId <String>: UID of the challenge
       challengeId: this.$route.params.challenge_id,
       loading: true, // <Boolean>: flag for the page loading
-      data: {}, // <Object>: webpage information regarding the specifc project
+      data: {}, // <Object>: webpage information regarding the specifc challenge
       notFound: false, // <Boolean>: flag for 404
       pageTab: '', // <String>: tab tracker for the webpage
       splitterModel: 15, // <Number>: % of vw that left splitter is located
-      priorityGague: {
+      priorityGague: { // <Object>: data for knob animation
+        // val <Array<Integer>>: the values of the possible angles
         val: [0, 90, 180, 270],
+        // color <Array<String>>: the color of the knob
         color: ['green', 'green', 'yellow-8', 'red'],
+        // text <Array<String>>: the display text of the knob
         text: ['Null', 'Long', 'Med', 'Short']
       }
     }
@@ -570,7 +573,9 @@ export default {
   methods: {
     setPageTab: function () {
       /*
-      // TODO: add function description
+      // assigns challenge route extension to this.pageTab
+      // params: <void>
+      // return: <void>
       */
 
       if (this.$route.params.extraRoute === 'logs') {
@@ -583,7 +588,11 @@ export default {
     },
     replyLog: function (familyIndex, responseObj) {
       /*
-      // TODO: add function description
+      // allow the user to reply to a log and notifies user on fail
+      // params:
+      //    @familyIndex <Integer>: index number on the log list
+      //    @reponseObj <Object>: the targetted reponse
+      // return: <void>
       */
 
       this.$q.dialog({
@@ -635,6 +644,7 @@ export default {
       // load firebase database reference
       // load firebase storage reference (if applicable)
       // load firebase cloud functions reference (if applicable)
+      // params: <void>
       // return: Promise<String>
       */
 
@@ -652,7 +662,7 @@ export default {
         })
       } else {
         return new Promise((resolve, reject) => {
-          productionDb.collection('config').doc('project').get()
+          return productionDb.collection('config').doc('project').get()
             .then(doc => {
               if (doc.exists) {
                 if (doc.data().db === 'testing') {
@@ -664,7 +674,9 @@ export default {
                 }
                 resolve('Database fetch complete...')
               } else {
-                reject('"/config/project" path does not exists in the database...')
+                reject(
+                  '"/config/project" path does not exists in the database...'
+                )
               }
             })
             .catch(err => {
@@ -675,7 +687,10 @@ export default {
     },
     updateId: function () {
       /*
-      // TODO: add function description
+      // update this.challengeId depending on route object load the webpage
+      // information from cache if the information are already presented
+      // params: <void>
+      // return: <void>
       */
 
       this.challengeId = this.$route.params.challenge_id
@@ -693,7 +708,10 @@ export default {
     },
     loadInformation: function () {
       /*
-      // TODO: add function description
+      // loading all the required information regarding the uid provided,
+      // and check for alias table to see if the alias can be mapped to uid
+      // params: <void>
+      // return: <Promise<String>>
       */
 
       // start loading
@@ -701,7 +719,7 @@ export default {
 
       // return the promise to check for alias
       return new Promise((resolve, reject) => {
-        this.db.collection('challenges').doc('ToC').get()
+        return this.db.collection('challenges').doc('ToC').get()
           .then(doc => {
             if (doc.exists) {
               if (
@@ -721,147 +739,156 @@ export default {
           }).catch(err => {
             reject(err)
           })
-      }).then(res => {
-        return new Promise((resolve, reject) => {
-          this.db.collection('challenges').doc(res.uuid).get()
-            .then(doc => {
-              if (doc.exists) {
-                for (let objField in res) {
-                  this.data[objField] = res[objField]
-                }
+      })
+        .then(res => {
+          return new Promise((resolve, reject) => {
+            return this.db.collection('challenges').doc(res.uuid).get()
+              .then(doc => {
+                if (doc.exists) {
+                  for (let objField in res) {
+                    this.data[objField] = res[objField]
+                  }
 
-                for (let objField in doc.data()) {
-                  this.data[objField] = doc.data()[objField]
-                }
+                  for (let objField in doc.data()) {
+                    this.data[objField] = doc.data()[objField]
+                  }
 
-                this.sortBody()
-                this.sortChip()
+                  this.sortBody()
+                  this.sortChip()
 
-                if (!this.data.webpage.imgURL) {
-                  this.challengeImagePath = this.getMainPhoto()
-                } else {
-                  this.storage.ref().child(this.data.webpage.imgURL).getDownloadURL()
-                    .then(url => {
-                      this.challengeImagePath = url
-                    })
-                    .catch(err => {
-                      if (err) {
-                        this.challengeImagePath = this.getMainPhoto()
-                      }
-                    })
-                }
-
-                resolve()
-              } else {
-                reject('Document containing webpage information is either corrupted or no longer available!')
-              }
-            }).catch(err => {
-              reject(err)
-            })
-        })
-      }).then(() => {
-        return new Promise((resolve, reject) => {
-          let tmpSponsors = []
-          if (this.data.sponsors[0].email) {
-            // handling old data
-            this.data.sponsors.forEach(sponsor => {
-              tmpSponsors.push({
-                uuid: sponsor.uuid || sponsor.email
-              })
-            })
-
-            this.data.sponsors = tmpSponsors
-            tmpSponsors = []
-          }
-          let correctionReq = false // bool to check if data correction req
-          let uuidList = [] // list to correct data in db
-
-          // handling new data
-          this.db.collection('users').doc('ToC').get()
-            .then(doc => {
-              if (doc.exists) {
-                this.data.sponsors.forEach(sponsor => {
-                  // check if sponsor.uuid return empt user
-                  if (!doc.data()[sponsor.uuid]) {
-                    // hard check if the user is not in db
-                    for (let userUid in doc.data()) {
-                      if (doc.data()[userUid].email === sponsor.uuid) {
-                        tmpSponsors.push({
-                          ...doc.data()[userUid]
-                        })
-                        uuidList.push({
-                          uuid: userUid
-                        })
-
-                        correctionReq = true
-                        break
-                      }
-                    }
+                  if (!this.data.webpage.imgURL) {
+                    this.challengeImagePath = this.getMainPhoto()
                   } else {
-                    tmpSponsors.push({
-                      ...doc.data()[sponsor.uuid]
-                    })
-                    uuidList.push({
-                      uuid: sponsor.uuid
-                    })
+                    this.storage.ref().child(this.data.webpage.imgURL).getDownloadURL()
+                      .then(url => {
+                        this.challengeImagePath = url
+                      })
+                      .catch(err => {
+                        if (err) {
+                          this.challengeImagePath = this.getMainPhoto()
+                        }
+                      })
+                  }
+
+                  resolve()
+                } else {
+                  reject('Document containing webpage information is either corrupted or no longer available!')
+                }
+              }).catch(err => {
+                reject(err)
+              })
+          })
+        })
+        .then(() => {
+          return new Promise((resolve, reject) => {
+            let tmpSponsors = []
+
+            if (this.data.sponsors[0].email) {
+              // handling old data
+              this.data.sponsors.forEach(sponsor => {
+                tmpSponsors.push({
+                  uuid: sponsor.uuid || sponsor.email
+                })
+              })
+
+              this.data.sponsors = tmpSponsors
+              tmpSponsors = []
+            }
+            let correctionReq = false // bool to check if data correction req
+            let uuidList = [] // list to correct data in db
+
+            // handling new data
+            return this.db.collection('users').doc('ToC').get()
+              .then(doc => {
+                if (doc.exists) {
+                  this.data.sponsors.forEach(sponsor => {
+                    // check if sponsor.uuid return empt user
+                    if (!doc.data()[sponsor.uuid]) {
+                      // hard check if the user is not in db
+                      for (let userUid in doc.data()) {
+                        if (doc.data()[userUid].email === sponsor.uuid) {
+                          tmpSponsors.push({
+                            ...doc.data()[userUid]
+                          })
+                          uuidList.push({
+                            uuid: userUid
+                          })
+
+                          correctionReq = true
+                          break
+                        }
+                      }
+                    } else {
+                      tmpSponsors.push({
+                        ...doc.data()[sponsor.uuid]
+                      })
+                      uuidList.push({
+                        uuid: sponsor.uuid
+                      })
+                    }
+                  })
+
+                  this.data.sponsors = tmpSponsors
+
+                  if (correctionReq) {
+                    this.db.collection('challenges').doc('ToC').set({
+                      [this.data.uuid]: {
+                        sponsors: uuidList
+                      }
+                    }, { merge: true })
+                  }
+
+                  resolve()
+                } else {
+                  reject('Document containing webpage information is either corrupted or no longer available!')
+                }
+              }).catch(err => {
+                reject(err)
+              })
+          })
+        })
+        .then(() => {
+          // TODO: change this to promise all
+          let avatarLoad = false
+
+          this.data.sponsors.forEach(sponsor => {
+            if (sponsor.imgURL) {
+              avatarLoad = true
+
+              this.storage.ref().child(sponsor.imgURL).getDownloadURL()
+                .then(url => {
+                  this.extraSponsorInfo.img[sponsor.imgURL] = url
+
+                  if (this.data.sponsors[this.data.sponsors.length - 1] === sponsor) {
+                    setTimeout(() => {
+                      this.loading = false
+                    }, 100)
                   }
                 })
+            }
+          })
 
-                this.data.sponsors = tmpSponsors
-
-                if (correctionReq) {
-                  this.db.collection('challenges').doc('ToC').set({
-                    [this.data.uuid]: {
-                      sponsors: uuidList
-                    }
-                  }, { merge: true })
-                }
-
-                resolve()
-              } else {
-                reject('Document containing webpage information is either corrupted or no longer available!')
-              }
-            }).catch(err => {
-              reject(err)
-            })
-        })
-      }).then(() => {
-        // TODO: change this to promise all
-        let avatarLoad = false
-
-        this.data.sponsors.forEach(sponsor => {
-          if (sponsor.imgURL) {
-            avatarLoad = true
-
-            this.storage.ref().child(sponsor.imgURL).getDownloadURL()
-              .then(url => {
-                this.extraSponsorInfo.img[sponsor.imgURL] = url
-
-                if (this.data.sponsors[this.data.sponsors.length - 1] === sponsor) {
-                  setTimeout(() => {
-                    this.loading = false
-                  }, 100)
-                }
-              })
+          if (!avatarLoad) {
+            setTimeout(() => {
+              this.loading = false
+            }, 500)
           }
         })
-
-        if (!avatarLoad) {
-          setTimeout(() => {
-            this.loading = false
-          }, 500)
-        }
-      }).catch(err => {
-        if (err) {
-          setTimeout(() => {
-            this.notFound = true
-          }, 1500)
-        }
-      })
+        .catch(err => {
+          if (err) {
+            setTimeout(() => {
+              this.notFound = true
+            }, 1500)
+          }
+        })
     },
     popDialog: function (entry) {
       /*
-      // TODO: add function description
+      // allow the dialog to pop-up when the chip other than
+      // 'Copy URL' is clicked
+      // params:
+      //    @entry <String>: name of the member to access
+      // return: <void>
       */
 
       if (entry === 'awards') {
@@ -874,7 +901,9 @@ export default {
     },
     getMainPhoto: function () {
       /*
-      // TODO: add function description
+      // get the path of the main photo of the challenge
+      // params: <void>
+      // return: <String>
       */
 
       let val = `statics/images/computer-keyboard.jpg`
@@ -983,15 +1012,14 @@ export default {
       // logic handler to call either fallback or built-in
       // params:
       //    @entry <String>: current url
-      //  return: <void>
+      // return: <void>
       */
 
       if (!navigator.clipboard) {
         this.fallbackCopyTextToClipboard(entry)
         // return
       } else {
-        navigator.clipboard.writeText(entry).then(function () {
-        }, function (err) {
+        navigator.clipboard.writeText(entry).then(() => {}, (err) => {
           if (err) {
             // err handler
           }

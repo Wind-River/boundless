@@ -305,18 +305,21 @@ export default {
       // return: <Promise<Boolean>>
       */
 
-      return this.db.collection('config').doc('project').get().then(doc => {
-        if (doc.exists) {
-          this.allowedDomain = doc.data()['allowedDomain']
-        } else {
-          throw new Error('config/project is not available!')
-        }
-        return true
-      }).catch(function (error) {
-        if (error) {
-          return false
-        }
-      })
+      return this.db.collection('config').doc('project').get()
+        .then(doc => {
+          if (doc.exists) {
+            this.allowedDomain = doc.data()['allowedDomain']
+          } else {
+            throw new Error('config/project is not available!')
+          }
+
+          return true
+        })
+        .catch(error => {
+          if (error) {
+            return false
+          }
+        })
     },
     loadUserList: function () {
       /*
