@@ -279,6 +279,7 @@ export default {
     loadFireRefs: function () {
       if (this.$q.localStorage.has('boundless_db')) {
         let sessionDb = this.$q.localStorage.getItem('boundless_db')
+
         return new Promise((resolve, reject) => {
           if (sessionDb === 'testing') {
             this.db = testingDb
@@ -287,6 +288,7 @@ export default {
             this.db = productionDb
             this.cloudFunctions = proAppCall.httpsCallable('appCall')
           }
+
           resolve('Database fetch complete...')
         })
       } else {
@@ -297,13 +299,18 @@ export default {
                 if (doc.data().db === 'testing') {
                   this.db = testingDb
                   this.$q.localStorage.set('boundless_db', 'testing')
+                  this.cloudFunctions = testAppCall.httpsCallable('appCall')
                 } else {
                   this.db = productionDb
                   this.$q.localStorage.set('boundless_db', 'production')
+                  this.cloudFunctions = proAppCall.httpsCallable('appCall')
                 }
+
                 resolve('Database fetch complete...')
               } else {
-                reject('"/config/project" path does not exists in the database...')
+                reject(
+                  '"/config/project" path does not exists in the database...'
+                )
               }
             })
             .catch(err => {
@@ -313,30 +320,59 @@ export default {
       }
     },
     submitEnter: function (entry) {
+      /*
+      //
+      // params:
+      //    @entry <>:
+      // return: <void>
+      */
+
       let refName = `popup${entry}`
       this.$refs[refName].set()
       // push to database
     },
     getConfig: function () {
-      this.db.collection('config').doc('project').get()
+      /*
+      //
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
+
+      return this.db.collection('config').doc('project').get()
         .then(doc => {
           if (doc.exists) {
-            var data = doc.data()
+            let data = doc.data()
 
-            for (var key in data['keywords']) {
+            for (let key in data['keywords']) {
               this.popkeywords.push({
                 label: key,
                 value: data['keywords'][key]
               })
             }
+
+            return true
+          }
+
+          throw new Error('"config/project" not found!')
+        })
+        .catch(err => {
+          if (err) {
+            return false
           }
         })
     },
     getProjects: function () {
-      this.db.collection('challenges').doc('ToC').get()
+      /*
+      //
+      // params: <void>
+      // return: <Promise<Boolean>>
+      */
+
+      return this.db.collection('challenges').doc('ToC').get()
         .then(doc => {
           if (doc.exists) {
             let tocProjectData = doc.data()
+
             for (let project in tocProjectData) {
               if (project !== 'alias') {
                 this.projectList.push(tocProjectData[project])
@@ -344,20 +380,29 @@ export default {
               }
             }
           } else {
-            /* console.log('No -ToC- document!') */
+            throw new Error('No -ToC- document!')
           }
 
           setTimeout(() => {
             this.loading = false
+            return true
           }, 500)
         })
         .catch(error => {
           if (error) {
-            /* console.log(error) */
+            return false
           }
         })
     },
     deleteChallenge: function (entry, removedAlias) {
+      /*
+      //
+      // params:
+      //    @entry <>:
+      //    @removedAlias <>:
+      // return: <void>
+      */
+
       this.$q.dialog({
         title: 'Confirmation to Delete',
         message: `Delete ${entry}?`,

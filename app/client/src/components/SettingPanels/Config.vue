@@ -583,13 +583,17 @@ export default {
       storage: null, // <Object>: firebase storage credentials
       // staticImages <Object>: information related to the default images
       staticImages: defaultImages,
-      keywordOptions: [], // <Array<Object>>: list of keywords and their respective values from the
-      data: {}, // <Object>:
-      counter: 0, // <Integer>:
-      endCounter: 0, // <Integer>:
+      // keywordOptions <Array<Object>>: list of keywords and their
+      // respective values from the pass-in keywords list
+      keywordOptions: [],
+      // data <Object>: config information of either project or challenge
+      data: {},
+      counter: 0, // <Integer>: couter to track promises
+      endCounter: 0, // <Integer>: counter to end the promise calls
       selectedStyle: { // <Object>: style of the dom once selected
+        // boxShadow <String>: css property box-shadow
         boxShadow: '0px 0px 0px 3px orange inset',
-        borderRadius: '3px'
+        borderRadius: '3px' // <String>: css property border-radius
       },
       loading: true, // <Boolean>: flag for the page loading
       submitted: false, // <Boolean>: flag for handling child emitted submit
@@ -599,7 +603,9 @@ export default {
   methods: {
     addProgressTag: function () {
       /*
-      //
+      // helper function to add new tab on the progress
+      // which creates a dialog when invoked and notifies
+      // the user on success/failure
       // params: <void>
       // return: <void>
       */
@@ -646,9 +652,10 @@ export default {
     },
     deleteProgressTag: function (index) {
       /*
-      //
+      // helper function deletes the progress tag when invoked
+      // and notifies the user on failure
       // params:
-      //    @index <Integer>:
+      //    @index <Integer>: of the tag to be deleted
       // return: <void>
       */
 
@@ -675,15 +682,15 @@ export default {
       this.updated = true
       this.$forceUpdate()
     },
-    checkMax: function (entry) {
+    checkMax: function (keywords) {
       /*
-      //
+      // helper function to check if this.data.keywords is full (length of 5)
       // params:
-      //    @entry <>:
+      //    @keywords <Array<String>>: list of keywords
       // return: <void>
       */
 
-      if (entry.length > 5) {
+      if (keywords.length > 5) {
         this.$q.notify({
           color: 'negative',
           icon: 'warning',
@@ -692,8 +699,8 @@ export default {
           timeout: 500
         })
 
-        entry.pop()
-        this.data.keywords = entry
+        keywords.pop()
+        this.data.keywords = keywords
       } else {
         this.updated = true
       }
@@ -701,29 +708,32 @@ export default {
     getBlobAndSubmitFromURL: function (url, property, obj) {
       /*
       // https://stackoverflow.com/questions/11876175/how-to-get-a-file-or-blob-from-an-object-url
-      //
+      // fetch the blob data from the given url
       // params:
-      //    @url <String>:
-      //    @property <>:
-      //    @obj <>:
-      // return: <Blob>
+      //    @url <String>: link of where the blob data is stored
+      //    @property <String>: key of the config type
+      //    @obj <String>: filename of the file to be stored
+      //                   inside firebase storage
+      // return: <Promise<Blob>>
       */
 
       return fetch(url).then(res => {
         return res.blob()
       })
         .then(res => {
-          this.storage.ref()
+          return this.storage.ref()
             .child(
               `configs/${this.type}/${property}/${obj}.png`
             )
             .put(res)
             .then(ss => {
+              // TODO: replace with Promise.all
               ss.ref.getDownloadURL().then(dlURL => {
                 URL.revokeObjectURL(url)
                 this.data[property][obj].url = dlURL
                 delete this.data[property][obj].prev
                 this.counter = this.counter + 1
+
                 if (this.counter === this.endCounter) {
                   this.db.collection('config').doc('project').set({
                     [`${this.type}Config`]: this.data
@@ -783,6 +793,12 @@ export default {
       }
     },
     onSubmit: function () {
+      /*
+      // submit handler for the component
+      // params: <void>
+      // return: <void>
+      */
+
       this.endCounter = 0
       this.submitted = true
       this.$emit('submitting', true)
@@ -792,6 +808,7 @@ export default {
       for (let property in this.data) {
         for (let obj in this.data[property]) {
           let blobURL = this.data[property][obj].url
+
           if (blobURL && blobURL.split(':')[0] === 'blob') {
             blobFlag = true
             this.endCounter = this.endCounter + 1
@@ -819,6 +836,14 @@ export default {
       }
     },
     filePickerOnChange: function (type, field) {
+      /*
+      // helper function to extract image out of the picked file
+      // params:
+      //    @type <String>:
+      //    @field <String>:
+      // return: <void>
+      */
+
       const eventHandler = (e, type, field) => {
         const file = e.target.files[0]
         let fToken = field.split('.')
@@ -842,7 +867,13 @@ export default {
       eventHandler(event, type, field)
     },
     deepObjCopy: function (aObject) {
+      /*
       // https://stackoverflow.com/questions/4459928/how-to-deep-clone-in-javascript/34624648#34624648
+      // creates a deep copy of the input
+      // params:
+      //    @aObject <Object>: the object to be cloned
+      // return: <Object>
+      */
       if (!aObject) {
         return aObject
       }

@@ -285,9 +285,11 @@ export default {
                 if (doc.data().db === 'testing') {
                   this.db = testingDb
                   this.$q.localStorage.set('boundless_db', 'testing')
+                  this.cloudFunctions = testAppCall.httpsCallable('appCall')
                 } else {
                   this.db = productionDb
                   this.$q.localStorage.set('boundless_db', 'production')
+                  this.cloudFunctions = proAppCall.httpsCallable('appCall')
                 }
                 resolve('Database fetch complete...')
               } else {

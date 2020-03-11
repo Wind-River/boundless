@@ -12,18 +12,11 @@
 
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
+
+// For Deployment
 admin.initializeApp()
 
-// const db = admin.firestore()
 const storage = admin.storage().bucket()
-
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   console.log('Hello from vue')
-//   response.send("Hello from Firebase!");
-// });
 
 exports.appCall = functions.https.onCall(async (data, context) => {
   // https://stackoverflow.com/a/54961702
@@ -41,20 +34,7 @@ exports.appCall = functions.https.onCall(async (data, context) => {
     }
   } catch (err) {
     console.log(err)
-  }
 
-  return {
-    data: 'Error!'
+    throw new functions.https.HttpsError('400', err)
   }
 })
-
-// exports.appTestPoint = functions.https.onCall((data, context) => {
-//   console.log('starting the appTestPoint')
-//   for (let prop in context.rawRequest) {
-//     console.log(prop)
-//   }
-
-//   return {
-//     data: data.data
-//   }
-// })
