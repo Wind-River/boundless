@@ -160,7 +160,7 @@ https://firebase.google.com/docs/functions/get-started
 $ npm install -g firebase-tools
 
 # this could take several mins since this will be installing dependencies
-$ cd ./app/server/cloud/functions && npm i && cd ..
+$ cd ./app/server/firebase/functions && npm i && cd ..
 
 # 'firebase login' should prompt broswer, please select proper google account since
 # this command will be grabbing credentials from the browser

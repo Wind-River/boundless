@@ -118,6 +118,9 @@ def do_import(args):
   source = args.SOURCE
   target = args.TARGET
 
+  if ".zip" not in source:
+    raise Exception("ERROR: Import file must be a .zip file!")
+
   print("unzipping the zip file...")
   unzip(source, "./tmpFile")
 
@@ -164,12 +167,13 @@ def main(prog_name=os.path.basename(sys.argv[0]), args=None):
 
   if args.command == "export":
     do_export(args)
+    print("\nExport completed sucessfully")
   elif args.command == "import":
     do_import(args)
+    print("\nImport completed sucessfully")
   else:
-    raise Exception('Error!')
+    raise Exception('ERROR: Subcommand does not exist!')
   
-  print("\nDone!")
 
 def main_wrapper():
   try:

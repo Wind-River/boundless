@@ -82,9 +82,9 @@ let finalObj = {
 }
 
 fs.writeFile(
-  'server/cloud/.firebaserc', JSON.stringify(finalObj, null, 2), function (err)
+  'server/firebase/.firebaserc', JSON.stringify(finalObj, null, 2), function (err)
 {
   if (err) 
     return console.log(err)
-  console.log(`'.firebaserc' file has been created inside 'server/cloud' from 'system.yml' file...`)
+  console.log(`'.firebaserc' file has been created inside 'server/firebase' from 'system.yml' file...`)
 })
