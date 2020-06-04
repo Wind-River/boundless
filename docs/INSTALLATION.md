@@ -100,7 +100,7 @@ https://firebase.google.com/docs/functions/get-started
   1. (Firebase Hosting not required)
   1. Select [**Register app**]
   1. Copy the following for a later step from var firebaseConfigs = { ... };
-  ```js
+```js
   var firebaseConfig = {
     apiKey: "...",
     authDomain: "...",
@@ -112,7 +112,7 @@ https://firebase.google.com/docs/functions/get-started
     measurementId: "..."
   };
 ```
-  1. Select [**Continue to console**]
+Select [**Continue to console**]
 <br />
 
 ## Copy db creditals into init.js
