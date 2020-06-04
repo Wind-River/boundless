@@ -18,7 +18,7 @@ $ git pull upstream {branch_name}
 ```
 **Note:** This should be done once per day or once before you start developing
 
-Contributors may commit as many as they please but squash the commits to make to one commit above current dev branch upstream before "Pull Request"...
+Contributors may commit as many as they please but squash the commits to make to one commit above current dev branch upstream before "Pull Request".
 ```bash
 # squashing git commits
 $ git reset --soft HEAD~n && git commit -s -m "msg"
