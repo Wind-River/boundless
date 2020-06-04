@@ -20,41 +20,50 @@ Methods:
 
 <template>
   <div class="q-pa-sm full-width">
-    <q-card class="q-pa-md dbCard">
+    <q-card flat class="">
+      <!-- IMPORT DATABASE -->
+      <div class="q-mt-md">
+        <div>
+          <b class="text-h6">Import Database</b>
+          <q-separator color="secondary" />
+        </div>
 
-      <!-- <input type="file"> -->
-      <q-uploader
-        bordered hide-upload-btn
-        ref="file"
-        class="full-width q-mb-sm"
-        label="Upload JSON file for 'Import'..." accept=".json"
-        @added="retrieveDataFromFile"
-        @removed="attachedFile = !attachedFile"
-      />
+        <input
+          class="q-pb-md q-pt-sm"
+          type="file" ref="file" accept=".json"
+          @change="retrieveDataFromFile"
+        >
 
-      <q-form @submit="onSubmit">
-        <div class="row q-gutter-sm" align="center">
-          <div class="col">
-            <q-btn
-              no-caps
-              class="full-width" label="Import"
-              type="submit"
-              :disable="!attachedFile"
-            />
-
-            <q-tooltip v-if="!attachedFile">
-              Please attach a '*.json' file.
-            </q-tooltip>
+        <q-form @submit="onSubmit">
+          <div class="">
+            <div class="col">
+              <q-btn
+                no-caps label="Import" type="submit"
+                style="width: 145px;"
+                :disable="!attachedFile"
+                :color="attachedFile ? 'secondary' : 'grey'"
+              />
+            </div>
           </div>
+        </q-form>
+      </div>
 
+      <!-- EXPORT DATABASE -->
+      <div class="q-mt-lg">
+        <div>
+          <b class="text-h6">Export Database</b>
+          <q-separator color="secondary" />
+        </div>
+
+        <div class="q-pt-sm">
           <q-btn
             no-caps
+            style="width: 145px;"
             class="col" color="secondary" label="Download"
             @click="download('boundless_data', data)"
           />
         </div>
-      </q-form>
-
+      </div>
     </q-card>
   </div>
 </template>
@@ -249,12 +258,16 @@ export default {
        * @return {void}
        */
 
-      let fr = new FileReader()
-      fr.readAsText(this.$refs.file.files[0])
-      fr.onload = () => {
-        this.importDataField = JSON.parse(fr.result)
-
+      if (!this.$refs.file.files[0]) {
         this.attachedFile = !this.attachedFile
+      } else {
+        let fr = new FileReader()
+        fr.readAsText(this.$refs.file.files[0])
+        fr.onload = () => {
+          this.importDataField = JSON.parse(fr.result)
+
+          this.attachedFile = !this.attachedFile
+        }
       }
     }
   }

@@ -1,3 +1,15 @@
+<!-- ##
+## Copyright (c) 2020 Wind River Systems, Inc.
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at:
+##       http://www.apache.org/licenses/LICENSE-2.0
+## Unless required by applicable law or agreed to in writing, software  distributed
+## under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+## OR CONDITIONS OF ANY KIND, either express or implied.
+## -->
+
 ## Techologies Needed:
 * VS Code
 * GitBash
@@ -7,6 +19,37 @@
 * gCloud
 * Make
 * Node.js
+
+## Quasar Framework Guide
+#### Installation & Running Guide
+**Note:** If the developer/contributor has not installed quasar please follow the guide below first and go back to the main installation guide:
+```bash
+# quasar installation
+
+install visual studio code
+install node 
+
+$ npm install -g vue-cli
+$ npm install -g @quasar/cli
+
+$ quasar create {foldername}
+
+$ cd {foldername}
+$ quasar dev
+
+# check for upgradable packages
+$ quasar upgrade
+
+# do the actual upgrade
+$ quasar upgrade --install
+```
+
+#### Running and Sandboxing Guide
+Once user has finished cloning the git repo, the user can simply run the Sandbox mode by running the following commands.
+```bash
+$ npm i
+$ quasar dev
+```
 
 ## Setting Up Fork Environment:
 * [Adding Upstream](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork)

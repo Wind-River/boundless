@@ -166,11 +166,16 @@ Methods:
                       <q-separator color="secondary" />
                     </div>
 
-                    <div>
-                      <q-card class="q-ml-sm q-mr-sm q-mt-sm q-pa-sm">
+                    <q-page>
+                      <div class="q-px-sm">
+                        <div class="q-pb-sm">
+                          <b class="text-h6">Switch Database</b>
+                          <q-separator color="secondary" />
+                        </div>
+
                         <q-btn-toggle
-                          push glossy no-caps
-                          toggle-color="primary"
+                          push no-caps
+                          toggle-color="positive"
                           :options="[
                             {label: 'Primary', value: 'production'},
                             {label: 'Test', value: 'testing'}
@@ -178,12 +183,12 @@ Methods:
                           v-model="db"
                           @input="switchDatabase"
                         />
-                      </q-card>
+                      </div>
 
                       <ManageDatabase
                         @importingToDB="consoleLoading"
                       />
-                    </div>
+                    </q-page>
                   </q-tab-panel>
 
                   <!-- ---------------- Challenge Settings ----------------- -->
