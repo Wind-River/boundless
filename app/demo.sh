@@ -19,4 +19,4 @@ cd client
 echo "Running npm. Could take several minutes to complete..."
 npm i
 
-quasar dev
+npx quasar dev

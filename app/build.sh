@@ -28,7 +28,7 @@ echo "BUILDING BOUNDLESS..."
 echo ""
 sleep 1
 
-quasar build && sleep 2 && mv dist/ ../../
+npx quasar build && sleep 2 && mv dist/ ../../
 
 echo "Please serve 'dist/spa' file on a static filesever..."
 echo "The software can also be run locally via 'quasar dev' inside 'app/client' directory or the by calling 'make run' from root."
